@@ -4,6 +4,16 @@ using namespace std;
 
 bool prime_checker(long long a)
 {
+    if (a == 1)
+    {   
+        return false;
+    }
+    else if(a == 2 || a == 3)
+    {
+        return true;
+    }
+    
+
     for (long long i = 2; i <= sqrt(a); i++)
     {
         if (a % i == 0)
@@ -30,7 +40,6 @@ int main(int argc, char const *argv[])
                 cout << i << endl;
             }
         }
-        cout << endl;
     }
 
     return 0;

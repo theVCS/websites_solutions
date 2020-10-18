@@ -3,27 +3,26 @@ using namespace std;
 #define ll long long int
 #define REP(i, a, b) for (int i = a; i < b; i++)
 
-int pre[101], suff[102];
+int pre[100005], suff[100005];
 
 int gcd(int a, int b)
 {
-    int temp;
-
-    while (b)
+    if (b == 0)
     {
-        temp = b;
-        b = a % b;
-        a = temp;
+        return a;
     }
-    return a;
+    else
+    {
+        return gcd(b, a % b);
+    }
 }
 
-int main(int argc, char const *argv[])
+int main()
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
+    // ios_base::sync_with_stdio(false);
+    // cin.tie(NULL);
 
-    int t, arr[100], n, q, l, r;
+    int t, arr[100005], n, q, l, r;
     cin >> t;
 
     while (t--)
@@ -42,7 +41,7 @@ int main(int argc, char const *argv[])
 
         for (int i = n; i > 0; i--)
         {
-            suff[i] = gcd(arr[i], suff[i + 1]);
+            suff[i] = gcd(arr[i - 1], suff[i + 1]);
         }
 
         REP(i, 0, q)

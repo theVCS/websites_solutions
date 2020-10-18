@@ -1,11 +1,11 @@
 #include<iostream>
 using namespace std;
 
-long long factorial(long long n)
+long long factorial(long long  n)
 {
-    if (n > 1)
+    if (n)
     {
-        return n * factorial(n - 1);
+        return n*factorial(n - 1);
     }
     else
     {
@@ -16,13 +16,13 @@ long long factorial(long long n)
 
 int main(int argc, char const *argv[]){
     int t;
-    long long n;
+    long long  n;
     cin>>t;
     while (t--)
     {
         cin>>n;
         cout<<factorial(n)<<endl;
     }
-       
+    
     return 0;
 }
