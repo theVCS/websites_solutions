@@ -39,7 +39,7 @@ void matrixPower(ll power)
 
     while (power)
     {
-        if (power)
+        if (power % 2)
         {
             power--;
             multiply(transition_matrix, identity_matrix);
@@ -62,8 +62,8 @@ int main(int argc, char const *argv[])
     while (t--)
     {
         cin >> a >> b >> n;
-        matrixPower(n);
-        cout << ((a * transition_matrix[0][1]) % 1000000007 + (b * transition_matrix[1][1]) % 1000000007) % 1000000007 << endl;
+        matrixPower(n - 1);
+        cout << ((a * identity_matrix[0][1]) % 1000000007 + (b * identity_matrix[1][1]) % 1000000007) % 1000000007 << endl;
     }
 
     return 0;
