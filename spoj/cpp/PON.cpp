@@ -4,34 +4,67 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 
-ll binProd(ll n, ll power, ll m)
+ll binexp(ll n, ll power, ll m)
 {
     ll res = 1;
+
     while (power)
     {
         if (power % 2)
         {
             power--;
-            res = (res * (n % m)) % m;
+            res = (res * n) % m;
         }
         power /= 2;
-        n = ((n % m) * (n % m)) % m;
+        n = (n * n) % m;
     }
     return res;
 }
 
-bool isPrime(ll n)
+bool isComposite(ll a, ll d, ll s, ll n)
 {
-    if (n <= 5)
+    ll res = binexp(a % n, d, n);
+
+    if (res == 1 || res == n - 1)
     {
-        return (n == 2 || n == 3 || n == 5);
+        return false;
     }
 
-    ll a;
-    for (int i = 0; i <= 10; i++)
+    for (ll i = 1; i < s; i++)
     {
-        a = 2 + rand() % (n - 3);
-        if (binProd(a, n - 1, n) != 1)
+        res = (res * res) % n;
+
+        if (res == n - 1)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool millerRabin(ll n)
+{
+    if (n <= 4)
+    {
+        return n == 2 || n == 3;
+    }
+
+    ll d = n - 1, s = 0;
+
+    while (d % 2 == 0)
+    {
+        d /= 2;
+        s++;
+    }
+
+    for (ll a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+    {
+        if (n == a)
+        {
+            return true;
+        }
+
+        if (isComposite(a, d, s, n))
         {
             return false;
         }
@@ -43,16 +76,17 @@ int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    cout.tie(0);
+    cout.tie(NULL);
 
     int t;
     ll n;
+
     cin >> t;
 
     while (t--)
     {
         cin >> n;
-        if (isPrime(n))
+        if (millerRabin(n))
         {
             cout << "YES" << endl;
         }

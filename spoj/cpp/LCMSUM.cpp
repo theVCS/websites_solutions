@@ -2,7 +2,7 @@
 using namespace std;
 #define ll long long int
 #define mod 1000000007
-#define maxN 1000100
+#define maxN 1000001
 #define REP(i, a, b) for (int i = a; i < b; i++)
 ll phi[maxN];
 
@@ -26,7 +26,7 @@ void init()
     }
 }
 
-void display(ll a)
+void display(int a)
 {
     ll sum = 0;
 
@@ -34,30 +34,31 @@ void display(ll a)
     {
         if (a % i == 0)
         {
-            sum += i * phi[a / i];
+            sum += i * phi[i];
             if (i != (a / i))
             {
-                sum += (a / i) * phi[i];
+                sum += (a / i) * phi[a / i];
             }
         }
     }
-    cout<<sum<<endl;
+    cout << ((sum + 1) * a) / 2 << "\n";
 }
 
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
+    cout.tie(NULL);
 
     init();
 
     ll t, n, res;
 
-    scanf("%lld", &t);
+    scanf("%d", &t);
 
     while (t--)
     {
-        scanf("%lld", &n);
+        scanf("%d", &n);
         display(n);
     }
 

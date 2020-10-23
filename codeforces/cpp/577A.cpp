@@ -45,23 +45,28 @@ int main(int argc, char const *argv[])
 
     init(x);
 
-    for (ll P : fac)
+    for(ll P: fac)
     {
-        d1 = P;
-        d2 = x / P;
-        if (d1 <= n && d2 <= n)
-        {
-            if (d1 == d2)
-            {
-                cnt++;
-            }
-            else
-            {
-                cnt += 2;
-            }
-        }
+        cout<<P<<" ";
     }
 
-    cout << cnt;
+    // for (ll P : fac)
+    // {
+    //     d1 = P;
+    //     d2 = x / P;
+    //     if (d1 <= n && d2 <= n)
+    //     {
+    //         if (d1 == d2)
+    //         {
+    //             cnt++;
+    //         }
+    //         else
+    //         {
+    //             cnt += 2;
+    //         }
+    //     }
+    // }
+
+    // cout << cnt;
     return 0;
 }
