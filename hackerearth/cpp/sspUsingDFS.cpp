@@ -3,18 +3,17 @@ using namespace std;
 #define ll long long int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-vector<int> arr[10001];
-vector<bool> vis(10001, false);
 
-void dfs(int n)
+void dfs(vector<int> arr[], vector<bool> &vis, vector<int> &dis, int n, int ndis)
 {
     vis[n] = true;
+    dis[n] = ndis;
 
     for (int P : arr[n])
     {
         if (!vis[P])
         {
-            dfs(P);
+            dfs(arr, vis, dis, P, ndis + 1);
         }
     }
 }
@@ -25,35 +24,26 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, cnt = 0;
+    int n, e, a, b;
 
-    cin >> n >> m;
+    cin >> n >> e;
+    vector<int> arr[n + 1];
+    vector<bool> vis(false, n + 1);
+    vector<int> dis(n + 1);
 
-    for (int i = 0; i < m; i++)
+    while (e--)
     {
         cin >> a >> b;
         arr[a].push_back(b);
         arr[b].push_back(a);
     }
 
-    for (int i = 1; i <= n; i++)
+    dfs(arr, vis, dis, 2, 0);
+
+    for(int P: dis)
     {
-        if (!vis[i])
-        {
-            dfs(i);
-            cnt++;
-        }
+        cout<<P<<" ";
     }
-    
-    if (cnt == 1 && m == n - 1)
-    {
-        cout<<"YES";
-    }
-    else
-    {
-        cout<<"NO";
-    }
-    
 
     return 0;
 }

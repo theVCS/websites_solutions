@@ -10,6 +10,7 @@
         "ratio": "cpp",
         "cinttypes": "cpp",
         "cstdlib": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "random": "cpp"
     }
 }

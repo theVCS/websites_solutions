@@ -28,19 +28,39 @@ int main(int argc, char const *argv[])
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
-    int num = 1;
+    int larpall = 1, a = 100, b, db;
 
-    for (int i = 999; i > 100; i--)
+    while (a <= 999)
     {
-        for (int j = 999; j > 100; j--)
+        if (a % 11 == 0)
         {
-            if (isPallindrome(i * j))
-            {
-                num = max(i * j , num);
-            }
+            b = 999;
+            db = 1;
         }
+        else
+        {
+            b = 990;
+            db = 11;
+        }
+
+        while (b >= a)
+        {
+            if (b * a <= larpall)
+            {
+                break;
+            }
+
+            if (isPallindrome(a * b))
+            {
+                larpall = a * b;
+            }
+
+            b -= db;
+        }
+        a++;
     }
-    cout<<num;
+
+    cout << larpall;
 
     return 0;
 }

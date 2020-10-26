@@ -3,10 +3,8 @@ using namespace std;
 #define ll long long int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-vector<int> arr[10001];
-vector<bool> vis(10001, false);
 
-void dfs(int n)
+void dfs(vector<int> arr[], vector<bool> &vis, int n)
 {
     vis[n] = true;
 
@@ -14,7 +12,7 @@ void dfs(int n)
     {
         if (!vis[P])
         {
-            dfs(P);
+            dfs(arr, vis, P);
         }
     }
 }
@@ -25,11 +23,12 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, cnt = 0;
+    int n, e, a, b, cc = 0;
+    cin >> n >> e;
+    vector<int> arr[n + 1];
+    vector<bool> vis(n + 1, false);
 
-    cin >> n >> m;
-
-    for (int i = 0; i < m; i++)
+    while (e--)
     {
         cin >> a >> b;
         arr[a].push_back(b);
@@ -40,20 +39,12 @@ int main(int argc, char const *argv[])
     {
         if (!vis[i])
         {
-            dfs(i);
-            cnt++;
+            dfs(arr, vis, i);
+            cc++;
         }
     }
-    
-    if (cnt == 1 && m == n - 1)
-    {
-        cout<<"YES";
-    }
-    else
-    {
-        cout<<"NO";
-    }
-    
+
+    cout << cc;
 
     return 0;
 }

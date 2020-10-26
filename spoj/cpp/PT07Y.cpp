@@ -4,17 +4,19 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 vector<int> arr[10001];
-vector<bool> vis(10001, false);
+vector<bool> vis(10001);
+vector<int> dis(10001);
 
-void dfs(int n)
+void dfs(int n, int ndis)
 {
     vis[n] = true;
+    dis[n] = ndis;
 
     for (int P : arr[n])
     {
         if (!vis[P])
         {
-            dfs(P);
+            dfs(P, 1 + ndis);
         }
     }
 }
@@ -25,35 +27,48 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, cnt = 0;
+    int n, m, a, b, cnt = 0, piv, maxD = 0;
 
-    cin >> n >> m;
+    cin >> n;
+    m = n - 1;
 
-    for (int i = 0; i < m; i++)
+    while (m--)
     {
         cin >> a >> b;
         arr[a].push_back(b);
         arr[b].push_back(a);
     }
 
+    dfs(1, 0);
+
     for (int i = 1; i <= n; i++)
     {
-        if (!vis[i])
+        if (dis[i] > maxD)
         {
-            dfs(i);
-            cnt++;
+            piv = i;
+            maxD = dis[i];
         }
     }
-    
-    if (cnt == 1 && m == n - 1)
+
+    dis.clear();
+
+    for (int i = 1; i < 10001; i++)
     {
-        cout<<"YES";
-    }
-    else
-    {
-        cout<<"NO";
+        vis[i] = false;
     }
     
+    maxD = 0;
+    dfs(piv, 0);
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (dis[i] > maxD)
+        {
+            maxD = dis[i];
+        }
+    }
+
+    cout << maxD;
 
     return 0;
 }
