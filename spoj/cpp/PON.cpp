@@ -4,33 +4,34 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 
-ll binexp(ll n, ll power, ll m)
+unsigned ll binexp(unsigned ll a, unsigned ll power, unsigned ll m)
 {
-    ll res = 1;
+    unsigned ll res = 1;
 
     while (power)
     {
         if (power % 2)
         {
             power--;
-            res = (res * n) % m;
+            res = (res * a) % m;
         }
         power /= 2;
-        n = (n * n) % m;
+        a = (a * a) % m;
     }
+
     return res;
 }
 
-bool isComposite(ll a, ll d, ll s, ll n)
+bool isComposite(unsigned ll a, unsigned ll d, unsigned ll s, unsigned ll n)
 {
-    ll res = binexp(a % n, d, n);
+    unsigned ll res = binexp(a % n, d, n);
 
-    if (res == 1 || res == n - 1)
+    if (res == n - 1 || res == 1)
     {
         return false;
     }
 
-    for (ll i = 1; i < s; i++)
+    for (unsigned ll i = 1; i < s; i++)
     {
         res = (res * res) % n;
 
@@ -42,29 +43,30 @@ bool isComposite(ll a, ll d, ll s, ll n)
     return true;
 }
 
-bool millerRabin(ll n)
+bool isPrime(unsigned ll n)
 {
-    if (n <= 4)
+    if (n <= 5)
     {
-        return n == 2 || n == 3;
+        return (n == 2 || n == 3 || n == 5);
     }
 
-    ll d = n - 1, s = 0;
+    unsigned ll d = n - 1;
+    unsigned ll s = 0;
 
     while (d % 2 == 0)
     {
-        d /= 2;
         s++;
+        d /= 2;
     }
 
-    for (ll a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+    for (unsigned ll p : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
     {
-        if (n == a)
+        if (p == n)
         {
             return true;
         }
 
-        if (isComposite(a, d, s, n))
+        if (isComposite(p, d, s, n))
         {
             return false;
         }
@@ -79,22 +81,21 @@ int main(int argc, char const *argv[])
     cout.tie(NULL);
 
     int t;
-    ll n;
-
     cin >> t;
+    unsigned ll n;
 
     while (t--)
     {
         cin >> n;
-        if (millerRabin(n))
+
+        if (isPrime(n))
         {
-            cout << "YES" << endl;
+            cout << "YES\n";
         }
         else
         {
-            cout << "NO" << endl;
+            cout << "NO\n";
         }
     }
-
     return 0;
 }

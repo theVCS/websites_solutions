@@ -1,48 +1,62 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define ll long long int
-#define mod 2677
+#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-short int primes[2677];
-vector <short int> ln;
+#define maxN 1000001
+int sieve[maxN];
 
-int sieve()
+void init()
 {
-    primes[0] = primes[1] = -1;
-
-    for (short int i = 2; i < mod; i++)
+    for (int i = 2; i < maxN; i++)
     {
-        if (primes[i] == 0)
+        if (sieve[i] == 0)
         {
-            for (short int j = i; j < mod; j += i)
+            for (int j = i; j < maxN; j += i)
             {
-                primes[j] += 1;
+                if (sieve[j] == 0)
+                {
+                    sieve[j] = j / i;
+                }
             }
-        }
-    }
-
-    for (short int i = 2; i < mod; i++)
-    {
-        if (primes[i] > 2)
-        {
-            ln.push_back(i);
         }
     }
 }
 
+void display(int n)
+{
+    int fac = 0;
+    while (sieve[n])
+    {
+        if (fac != n / sieve[n])
+        {
+            fac = n / sieve[n];
+            printf("%d ", fac);
+        }
+        n = sieve[n];
+    }
+    printf("\n");
+}
+
 int main(int argc, char const *argv[])
 {
-    sieve();
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    short int t, n;
+    init();
 
-    cin >> t;
+    int t, n, cnt = 1;
+    scanf("%d", &t);
 
     while (t--)
     {
-        cin >> n;
-        cout << ln[n - 1] << endl;
+        scanf("%d", &n);
+        printf("Case %d: ", cnt);
+        display(n);
+        cnt++;
     }
+    
 
     return 0;
 }

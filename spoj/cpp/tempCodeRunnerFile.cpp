@@ -3,20 +3,71 @@ using namespace std;
 #define ll long long int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-vector<int> arr[10001];
-vector<bool> vis(10001, false);
 
-void dfs(int n)
+ll binexp(ll a, ll power, ll m)
 {
-    vis[n] = true;
+    ll res = 1;
 
-    for (int P : arr[n])
+    while (power)
     {
-        if (!vis[P])
+        if (power % 2)
         {
-            dfs(P);
+            power--;
+            res = (res * a) % m;
+        }
+        power /= 2;
+        a = (a * a) % m;
+    }
+
+    return res;
+}
+
+bool isComposite(ll a, ll d, ll s, ll n)
+{
+    ll res = binexp(a % n, d, n);
+
+    if (res == n - 1 || res == 1)
+    {
+        return false;
+    }
+
+    for (int i = 1; i < s; i++)
+    {
+        res = (res * res) % n;
+
+        if (res == n - 1)
+        {
+            return false;
         }
     }
+    return true;
+}
+
+bool isPrime(ll n)
+{
+    ll d = n - 1;
+    ll s = 0;
+
+    while (d % 2 == 0)
+    {
+        s++;
+        d /= 2;
+    }
+
+    for (ll p : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+    {
+        if (p == n)
+        {
+            return true;
+        }
+        
+
+        if (isComposite(p, d, s, n))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 int main(int argc, char const *argv[])
@@ -25,33 +76,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, cnt = 0;
+    int t;
+    cin>>t;
+    ll n;
 
-    cin >> n >> m;
-
-    for (int i = 0; i < m; i++)
+    while (t--)
     {
-        cin >> a >> b;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
-    }
+        cin>>n;
 
-    for (int i = 1; i <= n; i++)
-    {
-        if (!vis[i])
+        if (isPrime(n))
         {
-            dfs(i);
-            cnt++;
+            cout<<"YES\n";
         }
-    }
-    
-    if (cnt == 1 && m == n - 1)
-    {
-        cout<<"YES";
-    }
-    else
-    {
-        cout<<"NO";
+        else
+        {
+            cout<<"NO\n";
+        }
+        
     }
     
 
