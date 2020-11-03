@@ -14,43 +14,27 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll t, n, k, a, lm, cnt;
+    int t;
+    ll a, b;
 
     cin >> t;
 
     while (t--)
     {
-        cin >> n >> k;
-        cnt = 0;
-        lm = 0;
+        cin >> a >> b;
 
-        while (n--)
+        if (a > b)
         {
-            cnt++;
-            cin >> a;
-            a += lm;
-            lm = a - k;
-
-            if (lm < 0)
-            {
-                break;
-            }
+            cout << ">" << endl;
         }
-
-        if (n > 0)
+        else if (a < b)
         {
-            while (n--)
-            {
-                cin >> a;
-            }
+            cout << "<" << endl;
         }
-
-        if (lm >= 0)
+        else
         {
-            cnt += (lm / k) + 1;
+            cout << "=" << endl;
         }
-
-        cout << cnt << endl;
     }
 
     return 0;

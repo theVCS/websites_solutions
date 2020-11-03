@@ -14,43 +14,30 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll t, n, k, a, lm, cnt;
-
+    int t, n, ec = 0, oc = 0;
     cin >> t;
 
     while (t--)
     {
-        cin >> n >> k;
-        cnt = 0;
-        lm = 0;
+        cin >> n;
 
-        while (n--)
+        if (n % 2)
         {
-            cnt++;
-            cin >> a;
-            a += lm;
-            lm = a - k;
-
-            if (lm < 0)
-            {
-                break;
-            }
+            oc++;
         }
-
-        if (n > 0)
+        else
         {
-            while (n--)
-            {
-                cin >> a;
-            }
+            ec++;
         }
+    }
 
-        if (lm >= 0)
-        {
-            cnt += (lm / k) + 1;
-        }
-
-        cout << cnt << endl;
+    if (ec > oc)
+    {
+        cout << "READY FOR BATTLE" << endl;
+    }
+    else
+    {
+        cout << "NOT READY" << endl;
     }
 
     return 0;
