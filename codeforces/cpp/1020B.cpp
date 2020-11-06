@@ -4,6 +4,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1001
+
 vector<int> arr[maxN];
 int cnt[maxN];
 
@@ -17,7 +18,11 @@ int dfs(int n)
     else
     {
         cnt[n]++;
-        return dfs(arr[n][0]);
+
+        for (int child : arr[n])
+        {
+            return dfs(child);
+        }
     }
 }
 
@@ -39,7 +44,11 @@ int main(int argc, char const *argv[])
     for (int i = 1; i <= n; i++)
     {
         cout << dfs(i) << " ";
-        memset(cnt, 0, maxN);
+
+        REP(j, 1, n + 1)
+        {
+            cnt[j] = 0;
+        }
     }
 
     return 0;
