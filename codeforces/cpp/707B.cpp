@@ -12,14 +12,18 @@ using namespace std;
 vector<pair<int, ll>> arr[maxN];
 int centre[maxN], n, m, k;
 ll res = __LONG_LONG_MAX__;
+bool isCentre[maxN];
 
 void dfs(int centre[])
 {
     REP(i, 0, k)
     {
-        for(pair<int,ll>e: arr[centre[i]])
+        for (pair<int, ll> e : arr[centre[i]])
         {
-            res = min(res, e.second);
+            if (!isCentre[e.first])
+            {
+                res = min(res, e.second);
+            }
         }
     }
 }
@@ -45,6 +49,7 @@ int main(int argc, char const *argv[])
     REP(i, 0, k)
     {
         cin >> centre[i];
+        isCentre[centre[i]] = true;
     }
 
     dfs(centre);
@@ -57,7 +62,6 @@ int main(int argc, char const *argv[])
     {
         cout << res;
     }
-    
 
     return 0;
 }

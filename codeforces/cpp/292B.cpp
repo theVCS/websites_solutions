@@ -10,89 +10,33 @@ using namespace std;
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 vector<int> arr[maxN];
 bool vis[maxN];
-int n;
+int n, indegree[maxN];
+int inD1, inD2, inDV;
 
-bool bus(int node)
+void dfs(int node)
 {
-    int cnt = 0;
     vis[node] = true;
+
+    if (arr[node].size() == 1)
+    {
+        inD1++;
+    }
+    else if (arr[node].size() == 2)
+    {
+        inD2++;
+    }
+    else if (arr[node].size() == n - 1)
+    {
+        inDV++;
+    }
 
     for (int child : arr[node])
     {
         if (!vis[child])
         {
-            cnt++;
-            if (bus(child) == false)
-            {
-                return false;
-            }
+            dfs(child);
         }
     }
-
-    if (cnt == 2 || cnt == 1 || cnt == 0)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool ring(int node, int par, bool &val)
-{
-    int cnt = 0;
-    vis[node] = true;
-
-    for (int child : arr[node])
-    {
-        if (!vis[child])
-        {
-            cnt++;
-
-            if (ring(child, node, val) == false)
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if (child != par)
-            {
-                val = true;
-            }
-        }
-    }
-
-    if ((cnt == 2 || cnt == 1 || cnt == 0) && val)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-bool star(int node)
-{
-    int cnt = 0;
-    vis[node] = true;
-
-    for (int child : arr[node])
-    {
-        if (!vis[child])
-        {
-            cnt++;
-            if (star(child) == false)
-            {
-                return false;
-            }
-        }
-    }
-
-    if (cnt == 1 || cnt >= (n - 2) || cnt == 0)
-    {
-        return true;
-    }
-
-    return false;
 }
 
 int main(int argc, char const *argv[])
@@ -102,6 +46,7 @@ int main(int argc, char const *argv[])
     cout.tie(NULL);
 
     int m, a, b;
+    bool isBus = false, isRing = false, isStar = false;
 
     cin >> n >> m;
 
@@ -112,10 +57,39 @@ int main(int argc, char const *argv[])
         arr[b].push_back(a);
     }
 
-    // bool val = false;
-    if (star(1))
+    dfs(1);
+
+    // checking for edges and vertices
+    if (m == n - 1 && inD1 == 2 && inD2 == n - 2)
+    {
+        isBus = true;
+    }
+
+    if (n == m && inD2 == n)
+    {
+        isRing = true;
+    }
+
+    if (m == n - 1 && inD1 == n - 1 && inDV == 1)
+    {
+        isStar = true;
+    }
+
+    if (isBus)
     {
         cout << "bus topology";
+    }
+    else if (isRing)
+    {
+        cout << "ring topology";
+    }
+    else if (isStar)
+    {
+        cout << "star topology";
+    }
+    else
+    {
+        cout << "unknown topology";
     }
 
     return 0;
