@@ -10,7 +10,7 @@ using namespace std;
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 int phi[202918036];
-int invphi[99683841];
+int invphi[202918031];
 
 void init()
 {
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
     {
         cin >> n;
 
-        if(invphi[n] == 0)
+        if (invphi[n] == 0)
         {
             cout << -1 << endl;
         }

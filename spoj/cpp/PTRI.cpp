@@ -3,39 +3,30 @@ using namespace std;
 #define ll long long int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 202918036
+#define maxN 100000001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int phi[202918036];
-int invphi[99683841];
+bool isPrime[maxN];
+map<int, int> primes;
 
 void init()
 {
-    for (int i = 1; i < maxN; i++)
-    {
-        phi[i] = i;
-    }
+    int pos = 1;
+    isPrime[0] = isPrime[1] = true;
 
-    for (int i = 2; i < maxN; i++)
+    for (int i = 2; i <= maxN; i++)
     {
-        if (phi[i] == i)
+        if (!isPrime[i])
         {
-            for (int j = i; j < maxN; j += i)
+            isPrime[i] = pos++;
+
+            for (int j = i * i; j < maxN; j += i)
             {
-                phi[j] /= i;
-                phi[j] *= i - 1;
+                isPrime[j] = true;
             }
-        }
-    }
-
-    for (int i = 1; i < maxN; i++)
-    {
-        if (invphi[phi[i]] == 0)
-        {
-            invphi[phi[i]] = i;
         }
     }
 }
@@ -48,7 +39,7 @@ int main(int argc, char const *argv[])
 
     init();
 
-    int t, n;
+    int t, n, row, col;
 
     cin >> t;
 
@@ -56,13 +47,16 @@ int main(int argc, char const *argv[])
     {
         cin >> n;
 
-        if(invphi[n] == 0)
+        if (primes[n])
         {
-            cout << -1 << endl;
+            row = int(ceil((sqrt(8*primes[n] + 1) - 1)/2));
+            col = primes[n] - (row * (row - 1)) / 2;
+            cout << row << " " << col << endl;
+            // cout << primes[n] << endl;
         }
         else
         {
-            cout << invphi[n] << endl;
+            cout << -1 << endl;
         }
     }
 
