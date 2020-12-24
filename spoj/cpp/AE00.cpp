@@ -15,15 +15,16 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    int n, sum = 0;
 
     cin >> n;
 
-    while (n != 42)
+    for (int i = 1; i * i <= n; i++)
     {
-        cout << n << endl;
-        cin >> n;
+        sum += n / i - i + 1;
     }
+    
+    cout << sum;
 
     return 0;
 }

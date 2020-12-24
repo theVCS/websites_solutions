@@ -15,13 +15,13 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    ll n;
 
     cin >> n;
 
-    while (n != 42)
+    while (n)
     {
-        cout << n << endl;
+        cout << (n * (n + 1) * (2 * n + 1)) / 6 << endl;
         cin >> n;
     }
 

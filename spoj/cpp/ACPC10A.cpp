@@ -15,14 +15,26 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    ll a, b, c;
 
-    cin >> n;
+    cin >> a >> b >> c;
 
-    while (n != 42)
+    while (a || b || c)
     {
-        cout << n << endl;
-        cin >> n;
+        if(a == b && b == c)
+        {
+            cout << "GP " << a << endl;
+        }
+        else if ((2 * b) == (a + c))
+        {
+            cout << "AP " << c + (b - a) << endl;
+        }
+        else
+        {
+            cout << "GP " << c * b / a << endl;
+        }
+
+        cin >> a >> b >> c;
     }
 
     return 0;

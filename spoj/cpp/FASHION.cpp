@@ -15,22 +15,42 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll a, b, c;
+    int t, n, dum;
+    ll sum;
 
-    cin >> a >> b >> c;
+    cin >> t;
 
-    while (a)
+    while (t--)
     {
-        if ((2 * b) != (a + c))
+        cin >> n;
+
+        sum = 0;
+
+        vector<int> men;
+        vector<int> women;
+
+        REP(i, 0, n)
         {
-            cout << "GP " << c * c / b << endl;
-        }
-        else
-        {
-            cout << "AP " << c + (c - b) << endl;
+            cin >> dum;
+            men.push_back(dum);
         }
 
-        cin >> a >> b >> c;
+        sort(men.begin(), men.end());
+
+        REP(i, 0, n)
+        {
+            cin >> dum;
+            women.push_back(dum);
+        }
+
+        sort(women.begin(), women.end());
+
+        REP(i, 0, n)
+        {
+            sum += men[i] * women[i];
+        }
+
+        cout << sum << endl;
     }
 
     return 0;
