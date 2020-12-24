@@ -15,16 +15,35 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll x, y, cnt = 0;
+    ll n, k;
+    vector<ll> factors;
 
-    cin >> x >> y;
+    cin >> n >> k;
 
-    for (ll i = 1; i <= x; i++)
+    for (ll i = 1; i * i <= n; i++)
     {
-        cnt += (((y + i) / 5) - (i / 5));
+        if (n % i == 0)
+        {
+            factors.push_back(i);
+
+            if (i * i != n)
+            {
+                factors.push_back(n / i);
+            }
+        }
     }
 
-    cout << cnt;
+    sort(factors.begin(), factors.end());
+
+    if (k <= factors.size())
+    {
+        cout << factors[k - 1];
+    }
+    else
+    {
+        cout << -1;
+    }
+    
 
     return 0;
 }

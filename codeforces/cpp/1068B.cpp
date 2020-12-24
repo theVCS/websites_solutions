@@ -15,16 +15,27 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll x, y, cnt = 0;
+    ll b;
 
-    cin >> x >> y;
+    cin >> b;
 
-    for (ll i = 1; i <= x; i++)
+    int res = 0;
+
+    for (ll i = 1; i * i <= b; i++)
     {
-        cnt += (((y + i) / 5) - (i / 5));
+        if (b % i == 0)
+        {
+            if (i * i == b)
+            {
+                res++;
+            }
+            else
+            {
+                res += 2;
+            }
+        }
     }
-
-    cout << cnt;
+    cout << res;
 
     return 0;
 }

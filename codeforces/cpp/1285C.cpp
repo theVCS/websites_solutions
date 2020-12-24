@@ -9,46 +9,41 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll __lcm(ll a, ll b)
+{
+    return (a * b) / __gcd(a, b);
+}
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, dum, maxV = 0, maxV_2 = 0;
-    map<int, int> arr;
+    ll n, res = __LONG_LONG_MAX__;
+    map<pair<ll, ll>, ll> arr;
+    pair<ll, ll> fac;
 
     cin >> n;
 
-    REP(i, 0, n)
+    for (ll i = 1; i * i <= n; i++)
     {
-        cin >> dum;
-        arr[dum] += 1;
-        maxV = max(dum, maxV);
-    }
-
-    for (int i = 1; i * i <= maxV; i++)
-    {
-        if (maxV % i == 0)
+        if (n % i == 0 && __lcm(i, n / i) == n)
         {
-            arr[i]--;
-
-            if (i * i != maxV)
-            {
-                arr[maxV / i]--;
-            }
+            arr[{i, n / i}] = max(i, n / i);
         }
     }
 
-    for(auto ele: arr)
+    for (auto e : arr)
     {
-        if (ele.second)
+        if (e.second < res)
         {
-            maxV_2 = max(maxV_2, ele.first);
+            fac = e.first;
+            res = e.second;
         }
     }
 
-    cout << maxV << " " <<  maxV_2;
+    cout << fac.first << " " << fac.second;
 
     return 0;
 }

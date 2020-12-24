@@ -8,23 +8,17 @@ using namespace std;
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-
-int main(int argc, char const *argv[])
-{
+    
+int main(int argc, char const *argv[]){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
+    
+    ll n;
 
-    ll x, y, cnt = 0;
+    cin >> n;
 
-    cin >> x >> y;
-
-    for (ll i = 1; i <= x; i++)
-    {
-        cnt += (((y + i) / 5) - (i / 5));
-    }
-
-    cout << cnt;
-
+    cout << n / 2520;
+    
     return 0;
 }
