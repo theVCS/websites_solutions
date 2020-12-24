@@ -9,28 +9,16 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll counter(ll n, ll x)
+int leaPrime(int n)
 {
-    int cnt = 0;
-
-    for (ll i = 1; i * i <= x; i++)
+    for (int i = 2; i * i <= n; i++)
     {
-        if (x % i == 0)
+        if (n % i == 0)
         {
-            if (i <= n && x / i <= n)
-            {
-                if (i * i == x)
-                {
-                    cnt++;
-                }
-                else
-                {
-                    cnt += 2;
-                }
-            }
+            return i;
         }
     }
-    return cnt;
+    return n;
 }
 
 int main(int argc, char const *argv[])
@@ -39,11 +27,15 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll n, x;
+    int n;
 
-    cin >> n >> x;
+    cin >> n;
 
-    cout << counter(n, x);
+    while (n)
+    {
+        cout << leaPrime(n) << endl;
+        cin >> n;
+    }
 
     return 0;
 }

@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define ll long long int
-#define mod 1000000007
+#define mod 10000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
@@ -9,28 +9,23 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll counter(ll n, ll x)
+ll binexp(ll a, ll pow, ll m = mod)
 {
-    int cnt = 0;
+    ll res = 1;
 
-    for (ll i = 1; i * i <= x; i++)
+    while (pow)
     {
-        if (x % i == 0)
+        if (pow % 2)
         {
-            if (i <= n && x / i <= n)
-            {
-                if (i * i == x)
-                {
-                    cnt++;
-                }
-                else
-                {
-                    cnt += 2;
-                }
-            }
+            res = (res * a) % m;
+            pow--;
         }
+
+        pow /= 2;
+        a = (a * a) % m;
     }
-    return cnt;
+
+    return res;
 }
 
 int main(int argc, char const *argv[])
@@ -39,11 +34,15 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll n, x;
+    ll n, k;
 
-    cin >> n >> x;
+    cin >> n >> k;
 
-    cout << counter(n, x);
+    while (n)
+    {
+        cout << (binexp(n, k) + binexp(n, n) + 2 * binexp(n - 1, k) + 2 * binexp(n - 1, n - 1)) % mod << endl;
+        cin >> n >> k;
+    }
 
     return 0;
 }

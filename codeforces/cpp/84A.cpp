@@ -9,41 +9,17 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll counter(ll n, ll x)
-{
-    int cnt = 0;
-
-    for (ll i = 1; i * i <= x; i++)
-    {
-        if (x % i == 0)
-        {
-            if (i <= n && x / i <= n)
-            {
-                if (i * i == x)
-                {
-                    cnt++;
-                }
-                else
-                {
-                    cnt += 2;
-                }
-            }
-        }
-    }
-    return cnt;
-}
-
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll n, x;
+    ll n;
 
-    cin >> n >> x;
+    cin >> n;
 
-    cout << counter(n, x);
+    cout << (n / 2) * 3;
 
     return 0;
 }

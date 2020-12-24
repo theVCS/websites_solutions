@@ -9,28 +9,20 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll counter(ll n, ll x)
-{
-    int cnt = 0;
+bool sieve[maxN];
 
-    for (ll i = 1; i * i <= x; i++)
+void init()
+{
+    for (int i = 2; i * i <= maxN; i++)
     {
-        if (x % i == 0)
+        if (!sieve[i])
         {
-            if (i <= n && x / i <= n)
+            for (int j = i * i; j < maxN; j += i)
             {
-                if (i * i == x)
-                {
-                    cnt++;
-                }
-                else
-                {
-                    cnt += 2;
-                }
+                sieve[j] = true;
             }
         }
     }
-    return cnt;
 }
 
 int main(int argc, char const *argv[])
@@ -39,11 +31,20 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll n, x;
+    init();
 
-    cin >> n >> x;
+    int n;
 
-    cout << counter(n, x);
+    cin >> n;
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (sieve[i] && sieve[n - i])
+        {
+            cout << i << " " << n - i;
+            break;
+        }
+    }
 
     return 0;
 }

@@ -75,7 +75,7 @@ void init2()
     for (ll i = 1; i < maxN; i++)
     {
         sumn = divSum(i);
-        
+
         if (sumn <= 100000000 && sumInv[sumn] == 0)
         {
             sumInv[sumn] = i;
@@ -85,28 +85,28 @@ void init2()
 
 int main(int argc, char const *argv[])
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    // ios_base::sync_with_stdio(false);
+    // cin.tie(NULL);
+    // cout.tie(NULL);
 
     init();
     init2();
 
     ll t, n;
 
-    cin >> t;
+    scanf("%lld", &t);
 
     while (t--)
     {
-        cin >> n;
+        scanf("%lld", &n);
 
         if (sumInv[n] == 0)
         {
-            cout << -1 << endl;
+            printf("-1\n");
         }
         else
         {
-            cout << sumInv[n] << endl;
+            printf("%lld\n", sumInv[n]);
         }
     }
 
