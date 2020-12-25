@@ -1,37 +1,43 @@
+// compile in 8.3 gcc
+
 #include <bits/stdc++.h>
+#include <boost/multiprecision/cpp_int.hpp>
+using namespace boost::multiprecision;
 using namespace std;
-#define ll long long int
-#define mod 1000000007
+#define ll cpp_int
 #define REP(i, a, b) for (int i = a; i < b; i++)
+#define maxN 1000001
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-unsigned ll binexp(unsigned ll a, unsigned ll power, unsigned ll m)
+ll binExp(ll a, ll pow, ll m)
 {
-    unsigned ll res = 1;
+    ll res = 1;
 
-    while (power)
+    while (pow)
     {
-        if (power % 2)
+        if (pow % 2)
         {
-            power--;
             res = (res * a) % m;
         }
-        power /= 2;
         a = (a * a) % m;
+        pow /= 2;
     }
-
     return res;
 }
 
-bool isComposite(unsigned ll a, unsigned ll d, unsigned ll s, unsigned ll n)
+bool isComposite(ll a, ll d, ll s, ll n)
 {
-    unsigned ll res = binexp(a % n, d, n);
+    ll res = binExp(a, d, n);
 
-    if (res == n - 1 || res == 1)
+    if (res == 1 || res == n - 1)
     {
         return false;
     }
 
-    for (unsigned ll i = 1; i < s; i++)
+    for (ll i = 1; i < s; i++)
     {
         res = (res * res) % n;
 
@@ -43,30 +49,29 @@ bool isComposite(unsigned ll a, unsigned ll d, unsigned ll s, unsigned ll n)
     return true;
 }
 
-bool isPrime(unsigned ll n)
+bool millerRabin(ll n)
 {
-    if (n <= 5)
+    if (n != 2 && (n < 2 || n % 2 == 0))
     {
-        return (n == 2 || n == 3 || n == 5);
+        return false;
     }
 
-    unsigned ll d = n - 1;
-    unsigned ll s = 0;
+    ll d = n - 1, s = 0;
 
     while (d % 2 == 0)
     {
-        s++;
         d /= 2;
+        s++;
     }
 
-    for (unsigned ll p : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
+    for (ll a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})
     {
-        if (p == n)
+        if (n == a)
         {
             return true;
         }
 
-        if (isComposite(p, d, s, n))
+        if (isComposite(a, d, s, n))
         {
             return false;
         }
@@ -81,21 +86,23 @@ int main(int argc, char const *argv[])
     cout.tie(NULL);
 
     int t;
+    ll n;
+
     cin >> t;
-    unsigned ll n;
 
     while (t--)
     {
         cin >> n;
 
-        if (isPrime(n))
+        if (millerRabin(n))
         {
-            cout << "YES\n";
+            cout << "YES" << endl;
         }
         else
         {
-            cout << "NO\n";
+            cout << "NO" << endl;
         }
     }
+
     return 0;
 }
