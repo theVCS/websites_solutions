@@ -12,40 +12,19 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int sieve[maxN];
-ll ans[maxN];
+map<ll, bool>isFib;
 
 void init()
 {
-    for (int i = 1; i < maxN; i++)
-    {
-        sieve[i] = i;
-    }
+    ll a = 1, b = 1, temp;
 
-    for (int i = 2; i < maxN; i++)
+    while (b <= 10000000000)
     {
-        if (sieve[i] == i)
-        {
-            for (int j = i; j < maxN; j += i)
-            {
-                sieve[j] /= i;
-                sieve[j] *= i - 1;
-            }
-        }
+        isFib[b] = true;
+        temp = a;
+        a = b;
+        b +=temp;
     }
-
-    for (int i = 1; i < maxN; i++)
-    {
-        for (int j = i; j < maxN; j += i)
-        {
-            ans[j] += i * sieve[i];
-        }
-    }
-}
-
-ll lcmSum(int n)
-{
-    return ((ans[n] + 1) * n) / 2;
 }
 
 int main(int argc, char const *argv[])
@@ -56,14 +35,23 @@ int main(int argc, char const *argv[])
 
     init();
 
-    int t, n;
+    int t;
+    ll n;
 
     cin >> t;
 
     while (t--)
     {
         cin >> n;
-        cout << lcmSum(n) << endl;
+
+        if (isFib[n])
+        {
+            cout << "IsFibo" << endl;
+        }
+        else
+        {
+            cout << "IsNotFibo" << endl;
+        }
     }
 
     return 0;

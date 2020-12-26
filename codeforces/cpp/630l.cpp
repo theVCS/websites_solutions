@@ -12,32 +12,20 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll gcd(ll a, ll b, ll &x, ll &y)
+ll binexp(ll n, ll pow)
 {
-    if (b == 0)
-    {
-        x = 1;
-        y = 0;
-        return a;
-    }
-    ll d, x1, y1;
-    d = gcd(b, a % b, x1, y1);
-    x = y1;
-    y = x1 - (a / b) * y1;
-    return d;
-}
+    ll res = 1;
 
-bool findAnySolution(ll a, ll b, ll c, ll &x, ll &y)
-{
-    ll g = gcd(abs(a), abs(b), x, y);
-
-    if (c % g)
+    while (pow)
     {
-        return false;
+        if (pow % 2)
+        {
+            res = res * n;
+        }
+        n = n * n;
+        pow /= 2;
     }
-    x *= (c / g);
-    y *= (c / g);
-    return true;
+    return res;
 }
 
 int main(int argc, char const *argv[])
@@ -46,18 +34,10 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    ll a, b, c, x, y;
+    ll n;
+    cin >> n;
 
-    cin >> a >> b >> c;
-
-    if (findAnySolution(a, b, c, x, y) && x >= 0 && y >= 0)
-    {
-        cout << "YES";
-    }
-    else
-    {
-        cout << "NO";
-    }
+    cout << 24 * binexp(4, n - 3) + (n - 3) * 36 *binexp(4, n - 4);
 
     return 0;
 }

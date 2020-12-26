@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
+//#include <boost/multiprecision/cpp_int.hpp>
+//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
+//#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 100000001
@@ -9,24 +12,30 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime[maxN];
-map<int, int> primes;
+vector<bool> sieve(maxN);
+vector<int> arr(maxN);
 
 void init()
 {
-    int pos = 1;
-    isPrime[0] = isPrime[1] = true;
-
-    for (int i = 2; i <= maxN; i++)
+    int pos = 0;
+    sieve[0] = sieve[1] = true;
+    for (int i = 2; i * i <= maxN; i++)
     {
-        if (!isPrime[i])
+        if (!sieve[i])
         {
-            isPrime[i] = pos++;
-
+            arr[i] = ++pos;
             for (int j = i * i; j < maxN; j += i)
             {
-                isPrime[j] = true;
+                sieve[j] = true;
             }
+        }
+    }
+
+    for (int i = 10001; i < maxN; i += 2)
+    {
+        if (!sieve[i])
+        {
+            arr[i] = ++pos;
         }
     }
 }
@@ -39,7 +48,8 @@ int main(int argc, char const *argv[])
 
     init();
 
-    int t, n, row, col;
+    int t;
+    ll n, pos, row, col;
 
     cin >> t;
 
@@ -47,12 +57,13 @@ int main(int argc, char const *argv[])
     {
         cin >> n;
 
-        if (primes[n])
+        pos = arr[n];
+
+        if (pos)
         {
-            row = int(ceil((sqrt(8*primes[n] + 1) - 1)/2));
-            col = primes[n] - (row * (row - 1)) / 2;
+            row = ceil((sqrt(8 * pos + 1) - 1) / 2);
+            col = pos - (row * (row - 1)) / 2;
             cout << row << " " << col << endl;
-            // cout << primes[n] << endl;
         }
         else
         {

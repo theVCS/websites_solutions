@@ -6,46 +6,29 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 10000001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+bool arr[maxN];
 int sieve[maxN];
-ll ans[maxN];
 
 void init()
 {
-    for (int i = 1; i < maxN; i++)
-    {
-        sieve[i] = i;
-    }
+    arr[0] = arr[1] = true;
 
-    for (int i = 2; i < maxN; i++)
+    for (int i = 2; i * i <= maxN; i++)
     {
-        if (sieve[i] == i)
+        if (!arr[i])
         {
-            for (int j = i; j < maxN; j += i)
+            for (int j = i * i; j < maxN; j += i)
             {
-                sieve[j] /= i;
-                sieve[j] *= i - 1;
+                arr[j] = true;
             }
         }
     }
-
-    for (int i = 1; i < maxN; i++)
-    {
-        for (int j = i; j < maxN; j += i)
-        {
-            ans[j] += i * sieve[i];
-        }
-    }
-}
-
-ll lcmSum(int n)
-{
-    return ((ans[n] + 1) * n) / 2;
 }
 
 int main(int argc, char const *argv[])
@@ -56,14 +39,40 @@ int main(int argc, char const *argv[])
 
     init();
 
-    int t, n;
+    ll x = 1, y = 1, t, n, dum;
+
+    while (true)
+    {
+        dum = x * x + y * y * y * y;
+        if (dum >= maxN)
+        {
+            break;
+        }
+
+        while (dum < maxN)
+        {
+            if (!arr[dum])
+            {
+                sieve[dum] = 1;
+            }
+            y++;
+            dum = x * x + y * y * y * y;
+        }
+        x++;
+        y = 1;
+    }
+
+    for (int i = 3; i < maxN; i++)
+    {
+        sieve[i] += sieve[i - 1];
+    }
 
     cin >> t;
 
     while (t--)
     {
         cin >> n;
-        cout << lcmSum(n) << endl;
+        cout << sieve[n] << endl;
     }
 
     return 0;

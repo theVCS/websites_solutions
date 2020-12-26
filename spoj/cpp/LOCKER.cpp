@@ -12,40 +12,22 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int sieve[maxN];
-ll ans[maxN];
-
-void init()
+ll binexp(ll a, ll pow)
 {
-    for (int i = 1; i < maxN; i++)
-    {
-        sieve[i] = i;
-    }
+    a %= mod;
 
-    for (int i = 2; i < maxN; i++)
+    ll res = 1;
+
+    while (pow)
     {
-        if (sieve[i] == i)
+        if (pow % 2)
         {
-            for (int j = i; j < maxN; j += i)
-            {
-                sieve[j] /= i;
-                sieve[j] *= i - 1;
-            }
+            res = (res * a) % mod;
         }
+        pow /= 2;
+        a = (a * a) % mod;
     }
-
-    for (int i = 1; i < maxN; i++)
-    {
-        for (int j = i; j < maxN; j += i)
-        {
-            ans[j] += i * sieve[i];
-        }
-    }
-}
-
-ll lcmSum(int n)
-{
-    return ((ans[n] + 1) * n) / 2;
+    return res;
 }
 
 int main(int argc, char const *argv[])
@@ -54,16 +36,31 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    init();
-
-    int t, n;
+    int t;
+    ll n;
 
     cin >> t;
 
     while (t--)
     {
         cin >> n;
-        cout << lcmSum(n) << endl;
+
+        if (n < 3)
+        {
+            cout << n << endl;
+        }
+        else if (n % 3 == 1)
+        {
+            cout << (4 * binexp(3, (n - 4) / 3)) % mod << endl;
+        }
+        else if (n % 3 == 2)
+        {
+            cout << (2 * binexp(3, (n - 2) / 3)) % mod << endl;
+        }
+        else
+        {
+            cout << binexp(3, n / 3) << endl;
+        }
     }
 
     return 0;

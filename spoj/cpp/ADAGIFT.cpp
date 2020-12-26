@@ -96,38 +96,63 @@ bool millerRabin(bint n)
     return true;
 }
 
-int counter(string n)
+// int counter(string n)
+// {
+//     // map<pair<pair<cpp_int, cpp_int>, cpp_int>, bool> check;
+//     string a, b, c;
+//     int cnt = 0;
+//     bint k, l, m;
+
+//     for (int i = 0; i < n.size(); i++)
+//     {
+//         for (int j = i; j < n.size() - 1; j++)
+//         {
+//             a = n.substr(0, i);
+//             b = n.substr(i, j - i + 1);
+//             c = n.substr(j + 1, n.size() - j - 1);
+
+//             // k = cpp_int(a);
+//             // l = cpp_int(b);
+//             // m = cpp_int(c);
+
+//             // if (millerRabin(k) || millerRabin(l) || millerRabin(m))
+//             // {
+//             //     cnt++;
+//             // }
+
+//             cout << "a = " << a << " b = " << b << " c = " << c << endl;
+//             cout << endl;
+//         }
+//     }
+
+//     if (millerRabin(cpp_int(n)))
+//     {
+//         cnt++;
+//     }
+
+//     return cnt;
+// }
+
+int counter(string str, int n)
 {
-    // map<pair<pair<cpp_int, cpp_int>, cpp_int>, bool> check;
-    string a, b, c;
     int cnt = 0;
-    bint k, l, m;
 
-    for (int i = 0; i < n.size(); i++)
+    for (int len = 1; len <= n; len++)
     {
-        for (int j = i; j < n.size() - 1; j++)
+        for (int i = 0; i <= n - len; i++)
         {
-            a = n.substr(0, i);
-            b = n.substr(i, j - i + 1);
-            c = n.substr(j + 1, n.size() - j - 1);
+            int j = i + len - 1;
 
-            // k = cpp_int(a);
-            // l = cpp_int(b);
-            // m = cpp_int(c);
+            if (millerRabin(bint(str.substr(i, j - i + 1))))
+            {
+                cnt++;
+            }
 
-            // if (millerRabin(k) || millerRabin(l) || millerRabin(m))
-            // {
-            //     cnt++;
-            // }
+            // for (int k = i; k <= j; k++)
+            //     cout << str[k];
 
-            cout << "a = " << a << " b = " << b << " c = " << c << endl;
-            cout << endl;
+            // cout << endl;
         }
-    }
-
-    if (millerRabin(cpp_int(n)))
-    {
-        cnt++;
     }
 
     return cnt;
@@ -147,7 +172,7 @@ int main(int argc, char const *argv[])
     while (t--)
     {
         cin >> n;
-        cout << counter(n) << endl;
+        cout << counter(n, n.size()) << endl;
     }
 
     return 0;
