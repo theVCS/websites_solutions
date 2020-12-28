@@ -52,7 +52,10 @@ int main(int argc, char const *argv[])
         cin >> n >> m;
 
         REP(i, 1, n + 1)
-        vis[i] = false;
+        {
+            vis[i] = false;
+            arr[i].clear();
+        }
 
         REP(i, 0, m)
         {

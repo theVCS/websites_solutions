@@ -6,11 +6,28 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 100001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+vector<int> arr[maxN];
+bool vis[maxN];
+
+void dfs(int node)
+{
+    vis[node] = true;
+
+    for(int child: arr[node])
+    {
+        if (!vis[child])
+        {
+            dfs(child);
+        }
+        
+    }
+}
 
 int main(int argc, char const *argv[])
 {
@@ -18,38 +35,27 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n, m;
-    ll res, dum;
+    int n, m, a, b, cc = 0;
 
-    cin >> t;
+    cin >> n >> m;
 
-    while (t--)
+    while (m--)
     {
-        res = 0;
-        cin >> n >> m;
+        cin >> a >> b;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
+    }
 
-        REP(i, 0, n)
+    for (int i = 1; i <= n; i++)
+    {
+        if (!vis[i])
         {
-            cin >> dum;
-            res += dum;
-        }
-
-        if (n == m && n != 2)
-        {
-            cout << 2 * res << endl;
-            dum = 2;
-
-            REP(i, 0, n - 1)
-            {
-                cout << i + 1 << " " << i + 2 << endl;
-            }
-            cout << n << " " << 1 << endl;
-        }
-        else
-        {
-            cout << -1 << endl;
+            dfs(i);
+            cc++;
         }
     }
+
+    cout << cc;
 
     return 0;
 }

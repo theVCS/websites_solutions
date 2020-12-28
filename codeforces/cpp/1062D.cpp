@@ -12,43 +12,33 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll sumR(ll n)
+{
+    return ((n * (n + 1)) / 2) - 1;
+}
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n, m;
-    ll res, dum;
+    ll n;
+    ll res = 0;
 
-    cin >> t;
+    cin >> n;
 
-    while (t--)
+    if (n < 4)
     {
-        res = 0;
-        cin >> n >> m;
-
-        REP(i, 0, n)
+        cout << 0;
+    }
+    else
+    {
+        for (ll i = 2; i <= n; i++)
         {
-            cin >> dum;
-            res += dum;
+            res += 4 * sumR(n / i);
         }
-
-        if (n == m && n != 2)
-        {
-            cout << 2 * res << endl;
-            dum = 2;
-
-            REP(i, 0, n - 1)
-            {
-                cout << i + 1 << " " << i + 2 << endl;
-            }
-            cout << n << " " << 1 << endl;
-        }
-        else
-        {
-            cout << -1 << endl;
-        }
+        cout << res;
     }
 
     return 0;
