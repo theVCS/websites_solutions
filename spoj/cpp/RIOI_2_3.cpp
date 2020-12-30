@@ -1,14 +1,19 @@
 #include <bits/stdc++.h>
+//#include <boost/multiprecision/cpp_int.hpp>
+//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
+//#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 51
-int dx[] = {-1, 0, 1, 0};
-int dy[] = {0, -1, 0, 1};
+#define maxN 1000001
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool ap[10], vis[maxN][maxN];
-int arr[maxN][maxN], n, sx, sy, ex, ey, res;
+int arr[50][50], sx, sy, ex, ey, res[50][50], n;
+bool vis[50][50];
 
 bool isValid(int x, int y)
 {
@@ -19,39 +24,37 @@ bool isValid(int x, int y)
     return true;
 }
 
-void dfs(int x, int y, bool ap[], int apolo = 0)
+int dfs(int x, int y, map<int, bool> checker = {})
 {
-    vis[x][y] = true;
-    bool nap[10], flag = true;
-
-    REP(i, 0, 10)
-    nap[i] = ap[i];
-
-    if (!nap[arr[x][y]])
-    {
-        apolo++;
-        nap[arr[x][y]] = true;
-    }
-
     if (x == ex && y == ey)
     {
-        res = min(res, apolo);
-
-        if (apolo >= res)
-        {
-            flag = false;
-        }
+        return int(!checker[arr[x][y]]);
     }
+
+    vis[x][y] = true;
+    int res = 20;
+    int flag = int(!checker[arr[x][y]]), dum;
+
+    checker[arr[x][y]] = true;
+
 
     for (int i = 0; i < 4; i++)
     {
-        if (isValid(x + dx[i], y + dy[i]) && (x != ex || y != ey) && flag)
+        if (isValid(x + dx[i], y + dy[i]))
         {
-            dfs(x + dx[i], y + dy[i], nap, apolo);
+            dum = flag;
+            if (!checker[arr[x + dx[i]][y + dy[i]]])
+            {
+                checker[arr[x + dx[i]][y + dy[i]]] = true;
+                dum = flag + 1;
+            }
+            res = min(res, dum + dfs(x + dx[i], y + dy[i], checker));
         }
     }
 
     vis[x][y] = false;
+
+    return res;
 }
 
 int main(int argc, char const *argv[])
@@ -69,19 +72,13 @@ int main(int argc, char const *argv[])
         cin >> n;
 
         REP(i, 0, n)
-        {
-            REP(j, 0, n)
-            {
-                cin >> arr[i][j];
-            }
-        }
+        REP(j, 0, n)
+        cin >> arr[i][j];
 
-        cin >> sx >> sy >> ex >> ey;
-        res = INT_MAX;
+        cin >> sx >> sy;
+        cin >> ex >> ey;
 
-        dfs(sx, sy, ap);
-
-        cout << res << endl;
+        cout << dfs(sx, sy) << endl;
     }
 
     return 0;

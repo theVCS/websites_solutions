@@ -6,7 +6,7 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500001
+#define maxN 10001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
@@ -14,20 +14,16 @@ using namespace std;
 
 vector<int> arr[maxN];
 bool vis[maxN];
-int dist[maxN], dis;
-map<int,int>dum;
 
-void dfs(int node, int root)
+void dfs(int node)
 {
     vis[node] = true;
-    dist[node] = root;
-    dis++;
 
     for (int child : arr[node])
     {
         if (!vis[child])
         {
-            dfs(child, root);
+            dfs(child);
         }
     }
 }
@@ -38,42 +34,27 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, k, a, b;
+    int n, a, cc = 0;
 
-    cin >> n >> m;
+    cin >> n;
 
-    while (m--)
+    REP(i, 1, n + 1)
     {
-        cin >> k;
-
-        if (k)
-        {
-            cin >> a;
-            k--;
-
-            REP(i, 0, k)
-            {
-                cin >> b;
-                arr[a].push_back(b);
-                arr[b].push_back(a);
-            }
-        }
+        cin >> a;
+        arr[a].push_back(i);
+        arr[i].push_back(a);
     }
 
     REP(i, 1, n + 1)
     {
         if (!vis[i])
         {
-            dis = 0;
-            dfs(i, i);
-            dum[i] = dis;
+            dfs(i);
+            cc++;
         }
     }
 
-    REP(i, 1, n + 1)
-    {
-        cout << dum[dist[i]] << " ";
-    }
+    cout << cc;
 
     return 0;
 }

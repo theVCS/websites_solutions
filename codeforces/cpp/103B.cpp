@@ -6,42 +6,36 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
+#define maxN 101
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<int> arr[maxN], trans[maxN];
-vector<int> order, SCC;
-bool vis[maxN], vis1[maxN];
+vector<int> arr[maxN];
+bool vis[maxN];
+int backE, cc;
 
-void dfs(int node)
+void dfs(int node, int par = -1)
 {
     vis[node] = true;
 
     for (int child : arr[node])
     {
-        if (!vis[child])
+        if (child == par)
         {
-            dfs(child);
+            continue;
+        }
+        else if (vis[child])
+        {
+            backE++;
+            // cout << child << " <--> " << node << endl;
+        }
+        else
+        {
+            dfs(child, node);
         }
     }
-    order.push_back(node);
-}
-
-void dfs1(int node)
-{
-    vis1[node] = true;
-
-    for (int child : trans[node])
-    {
-        if (!vis1[child])
-        {
-            dfs1(child);
-        }
-    }
-    SCC.push_back(node);
 }
 
 int main(int argc, char const *argv[])
@@ -58,7 +52,7 @@ int main(int argc, char const *argv[])
     {
         cin >> a >> b;
         arr[a].push_back(b);
-        trans[b].push_back(a);
+        arr[b].push_back(a);
     }
 
     REP(i, 1, n + 1)
@@ -66,31 +60,21 @@ int main(int argc, char const *argv[])
         if (!vis[i])
         {
             dfs(i);
+            cc++;
         }
-    }
+    }  
 
-    REP(i, 1, n + 1)
+    backE /= 2;
+
+    if (cc == 1 && backE == 1)
     {
-        if (!vis1[order[n - i]])
-        {
-            dfs1(order[n - i]);
-
-            if (SCC.size() > 1)
-            {
-                for (int ele : SCC)
-                {
-                    vis[ele] = false;
-                }
-            }
-
-            SCC.clear();
-        }
+        cout << "FHTAGN!";
     }
-
-    REP(i, 1, n + 1)
+    else
     {
-        cout << !vis[i] << " ";
+        cout << "NO";
     }
+    
 
     return 0;
 }

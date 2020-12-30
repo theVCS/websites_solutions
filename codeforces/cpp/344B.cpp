@@ -12,47 +12,39 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n, x[101], y[101];
-bool vis[101];
-
-void dfs(int i)
-{
-    vis[i] = true;
-
-    for (int j = 1; j <= n; j++)
-    {
-        if (!vis[j] && (x[j] == x[i] || y[j] == y[i]))
-        {
-            dfs(j);
-        }
-    }
-}
-
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int cc = 0;
+    int a, b, c, sum, x, y, z;
 
-    cin >> n;
+    cin >> a >> b >> c;
 
-    REP(i, 1, n + 1)
+    sum = a + b + c;
+
+    if (sum % 2)
     {
-        cin >> x[i] >> y[i];
+        cout << "Impossible";
     }
-
-    REP(i, 1, n + 1)
+    else
     {
-        if (!vis[i])
+        sum /= 2;
+
+        x = sum - c;
+        y = sum - a;
+        z = sum - b;
+
+        if (x >= 0 && y >= 0 && z >= 0)
         {
-            cc++;
-            dfs(i);
+            cout << x << " " << y << " " << z;
         }
-    }
-
-    cout << cc - 1;
+        else
+        {
+            cout << "Impossible";
+        }
+        }
 
     return 0;
 }
