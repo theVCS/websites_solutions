@@ -6,34 +6,30 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 150001
+#define maxN 100001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 vector<int> arr[maxN];
+int indegree[maxN];
+vector<pair<int, int>> res;
 bool vis[maxN];
-ll ne, be;
 
-void dfs(int node, int par = -1)
+void dfs(int node, int inn, int par = -1)
 {
     vis[node] = true;
-    ne++;
 
     for (int child : arr[node])
     {
-        if (child == par)
+        if (vis[child])
         {
-            continue;
-        }
-        else if (vis[child])
-        {
-            be++;
+            res.push_back({inn, child});
         }
         else
         {
-            dfs(child, node);
+            dfs(child, inn, node);
         }
     }
 }
@@ -44,44 +40,51 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b;
-    bool flag = false;
+    int n, dum, incounter = 0, cc = 0;
 
-    cin >> n >> m;
+    cin >> n;
 
-    while (m--)
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
+        cin >> dum;
+        arr[i].push_back(dum);
+        indegree[dum]++;
+    }
+
+    REP(i, 1, n + 1)
+    {
+        if (indegree[i] == 0)
+        {
+            dfs(i, i);
+            incounter++;
+        }
     }
 
     REP(i, 1, n + 1)
     {
         if (!vis[i])
         {
-            be = 0;
-            ne = 0;
-            dfs(i);
-
-            be /= 2;
-
-            if (ne * (ne - 1) != 2 * (be + ne - 1))
-            {
-                flag = true;
-                break;
-            }
+            dfs(i, i);
+            cc++;
         }
     }
 
-    if (flag)
+    int size = res.size();
+
+    if (incounter || cc > 1)
     {
-        cout << "NO";
+        cout << size << endl;
+
+        REP(i, 0, size)
+        {
+            cout << res[i].second << " " << res[(i + 1) % size].first << endl;
+        }
     }
     else
     {
-        cout << "YES";
+        cout << 0;
     }
+    
 
     return 0;
 }

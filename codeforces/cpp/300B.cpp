@@ -90,6 +90,30 @@ int main(int argc, char const *argv[])
         }
     }
 
+    // for(int e: three)
+    // {
+    //     cout << e << " ";
+    // }cout <<endl;
+
+    // for(int e: two)
+    // {
+    //     cout << e << " ";
+    // }
+    // cout << endl;
+    
+    // for(int e: one)
+    // {
+    //     cout << e << " ";
+    // }
+    // cout << endl;
+
+    if (one.size() < two.size())
+    {
+        cout << -1;
+        return 0;
+    }
+    
+
     REP(i, 0, 50)
     {
         vis[i] = false;
@@ -97,11 +121,12 @@ int main(int argc, char const *argv[])
 
     for (int a : two)
     {
-        int b = one.front();
+        int b = one.back();
         one.pop_back();
 
         arr[a].push_back(b);
         arr[b].push_back(a);
+        // cout << a << " <=---=> " << b << endl;
     }
 
     for (int i = 0; i < one.size(); i += 3)

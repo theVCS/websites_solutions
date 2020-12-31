@@ -6,7 +6,7 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 150001
+#define maxN 300001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
@@ -14,26 +14,18 @@ using namespace std;
 
 vector<int> arr[maxN];
 bool vis[maxN];
-ll ne, be;
+int indegree[maxN];
+map<int, vector<int>> checker;
 
-void dfs(int node, int par = -1)
+void dfs(int node)
 {
     vis[node] = true;
-    ne++;
 
     for (int child : arr[node])
     {
-        if (child == par)
+        if (!vis[child])
         {
-            continue;
-        }
-        else if (vis[child])
-        {
-            be++;
-        }
-        else
-        {
-            dfs(child, node);
+            dfs(child);
         }
     }
 }
@@ -44,8 +36,7 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b;
-    bool flag = false;
+    int n, m, a, b, cc = 0;
 
     cin >> n >> m;
 
@@ -54,34 +45,37 @@ int main(int argc, char const *argv[])
         cin >> a >> b;
         arr[a].push_back(b);
         arr[b].push_back(a);
+        indegree[a]++;
+        indegree[b]++;
     }
 
     REP(i, 1, n + 1)
     {
         if (!vis[i])
         {
-            be = 0;
-            ne = 0;
             dfs(i);
-
-            be /= 2;
-
-            if (ne * (ne - 1) != 2 * (be + ne - 1))
-            {
-                flag = true;
-                break;
-            }
+            cc++;
         }
     }
 
-    if (flag)
+    if (cc > 2)
     {
         cout << "NO";
+        return 0;
     }
-    else
+
+    REP(i, 1, n + 1)
+    {
+        checker[indegree[i]].push_back(i);
+    }
+
+    if (checker[1].size() == n - 2)
     {
         cout << "YES";
+        return 0;
     }
+
+    cout << "NO";
 
     return 0;
 }

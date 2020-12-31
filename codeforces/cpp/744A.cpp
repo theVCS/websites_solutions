@@ -6,7 +6,7 @@ using namespace std;
 //#define bint cpp_int
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 150001
+#define maxN 1001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
@@ -14,26 +14,18 @@ using namespace std;
 
 vector<int> arr[maxN];
 bool vis[maxN];
-ll ne, be;
+int cn;
 
-void dfs(int node, int par = -1)
+void dfs(int node)
 {
     vis[node] = true;
-    ne++;
+    cn++;
 
     for (int child : arr[node])
     {
-        if (child == par)
+        if (!vis[child])
         {
-            continue;
-        }
-        else if (vis[child])
-        {
-            be++;
-        }
-        else
-        {
-            dfs(child, node);
+            dfs(child);
         }
     }
 }
@@ -44,44 +36,51 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b;
-    bool flag = false;
+    int n, m, k, dum, a, b, lsize = 0;
+    vector<int> gov, ccsize;
 
-    cin >> n >> m;
+    cin >> n >> m >> k;
 
-    while (m--)
+    while (k--)
+    {
+        cin >> dum;
+        gov.push_back(dum);
+    }
+
+    REP(i, 0, m)
     {
         cin >> a >> b;
         arr[a].push_back(b);
         arr[b].push_back(a);
     }
 
+    for (int g : gov)
+    {
+        cn = 0;
+        dfs(g);
+        ccsize.push_back(cn);
+    }
+
     REP(i, 1, n + 1)
     {
         if (!vis[i])
         {
-            be = 0;
-            ne = 0;
+            cn = 0;
             dfs(i);
-
-            be /= 2;
-
-            if (ne * (ne - 1) != 2 * (be + ne - 1))
-            {
-                flag = true;
-                break;
-            }
+            lsize += cn;
         }
     }
 
-    if (flag)
+    sort(ccsize.begin(), ccsize.end(), greater <>());
+
+    ll res = ((ccsize[0] + lsize) * (ccsize[0] + lsize - 1)) / 2;
+
+    for (int i = 1; i < ccsize.size(); i++)
     {
-        cout << "NO";
+        res += (ccsize[i] * (ccsize[i] - 1)) / 2;
     }
-    else
-    {
-        cout << "YES";
-    }
+
+    cout << res - m;
 
     return 0;
 }

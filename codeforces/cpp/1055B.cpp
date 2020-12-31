@@ -12,30 +12,23 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<int> arr[maxN];
-bool vis[maxN];
+int n, m, dum, p;
+ll arr[maxN], l, d;
 
-void bfs(int node = 1)
+void timCa()
 {
-    vis[node] = true;
-    priority_queue<int, vector<int>, greater<int>> pq;
-    pq.push(node);
+    int ans = 0;
 
-    while (!pq.empty())
+    for (ll i = 1; i <= n; i+=l)
     {
-        int curr = pq.top();
-        cout << curr << " ";
-        pq.pop();
-
-        for (int child : arr[curr])
-        {
-            if (!vis[child])
-            {
-                vis[child] = true;
-                pq.push(child);
-            }
-        }
+        
     }
+    
+}
+
+void upd(int p, ll d)
+{
+    arr[p] += d;
 }
 
 int main(int argc, char const *argv[])
@@ -44,18 +37,27 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b;
+    cin >> n >> m >> l;
 
-    cin >> n >> m;
+    REP(i, 1, n + 1)
+    {
+        cin >> arr[i];
+    }
 
     while (m--)
     {
-        cin >> a >> b;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
-    }
+        cin >> dum;
 
-    bfs();
+        if (dum)
+        {
+            cin >> p >> d;
+            upd(p, d);
+        }
+        else
+        {
+            timCa();
+        }
+    }
 
     return 0;
 }

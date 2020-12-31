@@ -12,36 +12,36 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<int> ms, res;
 vector<int> arr[maxN];
 bool vis[maxN];
-ll cs;
+int indegree[maxN], n;
 
-ll binexp(ll n, int pow)
+void kahn()
 {
-    ll res = 1;
+    queue<int> q;
 
-    while (pow)
+    REP(i, 1, n + 1)
     {
-        if (pow % 2)
+        if (indegree[i] == 0)
         {
-            res = (res * n) % mod;
+            q.push(i);
         }
-        n = (n * n) % mod;
-        pow /= 2;
     }
-    return res;
-}
 
-void dfs(int node)
-{
-    vis[node] = true;
-    cs++;
-
-    for (int child : arr[node])
+    while (!q.empty())
     {
-        if (!vis[child])
+        int curr = q.front();
+        res.push_back(curr);
+        q.pop();
+
+        for (int child : arr[curr])
         {
-            dfs(child);
+            indegree[child]--;
+            if (indegree[child] == 0)
+            {
+                q.push(child);
+            }
         }
     }
 }
@@ -52,34 +52,34 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, k, a, b, c;
-    
+    int k, dum;
+
     cin >> n >> k;
 
-    ll res = binexp(n * 1LL, k);
-
-    REP(i, 0, n - 1)
+    while (k--)
     {
-        cin >> a >> b >> c;
-
-        if (c == 0)
-        {
-            arr[a].push_back(b);
-            arr[b].push_back(a);
-        }
+        cin >> dum;
+        ms.push_back(dum);
     }
 
     REP(i, 1, n + 1)
     {
-        if (!vis[i])
+        cin >> k;
+
+        while (k--)
         {
-            cs = 0;
-            dfs(i);
-            res = (res - binexp(cs, k) + mod) % mod;
+            cin >> dum;
+            arr[dum].push_back(i);
+            indegree[i]++;
         }
     }
 
-    cout << res;
+    kahn();
+
+    for (int e : res)
+    {
+        cout << e << " ";
+    }
 
     return 0;
 }
