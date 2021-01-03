@@ -13,56 +13,58 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n, blk, arr[maxN], f[310];
+ll arr[maxN];
+int f[310], n, blk;
+map<ll, int> counter;
 
 void init()
 {
-    int res = INT_MAX;
+    int res = 0;
 
-    for (int i = 0; i < n; i++)
+    REP(i, 0, n)
     {
-        res = min(res, arr[i]);
-
         if ((i + 1) % blk == 0)
         {
             f[i / blk] = res;
-            res = INT_MAX;
+            res = 0;
+        }
+
+        if (arr[i] == i)
+        {
+            res++;
         }
     }
-
     f[n / blk] = res;
 }
 
-int srDec(int l, int r)
+int sqDec(int l, int r)
 {
-    int ib = l / blk;
-    int lb = r / blk;
-    int res = INT_MAX;
+    l--, r--;
+    int lb = l / blk;
+    int rb = r / blk;
+    int res = 0;
 
-    if (ib == lb)
+    if (lb == rb)
     {
-        for (int i = l; i <= r; i++)
+        for (int i = lb; i <= r; i++)
         {
-            res = min(res, arr[i]);
+            if (arr[i] == i)
+            {
+                res++;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (arr[i] == i)
+                {
+                    res++;
+                }
+            }
         }
     }
-    else
-    {
-        for (int i = l; i < (ib + 1) * blk; i++)
-        {
-            res = min(res, arr[i]);
-        }
 
-        for (int i = ib + 1; i < lb; i++)
-        {
-            res = min(res, f[i]);
-        }
-
-        for (int i = lb * blk; i <= r; i++)
-        {
-            res = min(res, arr[i]);
-        }
-    }
     return res;
 }
 
@@ -72,24 +74,18 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int q, l, r;
+    int m;
 
-    cin >> n;
+    cin >> n >> m;
 
     blk = sqrt(n);
 
     REP(i, 0, n)
-    cin >> arr[i];
+    {
+        cin >> arr[i];
+    }
 
     init();
-
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> l >> r;
-        cout << srDec(l, r) << endl;
-    }
 
     return 0;
 }

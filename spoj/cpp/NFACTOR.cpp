@@ -89,18 +89,5 @@ int main(int argc, char const *argv[])
         cout << final[b][n] - final[a][n] + (final[a][n] - final[a - 1][n]) << endl;
     }
 
-    // while (true)
-    // {
-    //     int k;
-
-    //     cin >> k;
-
-    //     for (int i = 0; i < 11; i++)
-    //     {
-    //         cout << i << " -> " << final[k][i] << "\t";
-    //     }
-    //     cout << endl;
-    // }
-
     return 0;
 }
