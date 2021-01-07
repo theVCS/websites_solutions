@@ -13,24 +13,39 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
+ll div(ll n)
 {
-    if (n == 2)
+    if (n % 2 == 0)
     {
-        return true;
+        return 2;
     }
-    if (n == 1 || n % 2 == 0)
+
+    for (ll i = 3; i * i <= n; i += 2)
+    {
+        if (n % i == 0)
+        {
+            return i;
+        }
+    }
+
+    return n;
+}
+
+ll isPrime(ll n)
+{
+    if (n % 2 == 0)
     {
         return false;
     }
 
-    for (int i = 3; i * i <= n; i += 2)
+    for (ll i = 3; i * i <= n; i += 2)
     {
         if (n % i == 0)
         {
             return false;
         }
     }
+
     return true;
 }
 
@@ -40,19 +55,41 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    ll n, a, b;
 
     cin >> n;
 
-    if (isPrime(n))
+    ll sum = n, oldb = 0;
+
+    while (n != 1)
     {
-        cout << "PRIME";
+        a = div(n);
+        b = n / a;
+
+        if (a > b)
+        {
+            swap(a, b);
+        }
+
+        if (a == n || b == n)
+        {
+            oldb = n;
+        }
+        
+
+        if (b == oldb)
+        {
+            swap(a, b);
+        }
+
+        n = b;
+        sum += n;
+        oldb = b;
     }
-    else
-    {
-        cout << "NOT PRIME";
-    }
-    
+
+    // sum += 1;
+
+    cout << sum;
 
     return 0;
 }

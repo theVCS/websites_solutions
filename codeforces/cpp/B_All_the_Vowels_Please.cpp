@@ -13,25 +13,24 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
+int init(int n)
 {
-    if (n == 2)
-    {
-        return true;
-    }
-    if (n == 1 || n % 2 == 0)
-    {
-        return false;
-    }
+    int a, b;
 
-    for (int i = 3; i * i <= n; i += 2)
+    for (int i = 1; i * i <= n; i++)
     {
         if (n % i == 0)
         {
-            return false;
+            a = n / i;
+            b = i;
+
+            if (a >= 5 && b >= 5)
+            {
+                return a;
+            }
         }
     }
-    return true;
+    return -1;
 }
 
 int main(int argc, char const *argv[])
@@ -44,15 +43,25 @@ int main(int argc, char const *argv[])
 
     cin >> n;
 
-    if (isPrime(n))
+    int a = init(n), b;
+
+    if (a == -1)
     {
-        cout << "PRIME";
+        cout << -1;
+        return 0;
     }
-    else
+
+    b = n / a;
+
+    vector<char> vowels{'a', 'e', 'i', 'o', 'u'};
+
+    for (int i = 0; i < a; i++)
     {
-        cout << "NOT PRIME";
+        for (int j = 0; j < b; j++)
+        {
+            cout << vowels[(i + j) % vowels.size()];
+        }
     }
-    
 
     return 0;
 }

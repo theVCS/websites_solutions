@@ -13,20 +13,14 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
-{
-    if (n == 2)
-    {
-        return true;
-    }
-    if (n == 1 || n % 2 == 0)
-    {
-        return false;
-    }
+int TL, PL;
+string T, P;
 
-    for (int i = 3; i * i <= n; i += 2)
+bool match(int l)
+{
+    for (int i = 0; i < PL; i++)
     {
-        if (n % i == 0)
+        if (T[l + i] != P[i])
         {
             return false;
         }
@@ -40,19 +34,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    getline(cin, T);
+    TL = T.size();
 
-    cin >> n;
+    P = "to the";
+    PL = 6;
 
-    if (isPrime(n))
+    for (int L = 0, R = PL - 1; R < TL; L++, R++)
     {
-        cout << "PRIME";
+        // cout << R << endl;
+        if (match(L))
+        {
+            cout << "YES";
+            return 0;
+        }
     }
-    else
-    {
-        cout << "NOT PRIME";
-    }
-    
+
+    cout << "NO";
 
     return 0;
 }

@@ -13,46 +13,30 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
-{
-    if (n == 2)
-    {
-        return true;
-    }
-    if (n == 1 || n % 2 == 0)
-    {
-        return false;
-    }
-
-    for (int i = 3; i * i <= n; i += 2)
-    {
-        if (n % i == 0)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    int p1, p2, p3, p4, a, b, smallest;
 
-    cin >> n;
+    cin >> p1 >> p2 >> p3 >> p4 >> a >> b;
 
-    if (isPrime(n))
+    smallest = min(min(p1, p2), min(p3, p4));
+
+    if (a >= smallest)
     {
-        cout << "PRIME";
+        cout << 0;
+    }
+    else if (a < smallest && b > smallest)
+    {
+        cout << smallest - a;
     }
     else
     {
-        cout << "NOT PRIME";
+        cout << b - a + 1;
     }
-    
 
     return 0;
 }

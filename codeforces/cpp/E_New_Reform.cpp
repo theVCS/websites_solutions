@@ -13,25 +13,30 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
-{
-    if (n == 2)
-    {
-        return true;
-    }
-    if (n == 1 || n % 2 == 0)
-    {
-        return false;
-    }
+vector<int> arr[maxN];
+bool vis[maxN];
+int cnt;
 
-    for (int i = 3; i * i <= n; i += 2)
+void dfs(int node, int par = -1)
+{
+    vis[node] = true;
+
+    for (int child : arr[node])
     {
-        if (n % i == 0)
+        if (child == par)
         {
-            return false;
+            continue;
+        }
+        else if (vis[child])
+        {
+            cnt = 0;
+            return;
+        }
+        else
+        {
+            dfs(child, node);
         }
     }
-    return true;
 }
 
 int main(int argc, char const *argv[])
@@ -40,19 +45,29 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    int n, m, a, b;
 
-    cin >> n;
+    cin >> n >> m;
 
-    if (isPrime(n))
+    while (m--)
     {
-        cout << "PRIME";
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
     }
-    else
+
+    int res = 0;
+
+    REP(i, 1, n + 1)
     {
-        cout << "NOT PRIME";
+        if (!vis[i])
+        {
+            cnt = 1;
+            dfs(i);
+            res += cnt;
+        }
     }
-    
+
+    cout << res;
 
     return 0;
 }

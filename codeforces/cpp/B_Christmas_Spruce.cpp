@@ -7,31 +7,42 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 1050
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
+int outdegree[maxN], leafCount[maxN];
+vector<int> arr[maxN];
+
+bool dfs(int node, int par = -1)
 {
-    if (n == 2)
+    int size = 0;
+
+    for (int child : arr[node])
+    {
+        if (child != par)
+        {
+            if (!dfs(child, node))
+            {
+                return false;
+            }
+        }
+        if (outdegree[child] == 0)
+        {
+            size++;
+        }
+    }
+
+    if (size >= 3 || (size == 0 && arr[node].size() == 0))
     {
         return true;
     }
-    if (n == 1 || n % 2 == 0)
+    else
     {
         return false;
     }
-
-    for (int i = 3; i * i <= n; i += 2)
-    {
-        if (n % i == 0)
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 int main(int argc, char const *argv[])
@@ -40,17 +51,24 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    int n, a;
 
     cin >> n;
 
-    if (isPrime(n))
+    REP(i, 1, n)
     {
-        cout << "PRIME";
+        cin >> a;
+        outdegree[a]++;
+        arr[a].push_back(i + 1);
+    }
+
+    if (dfs(1))
+    {
+        cout << "Yes";
     }
     else
     {
-        cout << "NOT PRIME";
+        cout << "No";
     }
     
 

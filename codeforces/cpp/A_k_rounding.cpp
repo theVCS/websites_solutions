@@ -13,25 +13,20 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-bool isPrime(int n)
+ll binexp(ll pow, ll a = 10)
 {
-    if (n == 2)
-    {
-        return true;
-    }
-    if (n == 1 || n % 2 == 0)
-    {
-        return false;
-    }
+    ll res = 1;
 
-    for (int i = 3; i * i <= n; i += 2)
+    while (pow)
     {
-        if (n % i == 0)
+        if (pow % 2)
         {
-            return false;
+            res *= a;
         }
+        a *= a;
+        pow /= 2;
     }
-    return true;
+    return res;
 }
 
 int main(int argc, char const *argv[])
@@ -40,19 +35,13 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n;
+    ll n, k, pow;
 
-    cin >> n;
+    cin >> n >> k;
 
-    if (isPrime(n))
-    {
-        cout << "PRIME";
-    }
-    else
-    {
-        cout << "NOT PRIME";
-    }
-    
+    pow = binexp(k);
+
+    cout << (n * pow) / __gcd(n, pow);
 
     return 0;
 }
