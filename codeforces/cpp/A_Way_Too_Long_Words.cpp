@@ -13,48 +13,29 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-map<pii, vector<pii>> graph;
-vector<int> weights;
-
-void graphBuilder(int m)
-{
-    pii a, b;
-
-    // making level first
-    for (int w : weights)
-    {
-        graph[{w, w}].push_back({0, 0});
-        graph[{0, 0}].push_back({w, w});
-    }
-
-    for (int step = 2; step <= m; step++)
-    {
-        for (auto e : graph)
-        {
-            
-        }
-        
-    }
-    
-}
-
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
+    int t;
+
+    cin >> t;
+
     string s;
 
-    int m;
-
-    cin >> s >> m;
-
-    for (int i = 0; i < 10; i++)
+    while (t--)
     {
-        if (s[i] == '1')
+        cin >> s;
+
+        if (s.size() < 11)
         {
-            weights.push_back(i + 1);
+            cout << s << endl;
+        }
+        else
+        {
+            cout << s[0] << s.size() - 2 << s[s.size() - 1] << endl;
         }
     }
 

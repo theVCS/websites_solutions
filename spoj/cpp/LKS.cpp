@@ -13,37 +13,35 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll t[5001];
-
-ll dp(string s, int n)
+void knapSack(int W, int wt[], int value[], int n)
 {
-    if (n <= 1)
+    int t[n + 1][W + 1];
+
+    for (int i = 0; i < n + 1; i++)
     {
-        return 0;
+        t[i][0] = 0;
     }
-    else if (t[n] != -1)
+    for (int i = 0; i < W + 1; i++)
     {
-        return t[n];
+        t[0][i] = 0;
     }
-    else if (s[n - 1] <= 54 && s[n - 2] <= 50)
+
+    for (int i = 1; i < n + 1; i++)
     {
-        if (s[n - 1] == '0')
+        for (int j = 1; j < W + 1; j++)
         {
-            return t[n] = dp(s, n - 2);
-        }
-        else if (s[n - 2] == '0')
-        {
-            return t[n] = dp(s, n - 1);
-        }
-        else
-        {
-            return t[n] = 1 + dp(s, n - 1) + dp(s, n - 2);
+            if (wt[i - 1] <= j)
+            {
+                t[i][j] = max(value[i - 1] + t[i - 1][j - wt[i - 1]], t[i - 1][j]);
+            }
+            else
+            {
+                t[i][j] = t[i - 1][j];
+            }
         }
     }
-    else
-    {
-        return t[n] = dp(s, n - 1);
-    }
+
+    cout << t[n][W] << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -52,19 +50,16 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    string s;
+    int W, n;
 
-    while (cin >> s)
-    {
-        if (s == "0")
-        {
-            return 0;
-        }
+    cin >> W >> n;
 
-        memset(t, -1, sizeof(t));
+    int value[n], wt[n];
 
-        cout << 1 + dp(s, s.size()) << endl;
-    }
+    REP(i, 0, n)
+    cin >> value[i] >> wt[i];
+
+    knapSack(W, wt, value, n);
 
     return 0;
 }

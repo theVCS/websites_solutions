@@ -7,42 +7,41 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 51200001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll t[5001];
+bool isSupUg[maxN];
+set<int> s;
+vector<int> res;
 
-ll dp(string s, int n)
+void sieve()
 {
-    if (n <= 1)
+    isSupUg[1] = true;
+
+    for (int e : s)
     {
-        return 0;
-    }
-    else if (t[n] != -1)
-    {
-        return t[n];
-    }
-    else if (s[n - 1] <= 54 && s[n - 2] <= 50)
-    {
-        if (s[n - 1] == '0')
+        for (int i = e; i < maxN; i += e)
         {
-            return t[n] = dp(s, n - 2);
+            isSupUg[i] = true;
         }
-        else if (s[n - 2] == '0')
+    }
+
+    for (int i = 1; i < maxN; i++)
+    {
+        if (!isSupUg[i])
         {
-            return t[n] = dp(s, n - 1);
+            for (int j = i; j < maxN; j += i)
+            {
+                isSupUg[j] = false;
+            }
         }
         else
         {
-            return t[n] = 1 + dp(s, n - 1) + dp(s, n - 2);
+            res.push_back(i);
         }
-    }
-    else
-    {
-        return t[n] = dp(s, n - 1);
     }
 }
 
@@ -52,19 +51,17 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    string s;
+    s.insert(2);
+    // s.insert(3);
+    // s.insert(5);
 
-    while (cin >> s)
-    {
-        if (s == "0")
-        {
-            return 0;
-        }
+    sieve();
 
-        memset(t, -1, sizeof(t));
+    int n;
 
-        cout << 1 + dp(s, s.size()) << endl;
-    }
+    cin >> n;
+
+    cout << res[n - 1];
 
     return 0;
 }

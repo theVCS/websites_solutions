@@ -13,29 +13,22 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-map<pii, vector<pii>> graph;
-vector<int> weights;
-
-void graphBuilder(int m)
+bool winner(int N)
 {
-    pii a, b;
+    bool alice[1001];
+    alice[0] = alice[1] = false;
+    alice[2] = true;
 
-    // making level first
-    for (int w : weights)
+    for (int i = 2; i < 1001; i++)
     {
-        graph[{w, w}].push_back({0, 0});
-        graph[{0, 0}].push_back({w, w});
-    }
-
-    for (int step = 2; step <= m; step++)
-    {
-        for (auto e : graph)
+        if (alice[i])
         {
-            
+            for (int j = i; j < 1001; j += i)
+            {
+                alice[j] = true;
+            }
         }
-        
     }
-    
 }
 
 int main(int argc, char const *argv[])
@@ -43,20 +36,6 @@ int main(int argc, char const *argv[])
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
-
-    string s;
-
-    int m;
-
-    cin >> s >> m;
-
-    for (int i = 0; i < 10; i++)
-    {
-        if (s[i] == '1')
-        {
-            weights.push_back(i + 1);
-        }
-    }
 
     return 0;
 }

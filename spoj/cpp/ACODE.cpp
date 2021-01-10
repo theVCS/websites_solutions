@@ -14,6 +14,7 @@ using namespace std;
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll t[5001];
+bool flag;
 
 ll dp(string s, int n)
 {
@@ -27,7 +28,12 @@ ll dp(string s, int n)
     }
     else if (s[n - 1] <= 54 && s[n - 2] <= 50)
     {
-        if (s[n - 1] == '0')
+        if (s[n - 1] == '0' && s[n - 2] == '0' || s[n - 2] > 50)
+        {
+            flag = false;
+            return 0;
+        }
+        else if (s[n - 1] == '0')
         {
             return t[n] = dp(s, n - 2);
         }
@@ -39,6 +45,11 @@ ll dp(string s, int n)
         {
             return t[n] = 1 + dp(s, n - 1) + dp(s, n - 2);
         }
+    }
+    else if (s[n - 1] == '0' && s[n - 2] > 50)
+    {
+        flag = false;
+        return 0;
     }
     else
     {
@@ -53,6 +64,7 @@ int main(int argc, char const *argv[])
     cout.tie(NULL);
 
     string s;
+    ll ans;
 
     while (cin >> s)
     {
@@ -63,7 +75,18 @@ int main(int argc, char const *argv[])
 
         memset(t, -1, sizeof(t));
 
-        cout << 1 + dp(s, s.size()) << endl;
+        flag = true;
+
+        ans = dp(s, s.size());
+
+        if (flag)
+        {
+            cout << 1 + dp(s, s.size()) << endl;
+        }
+        else
+        {
+            cout << 0 << endl;
+        }
     }
 
     return 0;

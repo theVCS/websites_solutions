@@ -7,34 +7,16 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 200001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-map<pii, vector<pii>> graph;
-vector<int> weights;
+vector<int> arr[maxN];
 
-void graphBuilder(int m)
+void bfs(int node)
 {
-    pii a, b;
-
-    // making level first
-    for (int w : weights)
-    {
-        graph[{w, w}].push_back({0, 0});
-        graph[{0, 0}].push_back({w, w});
-    }
-
-    for (int step = 2; step <= m; step++)
-    {
-        for (auto e : graph)
-        {
-            
-        }
-        
-    }
     
 }
 
@@ -44,18 +26,20 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    string s;
+    int t, n, m, a, b;
 
-    int m;
+    cin >> t;
 
-    cin >> s >> m;
-
-    for (int i = 0; i < 10; i++)
+    while (t--)
     {
-        if (s[i] == '1')
-        {
-            weights.push_back(i + 1);
-        }
+        cin >> n >> m;
+    }
+
+    while (m--)
+    {
+        cin >> a >> b;
+        arr[a].push_back(b);
+        arr[b].push_back(a);
     }
 
     return 0;

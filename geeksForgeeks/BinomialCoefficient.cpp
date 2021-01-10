@@ -7,42 +7,33 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 10001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll t[5001];
+// using Memoization 
 
-ll dp(string s, int n)
+ll t[maxN][maxN];
+
+ll nck(int n, int k)
 {
-    if (n <= 1)
+    if (k > n)
     {
         return 0;
     }
-    else if (t[n] != -1)
+    else if (n == k || k == 0)
     {
-        return t[n];
+        return 1;
     }
-    else if (s[n - 1] <= 54 && s[n - 2] <= 50)
+    else if (t[n][k] != -1)
     {
-        if (s[n - 1] == '0')
-        {
-            return t[n] = dp(s, n - 2);
-        }
-        else if (s[n - 2] == '0')
-        {
-            return t[n] = dp(s, n - 1);
-        }
-        else
-        {
-            return t[n] = 1 + dp(s, n - 1) + dp(s, n - 2);
-        }
+        return t[n][k];
     }
     else
     {
-        return t[n] = dp(s, n - 1);
+        return t[n][k] = nck(n - 1, k - 1) + nck(n - 1, k);
     }
 }
 
@@ -52,19 +43,13 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    string s;
+    memset(t, -1, maxN * maxN);
 
-    while (cin >> s)
-    {
-        if (s == "0")
-        {
-            return 0;
-        }
+    int n, k;
 
-        memset(t, -1, sizeof(t));
+    cin >> n >> k;
 
-        cout << 1 + dp(s, s.size()) << endl;
-    }
+    cout << nck(n, k);
 
     return 0;
 }

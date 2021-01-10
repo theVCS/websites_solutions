@@ -9,23 +9,25 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll arr[1000000001];
+map<ll, ll> dp;
 
 ll maxMon(ll n)
 {
-    int exc = (n / 2) + (n / 3) + (n / 4);
-
-    if (arr[n])
+    if (n == 0)
     {
-        return arr[n];
+        return 0;
     }
-    else if (exc > n)
+    else if (dp[n])
     {
-        return arr[n] = maxMon(n / 2) + maxMon(n / 3) + maxMon(n / 4);
+        return dp[n];
+    }
+    else if (n <= 4)
+    {
+        return n;
     }
     else
     {
-        return arr[n] = n;
+        return dp[n] = max(n, maxMon(n / 2) + maxMon(n / 3) + maxMon(n / 4));
     }
 }
 
