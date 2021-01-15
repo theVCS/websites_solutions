@@ -8,16 +8,15 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
+#define INF 999999999999
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+ll t[501][10001];
 
-int maxP;
-
-int minMon(int price[], int wt[], int n, int W)
+ll minMon(int price[], int wt[], int n, int W)
 {
-    int t[n + 1][W + 1];
 
     for (int i = 0; i < n + 1; i++)
     {
@@ -25,19 +24,19 @@ int minMon(int price[], int wt[], int n, int W)
     }
     for (int i = 1; i < W + 1; i++)
     {
-        t[0][i] = INT_MAX - maxP - 1;
+        t[0][i] = INF;
 
-        if (i % wt[0])
-        {
-            t[1][i] = INT_MAX - maxP - 1;
-        }
-        else
-        {
-            t[1][i] = i / wt[0];
-        }
+        // if (i % wt[0])
+        // {
+        //     t[1][i] = INF;
+        // }
+        // else
+        // {
+        //     t[1][i] = i / wt[0];
+        // }
     }
 
-    for (int i = 2; i < n + 1; i++)
+    for (int i = 1; i < n + 1; i++)
     {
         for (int j = 1; j < W + 1; j++)
         {
@@ -63,14 +62,12 @@ int main(int argc, char const *argv[])
 
     int t, e, f, n;
     int wt[501], price[501];
-    int res;
+    ll res;
 
     cin >> t;
 
     while (t--)
     {
-        maxP = 0;
-
         cin >> e >> f;
         f -= e;
 
@@ -79,18 +76,16 @@ int main(int argc, char const *argv[])
         REP(i, 0, n)
         {
             cin >> price[i] >> wt[i];
-            maxP = max(maxP, price[i]);
         }
 
         res = minMon(price, wt, n, f);
 
-        if ((res >= INT_MAX - maxP - 1 && res <= INT_MAX) || res < 0)
+        if (res == INF)
         {
             cout << "This is impossible." << endl;
         }
         else
         {
-
             cout << "The minimum amount of money in the piggy-bank is " << res << "." << endl;
         }
     }

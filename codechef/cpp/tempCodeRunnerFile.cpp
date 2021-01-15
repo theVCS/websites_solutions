@@ -1,4 +1,2 @@
-if (rsum == cursum)
-    {
-        swap++;
-    }
+
+        {
