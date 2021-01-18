@@ -8,43 +8,41 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
-#define INF 9999999
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int solve(int arr[], int n, int k)
+int arr[26];
+
+int solve(string a, string b, int n, int m)
 {
-    int t[n + 1][k + 1];
+    int t[n + 1][m + 1];
 
     for (int i = 0; i < n + 1; i++)
     {
         t[i][0] = 0;
     }
-    for (int i = 0; i < k + 1; i++)
+    for (int j = 0; j < m + 1; j++)
     {
-        t[0][i] = INF;
+        t[0][j] = 0;
     }
 
     for (int i = 1; i < n + 1; i++)
     {
-        for (int j = 1; j < k + 1; j++)
+        for (int j = 1; j < m + 1; j++)
         {
-            if (i <= j)
+            if (a[i - 1] == b[j - 1])
             {
-                t[i][j] = min(arr[i - 1] + t[i][j - i], t[i - 1][j]);
+                t[i][j] = arr[a[i - 1] - 'a'] + t[i - 1][j - 1];
             }
             else
             {
-                t[i][j] = t[i - 1][j];
+                t[i][j] = max(t[i - 1][j], t[i][j - 1]);
             }
-
-            // cout << t[i][j] << " ";
         }
-        // cout << endl;
     }
-    return t[n][k] < 0 ? -1 : t[n][k];
+    return t[n][m];
 }
 
 int main(int argc, char const *argv[])
@@ -53,23 +51,19 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n, k;
+    int n, m;
+    string a, b;
 
-    cin >> t;
+    cin >> n >> m;
 
-    while (t--)
+    REP(i, 0, 26)
     {
-        cin >> n >> k;
-
-        int arr[k];
-
-        REP(i, 0, k)
-        {
-            cin >> arr[i];
-        }
-
-        cout << solve(arr, k, k) << endl;
+        cin >> arr[i];
     }
+
+    cin >> a >> b;
+
+    cout << solve(a, b, n, m);
 
     return 0;
 }

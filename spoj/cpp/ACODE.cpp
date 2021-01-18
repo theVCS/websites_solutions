@@ -13,47 +13,54 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll t[5001];
 bool flag;
+ll t[5001];
 
-ll dp(string s, int n)
+int getCode(char c1, char c2)
+{
+    return 10 * (c1 - '0') + (c2 - '0');
+}
+
+ll solve(string s, int n)
 {
     if (n <= 1)
     {
-        return 0;
+        return 1;
     }
     else if (t[n] != -1)
     {
         return t[n];
     }
-    else if (s[n - 1] <= 54 && s[n - 2] <= 50)
-    {
-        if (s[n - 1] == '0' && s[n - 2] == '0' || s[n - 2] > 50)
-        {
-            flag = false;
-            return 0;
-        }
-        else if (s[n - 1] == '0')
-        {
-            return t[n] = dp(s, n - 2);
-        }
-        else if (s[n - 2] == '0')
-        {
-            return t[n] = dp(s, n - 1);
-        }
-        else
-        {
-            return t[n] = 1 + dp(s, n - 1) + dp(s, n - 2);
-        }
-    }
-    else if (s[n - 1] == '0' && s[n - 2] > 50)
+    else if (s[n - 1] == '0' && s[n - 2] == '0')
     {
         flag = false;
         return 0;
     }
+    else if (s[n - 1] == '0')
+    {
+        int code = getCode('0', s[n - 2]);
+
+        if (code >= 3)
+        {
+            flag = false;
+            return 0;
+        }
+        return t[n] = solve(s, n - 2);
+    }
+    else if (s[n - 2] == '0')
+    {
+        return t[n] = solve(s, n - 1);
+    }
+
+    int cnt = getCode(s[n - 2], s[n - 1]);
+
+    if (cnt <= 26)
+    {
+        return t[n] = solve(s, n - 1) + solve(s, n - 2);
+    }
     else
     {
-        return t[n] = dp(s, n - 1);
+        return t[n] = solve(s, n - 1);
     }
 }
 
@@ -64,29 +71,19 @@ int main(int argc, char const *argv[])
     cout.tie(NULL);
 
     string s;
-    ll ans;
 
-    while (cin >> s)
+    while (true)
     {
+        cin >> s;
+        flag = true;
+        memset(t, -1, sizeof(t));
+
         if (s == "0")
         {
             return 0;
         }
 
-        memset(t, -1, sizeof(t));
-
-        flag = true;
-
-        ans = dp(s, s.size());
-
-        if (flag)
-        {
-            cout << 1 + dp(s, s.size()) << endl;
-        }
-        else
-        {
-            cout << 0 << endl;
-        }
+        cout << solve(s, s.size()) * flag << endl;
     }
 
     return 0;
