@@ -14,29 +14,30 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int blk;
 const int N = 5e4 + 10;
 const int Q = 1e5 + 10;
-int A[N], last[N], rev[N + Q], cnt[N + Q];
-bool use[N];
+int blk;
 
-struct query
+struct Query
 {
-    int index, l, r, t, lb, rb;
+    int l, r, t, ind, lb, rb;
 } q[Q];
 
 struct Update
 {
+    //A[x] = new_y;
     int x, new_y, prev_y;
 } u[Q];
 
-bool cmp(query a, query b)
+bool cmp(Query a, Query b)
 {
     return (a.lb < b.lb) || (a.lb == b.lb && a.rb < b.rb) || (a.lb == b.lb && a.rb == b.rb && a.t < b.t);
 }
 
-ll ans[Q], curr_ans;
-int nq, nu, compressed_val;
+int A[N], last[N], nu, nq, compressed_value, cnt[N + Q];
+ll ans[Q], curr_ans, rev[N + Q];
+bool use[N];
+map<int, int> fre;
 
 void add(int index)
 {
@@ -58,15 +59,15 @@ void remove(int index)
     }
 }
 
-void reflect_update(int index, int y)
+void reflect_update(int index, int value)
 {
     if (!use[index])
     {
-        A[index] = y;
+        A[index] = value;
         return;
     }
     remove(index);
-    A[index] = y;
+    A[index] = value;
     add(index);
 }
 
@@ -75,7 +76,7 @@ void do_update(int index)
     reflect_update(u[index].x, u[index].new_y);
 }
 
-void undo_update(int index)
+void undo(int index)
 {
     reflect_update(u[index].x, u[index].prev_y);
 }
@@ -88,66 +89,77 @@ int main(int argc, char const *argv[])
 
     int n;
 
+    // cin >> n;
     scanf("%d", &n);
 
-    blk = pow(n, 2.0 / 3.0);
-
-    map<int, int> mp;
+    blk = max(1, (int)pow(n, 2.0 / 3));
 
     REP(i, 1, n + 1)
     {
+        // cin >> A[i];
         scanf("%d", A + i);
         last[i] = A[i];
-        mp[A[i]];
+        fre[A[i]];
     }
 
     int m;
 
+    // cin >> m;
     scanf("%d", &m);
 
-    for (int i = 1; i < m + 1; i++)
+    char c[2];
+    int l, r;
+
+    // getting data
+    REP(i, 0, m)
     {
-        char s[2];
-        int x, y;
+        // cin >> c >> l >> r;
+        scanf("%s %d %d", c, &l, &r);
 
-        scanf("%s %d %d", s, &x, &y);
-
-        if (s[0] == 'Q')
+        if (c[0] == 'U')
         {
-            nq++;
-            q[nq] = {nq, x, y, nu, x / blk, y / blk};
+            nu++;
+            u[nu].x = l;
+            u[nu].new_y = r;
+            u[nu].prev_y = last[l];
+            last[l] = r;
+            fre[r];
         }
         else
         {
-            u[++nu] = {x, y, last[x]};
-            last[x] = y;
-            mp[y];
+            nq++;
+            q[nq].l = l;
+            q[nq].r = r;
+            q[nq].t = nu;
+            q[nq].ind = nq;
+            q[nq].lb = l / blk;
+            q[nq].rb = r / blk;
         }
     }
 
-    for (auto &it : mp)
+    for (auto &it : fre)
     {
-        it.second = ++compressed_val;
-        rev[compressed_val] = it.first;
+        it.second = ++compressed_value;
+        rev[compressed_value] = it.first;
     }
-    for (int i = 1; i <= n; i++)
+    for (int i = 1; i < n + 1; i++)
     {
-        A[i] = mp[A[i]];
+        A[i] = fre[A[i]];
     }
-    for (int i = 1; i <= nu; i++)
+    for (int i = 1; i < nu + 1; i++)
     {
-        u[i].new_y = mp[u[i].new_y];
-        u[i].prev_y = mp[u[i].prev_y];
+        u[i].prev_y = fre[u[i].prev_y];
+        u[i].new_y = fre[u[i].new_y];
     }
 
-    sort(q + 1, q + nq + 1, cmp);
+    sort(q + 1, q + 1 + nq, cmp);
 
     for (int i = 1, T = 0, L = 1, R = 0; i < nq + 1; i++)
     {
         while (T < q[i].t)
             do_update(++T);
         while (T > q[i].t)
-            undo_update(T--);
+            undo(T--);
         while (R < q[i].r)
             add(++R);
         while (L > q[i].l)
@@ -156,7 +168,8 @@ int main(int argc, char const *argv[])
             remove(R--);
         while (L < q[i].l)
             remove(L++);
-        ans[q[i].index] = curr_ans;
+
+        ans[q[i].ind] = curr_ans;
     }
 
     for (int i = 1; i < nq + 1; i++)

@@ -1,6 +1,6 @@
-if (totCoun[_arr[i].w] == m)
-            {
-                totCoun[_arr[i].w]++;
-                cout << "any" << endl;
-            }
-            else 
+ (rnode == -1)
+    // {
+    //     cout << "NO";
+    // }
+    // else
+    // {

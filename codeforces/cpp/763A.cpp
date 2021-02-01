@@ -14,31 +14,62 @@ using namespace std;
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 vector<int> arr[maxN];
-bool vis[maxN];
-int subSize[maxN], subCol[maxN], col[maxN];
+int col[maxN], rnode = -1;
+map<int, int> colCounter[maxN], mcolCounter;
+int n, a, b;
 
-pair<set<int>, int> dfs(int node)
+map<int, int> dfs(int node = 1, int par = -1)
 {
-    set<int> s;
-    s.insert(col[node]);
-    vis[node] = true;
-    int size = 1;
-    pair<set<int>, int> res;
+    map<int, int> mainCounter = mcolCounter;
+    bool flag = true;
 
     for (int child : arr[node])
     {
-        if (!vis[child])
+        if (child != par)
         {
-            res = dfs(child);
-            set_union(res.first.begin(), res.first.end(), s.begin(), s.end(), inserter(s, s.begin()));
-            size += res.second;
+            map<int, int> m1 = dfs(child, node);
+
+            for (auto e : m1)
+            {
+                colCounter[node][e.first] += e.second;
+            }
+
+            if (colCounter[child].size() != 1)
+            {
+                flag = false;
+            }
+            else
+            {
+                for (auto e : colCounter[child])
+                {
+                    mainCounter[e.first] -= e.second;
+
+                    if (mainCounter[e.first] == 0)
+                    {
+                        mainCounter.erase(e.first);
+                    }
+                }
+            }
         }
     }
 
-    subCol[node] = s.size();
-    subSize[node] = size;
+    mainCounter[col[node]]--;
 
-    return {s, size};
+    if (mainCounter[col[node]] == 0)
+    {
+        mainCounter.erase(col[node]);
+    }
+
+    if (flag)
+    {
+        if (mainCounter.size() == 1)
+        {
+            rnode = node;
+        }
+    }
+
+    colCounter[node][col[node]]++;
+    return colCounter[node];
 }
 
 int main(int argc, char const *argv[])
@@ -47,25 +78,41 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, a, b;
+    cin >> n;
 
     REP(i, 0, n - 1)
     {
         cin >> a >> b;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
+        arr[a].push_back(b), arr[b].push_back(a);
     }
-
-    pair<set<int>, int> s = dfs(1);
 
     REP(i, 1, n + 1)
     {
-        if (subSize[i] == subCol[i])
-        {
-            cout << "NO"
-        }
-        
+        cin >> col[i];
+        mcolCounter[col[i]]++;
     }
+
+    map<int, int> dum = dfs();
+
+    if (rnode == -1)
+    {
+        cout << "NO";
+    }
+    else
+    {
+        cout << "YES" << endl;
+        cout << rnode;
+    }
+
+    // REP(i, 1, n + 1)
+    // {
+    //     cout << i << "-> " << endl;
+    //     for (auto e : colCounter[i])
+    //     {
+    //         cout << e.first << " " << e.second << endl;
+    //     }
+    //     cout << endl;
+    // }
 
     return 0;
 }
