@@ -11,6 +11,9 @@
         "cinttypes": "cpp",
         "cstdlib": "cpp",
         "numeric": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "valarray": "cpp",
+        "string": "cpp",
+        "string_view": "cpp"
     }
 }
