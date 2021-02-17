@@ -7,58 +7,42 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 50001
+#define maxN 200001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n, k;
-
 vector<int> arr[maxN];
-int dp[maxN][501];
-int dp2[maxN][201];
-ll res;
+int subSize[maxN];
 
-void dfs(int node = 1, int par = -1)
+int dfs(int node, int par)
 {
+    subSize[node] = 1;
+
     for (int child : arr[node])
     {
-        if (child != par)
-        {
-            dfs(child, node);
+        if (child == par)
+            continue;
 
-            REP(i, 1, k + 1)
-            {
-                dp[node][i] += dp[child][i - 1];
-                dp2[node][i] = dp[node][i];
-            }
-        }
+        subSize[node] += dfs(child, node);
     }
 
-    dp[node][0] = 1;
+    return subSize[node];
 }
 
-void solve(int node = 1, int par = -1)
+int cenCal(int node, int par, int n)
 {
-    if (par != -1)
-    {
-        dp2[node][0] = 1;
-        dp2[node][1] = dp[node][1] + 1;
-
-        REP(i, 2, k + 1)
-        {
-            dp2[node][i] = dp[node][i] + dp2[par][i - 1] - dp[node][i - 2];
-        }
-    }
-
-    res += dp2[node][k] * 1LL;
-
     for (int child : arr[node])
     {
-        if (child != par)
-            solve(child, node);
+        if (child == par)
+            continue;
+
+        if (subSize[child] > n / 2)
+            return cenCal(child, node, n);
     }
+
+    return node;
 }
 
 int main(int argc, char const *argv[])
@@ -67,9 +51,9 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int a, b;
+    int n, a, b;
 
-    cin >> n >> k;
+    cin >> n;
 
     REP(i, 0, n - 1)
     {
@@ -77,10 +61,9 @@ int main(int argc, char const *argv[])
         arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    dfs();
-    solve();
+    dfs(1, -1);
 
-    cout << res/2;
+    cout << cenCal(1, -1, n);
 
     return 0;
 }

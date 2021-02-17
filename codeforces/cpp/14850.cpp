@@ -5,41 +5,39 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 998244353
+#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 200001
+#define maxN 1000001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll arr[maxN];
-ll ans[maxN];
-
-void solve(ll res, int n)
+int dp(ll a, ll b)
 {
-
+    if (a == 0)
+        return 0;
+    if (b >= a)
+        return 1;
+    else
+        return 1 + min(dp(a / b, b), dp(a, b + 1));
 }
 
 int main(int argc, char const *argv[])
 {
-    int n, q, x;
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    cin >> n;
+    int t;
+    ll a, b;
 
-    REP(i, 0, n)
+    cin >> t;
+
+    while (t--)
     {
-        scanf("%lld", arr + i);
-    }
-
-    cin >> q;
-
-    solve(0, n);
-
-    while (q--)
-    {
-        cin >> x;
-        cout << ans[x] << endl;
+        cin >> a >> b;
+        cout << dp(a, b) << endl;
     }
 
     return 0;

@@ -5,41 +5,30 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 998244353
+#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 200001
+#define maxN 100001
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll arr[maxN];
-ll ans[maxN];
-
-void solve(ll res, int n)
+struct edge
 {
-
-}
+    int node, val;
+};
+vector<edge> arr[maxN];
 
 int main(int argc, char const *argv[])
 {
-    int n, q, x;
 
-    cin >> n;
+    int n, a, b, c;
 
-    REP(i, 0, n)
+    scanf("%d", &n);
+
+    REP(i, 0, n - 1)
     {
-        scanf("%lld", arr + i);
-    }
-
-    cin >> q;
-
-    solve(0, n);
-
-    while (q--)
-    {
-        cin >> x;
-        cout << ans[x] << endl;
+        scanf("%d %d", &a, &b, &c);
     }
 
     return 0;

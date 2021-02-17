@@ -16,16 +16,15 @@ using namespace std;
 
 int n;
 
-// initialization part
-int level[maxN], parent[maxN][20], subSize[maxN];
+// intiliazation
 vector<pii> tree[maxN];
-vector<int> edge[maxN];
-pii specialChild[maxN]; // first is a child and second is the weight of edge
+int parent[maxN][20], level[maxN], subSize[maxN];
+pii specialChild[maxN];
 
 void dfs(int node = 1, int par = -1, int l = 0)
 {
-    parent[node][0] = par;
     level[node] = l;
+    parent[node][0] = par;
     subSize[node] = 1;
 
     int nodeX = -1, size = 0, weight = 0;
@@ -37,17 +36,17 @@ void dfs(int node = 1, int par = -1, int l = 0)
 
         dfs(child.first, node, l + 1);
 
-        subSize[node] += subSize[child.first];
-
-        if (size < subSize[child.first])
+        if (subSize[child.first] > size)
             size = subSize[child.first], nodeX = child.first, weight = child.second;
+
+        subSize[node] += subSize[child.first];
     }
 
     specialChild[node] = {nodeX, weight};
 }
 
 // heavy light decomposition
-int timer, label[maxN], arr[maxN], chainHead[maxN];
+int chainHead[maxN], label[maxN], arr[maxN], timer;
 
 void HLD(int node = 1, int par = -1, int val = 0)
 {
@@ -64,60 +63,13 @@ void HLD(int node = 1, int par = -1, int val = 0)
 
     for (pii child : tree[node])
     {
-        if (child.first == sc || child.first == par)
+        if (child.first == par || child.first == sc)
             continue;
         HLD(child.first, node, child.second);
     }
 }
 
-// segment tree
-int segTree[maxN * 4];
-
-void build(int si, int ss, int se)
-{
-    if (ss == se)
-    {
-        segTree[si] = arr[ss];
-    }
-    else
-    {
-        int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-        segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
-    }
-}
-
-int query(int si, int ss, int se, int qs, int qe)
-{
-    if (ss > qe || se < qs)
-        return 0;
-    if (qs <= ss && qe >= se)
-        return segTree[si];
-
-    int mid = (ss + se) / 2;
-    return max(query(2 * si, ss, mid, qs, qe), query(2 * si + 1, mid + 1, se, qs, qe));
-}
-
-void update(int si, int ss, int se, int qi)
-{
-    if (ss == se)
-    {
-        segTree[si] = arr[ss];
-        return;
-    }
-
-    int mid = (ss + se) / 2;
-
-    if (qi <= mid)
-        update(2 * si, ss, mid, qi);
-    else
-        update(2 * si + 1, mid + 1, se, qi);
-
-    segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
-}
-
-// LCA finder
+// LCA FINDER
 int LCA(int a, int b)
 {
     if (level[a] < level[b])
@@ -144,8 +96,8 @@ int LCA(int a, int b)
     return parent[a][0];
 }
 
-// k-th ancestor finder
-int kAncestor(int a, int d)
+// K-th ancestor finder
+int kAnces(int a, int d)
 {
     while (d)
     {
@@ -157,9 +109,38 @@ int kAncestor(int a, int d)
     return a;
 }
 
-int queryHl(int node, int ances)
+// basic segment tree
+int segTree[4 * maxN];
+
+void build(int si, int ss, int se)
 {
-    int res = 0, top = 0;
+    if (ss == se)
+    {
+        segTree[si] = arr[ss];
+    }
+    else
+    {
+        int mid = (ss + se) / 2;
+        build(2 * si, ss, mid);
+        build(2 * si + 1, mid + 1, se);
+        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+    }
+}
+
+int query(int si, int ss, int se, int qs, int qe)
+{
+    if (ss > qe || se < qs)
+        return 0;
+    if (qs <= ss && qe >= se)
+        return segTree[si];
+
+    int mid = (ss + se) / 2;
+    return (query(2 * si, ss, mid, qs, qe) + query(2 * si + 1, mid + 1, se, qs, qe));
+}
+
+int queryHL(int node, int ances)
+{
+    int ans = 0, top = 0;
 
     while (level[node] > level[ances])
     {
@@ -167,14 +148,18 @@ int queryHl(int node, int ances)
 
         if (level[top] <= level[ances])
         {
-            top = kAncestor(node, level[node] - level[ances] - 1);
+            top = kAnces(node, level[node] - level[ances] - 1);
         }
 
-        res = max(res, query(1, 1, n, label[top], label[node]));
+        ans += query(1, 1, n, label[top], label[node]);
         node = parent[top][0];
     }
 
-    return res;
+    return ans;
+}
+
+int kChild(int node, int ansc, int &k)
+{
 }
 
 int main(int argc, char const *argv[])
@@ -191,21 +176,19 @@ int main(int argc, char const *argv[])
         timer = 0;
         REP(i, 0, n + 1)
         {
-            chainHead[i] = i;
-            edge[i].clear();
             tree[i].clear();
+            chainHead[i] = i;
         }
 
         REP(i, 1, n)
         {
             scanf("%d %d %d", &a, &b, &c);
             tree[a].push_back({b, c}), tree[b].push_back({a, c});
-            edge[i].push_back(a), edge[i].push_back(b);
         }
 
         dfs();
 
-        // dp on parent array
+        // binary lifting preprocessing
         for (int j = 1; j < 20; j++)
         {
             for (int i = 1; i <= n; i++)
@@ -220,31 +203,44 @@ int main(int argc, char const *argv[])
         HLD();
         build(1, 1, n);
 
+        // REP(i, 1, n + 1)
+        // cout << i << " -> " << chainHead[i] << endl;
+
         while (true)
         {
             scanf("%s", s);
 
-            if (s[0] == 'D')
+            if (s[1] == 'O')
                 break;
 
-            scanf("%d %d", &a, &b);
-
-            if (s[0] == 'Q')
+            if (s[1] == 'I')
             {
+                scanf("%d %d", &a, &b);
                 lca = LCA(a, b);
-                printf("%d\n", max(queryHl(a, lca), queryHl(b, lca)));
+                printf("%d\n", queryHL(a, lca) + queryHL(b, lca));
             }
             else
             {
-                int index;
+                scanf("%d %d %d", &a, &b, &c);
+                lca = LCA(a, b);
 
-                if (level[edge[a][0]] > level[edge[a][1]])
-                    index = label[edge[a][0]];
+                int dist = level[a] + level[lca] - 2 * level[lca];
+
+                if (c == dist + 1)
+                {
+                    printf("%d\n", lca);
+                }
+                else if (c < dist + 1)
+                {
+                    printf("%d\n", kAnces(a, c - 1));
+                }
                 else
-                    index = label[edge[a][1]];
-
-                arr[index] = b;
-                update(1, 1, n, index);
+                {
+                    c -= dist + 1;
+                    dist = level[b] + level[lca] - 2 * level[lca];
+                    c = dist - c + 1;
+                    printf("%d\n", kAnces(b, c - 1));
+                }
             }
         }
     }

@@ -18,10 +18,11 @@ int n;
 
 // initialization part
 int level[maxN], parent[maxN][20], subSize[maxN];
-vector<pii> tree[maxN];
-vector<int> edge[maxN];
-pii specialChild[maxN]; // first is a child and second is the weight of edge
+vector<pii> tree[maxN]; // will store the tree
+vector<int> edge[maxN]; // will store the ith edge
+pii specialChild[maxN]; // this array will store the special child of a node with the child and weight of edge from node to child(first is a child and second is the weight of edge)
 
+// dfs call to find out level, parent, subTree size and special child for each node
 void dfs(int node = 1, int par = -1, int l = 0)
 {
     parent[node][0] = par;
@@ -48,6 +49,9 @@ void dfs(int node = 1, int par = -1, int l = 0)
 
 // heavy light decomposition
 int timer, label[maxN], arr[maxN], chainHead[maxN];
+// chainHead will store the head of each chain
+// arr shall store the list of weight for edge between node and parent of node
+// label shall store the index for a particular node
 
 void HLD(int node = 1, int par = -1, int val = 0)
 {
@@ -70,7 +74,7 @@ void HLD(int node = 1, int par = -1, int val = 0)
     }
 }
 
-// segment tree
+// segment tree -- normal segment tree implementation
 int segTree[maxN * 4];
 
 void build(int si, int ss, int se)
@@ -157,6 +161,7 @@ int kAncestor(int a, int d)
     return a;
 }
 
+// will give answer for the given query between node and ancestor
 int queryHl(int node, int ances)
 {
     int res = 0, top = 0;
@@ -205,7 +210,7 @@ int main(int argc, char const *argv[])
 
         dfs();
 
-        // dp on parent array
+        // dp on parent array -- binary lifting preprocessing
         for (int j = 1; j < 20; j++)
         {
             for (int i = 1; i <= n; i++)
@@ -218,7 +223,7 @@ int main(int argc, char const *argv[])
         }
 
         HLD();
-        build(1, 1, n);
+        build(1, 1, n); // build segment tree
 
         while (true)
         {
@@ -232,7 +237,7 @@ int main(int argc, char const *argv[])
             if (s[0] == 'Q')
             {
                 lca = LCA(a, b);
-                printf("%d\n", max(queryHl(a, lca), queryHl(b, lca)));
+                printf("%d\n", max(queryHl(a, lca), queryHl(b, lca))); // broken query in two parts
             }
             else
             {
@@ -244,7 +249,7 @@ int main(int argc, char const *argv[])
                     index = label[edge[a][1]];
 
                 arr[index] = b;
-                update(1, 1, n, index);
+                update(1, 1, n, index); // uodated in accordance with the node connected in ith edge
             }
         }
     }
