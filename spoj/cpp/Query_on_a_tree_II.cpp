@@ -158,10 +158,6 @@ int queryHL(int node, int ances)
     return ans;
 }
 
-int kChild(int node, int ansc, int &k)
-{
-}
-
 int main(int argc, char const *argv[])
 {
     int t, a, b, c, lca;
