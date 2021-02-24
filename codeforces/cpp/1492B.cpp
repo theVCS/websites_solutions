@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 200001
+#define maxN 100001
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
@@ -15,8 +15,9 @@ using namespace std;
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 int arr[maxN];
+int label[maxN];
 int segTree[4 * maxN];
-int ans;
+bool use[maxN];
 
 void build(int si, int ss, int se)
 {
@@ -33,37 +34,20 @@ void build(int si, int ss, int se)
     }
 }
 
-void query(int si, int ss, int se, int c)
+void update(int si, int ss, int se, int qs, int qe)
 {
-    if (ss == se)
+    if (ss > qe || se < qs)
     {
-        if (segTree[si] >= c)
-        {
-            segTree[si] -= c;
-            ans = ss;
-        }
-        else
-            ans = 0;
         return;
     }
-
-    int left = 2 * si;
-    int right = left + 1;
+    if (qs <= ss && qe >= se)
+    {
+        segTree[si] = INT_MIN;
+        return;
+    }
     int mid = (ss + se) / 2;
-
-    if (segTree[left] >= c)
-    {
-        query(left, ss, mid, c);
-    }
-    else if (segTree[right] >= c)
-    {
-        query(right, mid + 1, se, c);
-    }
-    else
-    {
-        ans = 0;
-    }
-
+    update(2 * si, ss, mid, qs, qe);
+    update(2 * si + 1, mid + 1, se, qs, qe);
     segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
 }
 
@@ -73,20 +57,37 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, c;
+    int t, n;
 
-    cin >> n >> m;
+    cin >> t;
 
-    REP(i, 1, n + 1)
-    cin >> arr[i];
-
-    build(1, 1, n);
-
-    while (m--)
+    while (t--)
     {
-        cin >> c;
-        query(1, 1, n, c);
-        cout << ans << " ";
+        cin >> n;
+
+        REP(i, 1, n + 1)
+        {
+            cin >> arr[i];
+            label[arr[i]] = i;
+        }
+
+        build(1, 1, n);
+        // cout << segTree[1];
+        int index = label[segTree[1]];
+        int end = n;
+
+        while (end)
+        {
+            for (int i = index; i <= end; i++)
+            {
+                cout << arr[i] << " ";
+            }
+
+            update(1, 1, n, index, end);
+            end = index - 1;
+            index = label[segTree[1]];
+        }
+        cout << endl;
     }
 
     return 0;

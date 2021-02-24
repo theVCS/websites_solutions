@@ -59,24 +59,29 @@ int dfs(int x, int y, map<int, bool> checker = {})
 
 int main(int argc, char const *argv[])
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    // ios_base::sync_with_stdio(false);
+    // cin.tie(NULL);
+    // cout.tie(NULL);
 
     int t;
 
-    cin >> t;
+    // cin >> t;
+    scanf("%d", &t);
 
     while (t--)
     {
-        cin >> n;
+        // cin >> n;
+        scanf("%d", &n);
 
         REP(i, 0, n)
         REP(j, 0, n)
-        cin >> arr[i][j];
+        // cin >> arr[i][j];
+        scanf("%d", &arr[i][j]);
 
-        cin >> sx >> sy;
-        cin >> ex >> ey;
+        // cin >> sx >> sy;
+        // cin >> ex >> ey;
+        scanf("%d %d", &sx, &sy);
+        scanf("%d %d", &ex, &ey);
 
         cout << dfs(sx, sy) << endl;
     }

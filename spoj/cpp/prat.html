@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="data"></div>
+</body>
+
+<script>
+    function loadFile(filePath) {
+        var result = null;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", filePath, false);
+        xmlhttp.send();
+        if (xmlhttp.status == 200) {
+            result = xmlhttp.responseText;
+        }
+        return result;
+    }
+    
+    var t = loadFile('input.txt');
+    var words = t.split(" ");
+    var newText = ``;
+
+    words.forEach(function (word) {
+
+        if (word == "Prince") {
+            newText += `<span style="color: red;">` + word + `</span> `;
+        } else {
+            newText += word + ' ';
+        }
+    });
+
+    document.getElementById('data').innerHTML = newText;
+    console.log(t);
+</script>
+
+</html>

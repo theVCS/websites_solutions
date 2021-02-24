@@ -7,86 +7,90 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 2011
+#define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
- 
+
 int hp, wp, hm, wm;
-char paint[2001][2001], master[2001][2001];
-ll power[4050];
-ll painthash[2001], masterHash[2001][2001];
- 
+ll power[maxN];
+char paint[maxN][maxN];
+ll paintHash[maxN][maxN];
+ll masterHash[maxN][maxN];
+ll dumHash[maxN][maxN];
+ll masterColHash[maxN][maxN];
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
- 
-    int cnt = 0;
-    ll mashash, phash;
-    // vector<pii> cord;
- 
-    power[0] = 1, power[1] = 31, power[2] = 961;
- 
+
+    ll paintColHash1 = 0;
+    ll paintColHash2 = 0;
+    power[0] = 1;
     cin >> hp >> wp >> hm >> wm;
- 
+
+    int cnt = 0;
+
+    REP(i, 1, maxN)
+    power[i] = 31 * power[i - 1];
+
     REP(i, 1, hp + 1)
     {
-        phash = 0;
-        for (int j = 1; j <= wp; j++)
+        REP(j, 1, wp + 1)
         {
             cin >> paint[i][j];
-            phash = (phash + (paint[i][j] - '0' + 1) * power[i + j]) % mod;
-            power[i + j + 1] = (power[i + j] * 31) % mod;
+            dumHash[i][j] = (dumHash[i][j - 1] + (paint[i][j] == 'x' ? 1 : 2) * power[j]) % mod;
+            paintHash[i][j] = (dumHash[i][j] + paintHash[i - 1][j]) % mod;
         }
-        painthash[i] = phash;
     }
- 
+
+    // finding hash of first row of a paint matrix
+    REP(i, 1, hp + 1)
+    {
+        paintColHash1 = (paintColHash1 + (paint[i][1] == 'x' ? 1 : 2) * power[i]) % mod;
+        paintColHash2 = (paintColHash2 + (paint[i][wp] == 'x' ? 1 : 2) * power[i]) % mod;
+    }
+
     REP(i, 1, hm + 1)
     {
-        mashash = 0;
-        for (int j = 1; j <= wm; j++)
+        REP(j, 1, wm + 1)
         {
-            cin >> master[i][j];
-            mashash = (mashash + (master[i][j] - '0' + 1) * power[i + j]) % mod;
-            masterHash[i][j] = mashash;
-            power[i + j + 1] = (power[i + j] * 31) % mod;
+            cin >> paint[i][j];
+            dumHash[i][j] = (dumHash[i][j - 1] + (paint[i][j] == 'x' ? 1 : 2) * power[j]) % mod;
+            masterHash[i][j] = (dumHash[i][j] + masterHash[i - 1][j]) % mod;
         }
     }
- 
-    bool flag;
- 
+
+    // hashing rows of masterpiece
+    REP(j, 1, wm + 1)
+    {
+        REP(i, 1, hm + 1)
+        {
+            masterColHash[i][j] = (masterColHash[i - 1][j] + (paint[i][j] == 'x' ? 1 : 2) * power[i]) % mod;
+        }
+    }
+
     for (int lr = 1, rr = hp; rr <= hm; rr++, lr++)
     {
         for (int lc = 1, rc = wp; rc <= wm; rc++, lc++)
         {
-            if (master[lr][lc] == paint[1][1])
-            {
-                flag = true;
- 
-                for (int i = lr; i <= rr; i++)
-                {
-                    mashash = (masterHash[i][rc] - masterHash[i][lc - 1] + mod) % mod;
-                    phash = (painthash[i - lr + 1] * power[lc + lr - 2]) % mod;
- 
-                    if (mashash != phash)
-                    {
-                        flag = false;
-                        break;
-                    }
-                }
- 
-                if (flag)
-                {
-                    cnt++;
-                }
-            }
+            // finding hash of the part
+            ll mhash = (masterHash[rr][rc] - masterHash[lr - 1][rc] - masterHash[rr][lc - 1] + masterHash[lr - 1][lc - 1] + 4LL * mod) % mod;
+
+            // finding hash of first column of paint
+            bool flag1 = (masterColHash[rr][lc] - masterColHash[lr - 1][lc] + mod * 4LL) % mod == (paintColHash1 * power[lr - 1] % mod);
+            bool flag2 = (masterColHash[rr][rc] - masterColHash[lr - 1][rc] + mod * 4LL) % mod == (paintColHash2 * power[lr - 1] % mod);
+
+            if (mhash == (paintHash[hp][wp] * power[lc - 1]) % mod && flag1 && flag2)
+                cnt++;
         }
     }
- 
+
     cout << cnt;
- 
+
     return 0;
-} 
+}
