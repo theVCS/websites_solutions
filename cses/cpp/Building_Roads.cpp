@@ -14,46 +14,54 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<int> arr[maxN];
+bool vis[maxN];
+
+void dfs(int node)
+{
+    vis[node] = true;
+
+    for (int child : arr[node])
+    {
+        if (vis[child])
+            continue;
+        dfs(child);
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int n, m, a, b;
+    vector<int> res;
 
-    cin >> t;
+    cin >> n >> m;
 
-    while (t--)
+    REP(I, 0, m)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
+    }
 
-        bool isOdd = n & 1;
+    REP(i, 1, n + 1)
+    {
+        if (vis[i] == false)
+            dfs(i), res.push_back(i);
+    }
 
-        while (n--)
+    if (res.size() > 1)
+    {
+        cout << res.size() - 1 << endl;
+        for (int i = 1; i < res.size(); i++)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
-
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
-
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
+            cout << res[i] << " " << res[i - 1] << endl;
         }
     }
+    else
+        cout << 0;
 
     return 0;
 }

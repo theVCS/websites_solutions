@@ -14,46 +14,55 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+set<int> arr[maxN];
+bool vis[maxN];
+ll cnt;
+
+void dfs(int node, int par = -1)
+{
+    vis[node] = true;
+    bool flag = true;
+    int leaf = 1;
+
+    for (int child : arr[node])
+    {
+        if (par != -1 && arr[child].find(par) == arr[child].end())
+            flag = false;
+
+        if (vis[child])
+            continue;
+
+        dfs(child, node);
+        leaf = 0;
+    }
+
+    if (flag && !leaf && par != -1)
+        cnt++;
+}
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int n, m, a, b;
 
-    cin >> t;
+    cin >> n >> m;
 
-    while (t--)
+    REP(i, 0, m)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
-
-        bool isOdd = n & 1;
-
-        while (n--)
-        {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
-
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
-
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+        cin >> a >> b;
+        arr[a].insert(b), arr[b].insert(a);
     }
+
+    REP(i, 1, n + 1)
+    {
+        if (vis[i] == false)
+            dfs(i);
+    }
+
+    cout << cnt;
 
     return 0;
 }

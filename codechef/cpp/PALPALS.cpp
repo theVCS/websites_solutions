@@ -14,45 +14,47 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int cnt[26];
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t;
+    string s;
 
     cin >> t;
 
     while (t--)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        cin >> s;
 
-        bool isOdd = n & 1;
+        for (char c : s)
+            cnt[c - 'a']++;
 
-        while (n--)
+        int even = 0, one = 0;
+
+        REP(i, 0, 26)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
+            if (cnt[i])
+            {
+                if (cnt[i] == 1)
+                    one++;
+                else if (cnt[i] % 2 == 1)
+                    even++, one++;
+                else if (cnt[i] % 2 == 0)
+                    even++;
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
+                cnt[i] = 0;
+            }
         }
+
+        if (even >= one)
+            cout << "YES" << endl;
         else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
-
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+            cout << "NO" << endl;
     }
 
     return 0;

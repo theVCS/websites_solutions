@@ -13,6 +13,20 @@ using namespace std;
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// while (T < q[i].t)
+//     do_update(++T);
+// while (T > q[i].t)
+//     undo(T--);
+// while (R < q[i].r)
+//     add(++R);
+// while (L > q[i].l)
+//     add(--L);
+// while (R > q[i].r)
+//     remove(R--);
+// while (L < q[i].l)
+//     remove(L++);
+
+int pi[maxN];
 
 int main(int argc, char const *argv[])
 {
@@ -20,39 +34,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    string s;
+    int n;
+    scanf("%s %d", &s, &n);
 
-    cin >> t;
-
-    while (t--)
+    for (int i = 1; i < n; i++)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        int j = pi[i - 1];
 
-        bool isOdd = n & 1;
-
-        while (n--)
+        while (j && s[i] != s[j])
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
+            j = pi[j - 1];
         }
-        sort(all(x));
-        sort(all(y));
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+        if (s[i] == s[j])
+            j++;
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+        pi[i] = j;
     }
 
     return 0;

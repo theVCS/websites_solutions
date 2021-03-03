@@ -7,12 +7,26 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 129
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+struct partic
+{
+    string name;
+    int s;
+    int p;
+} participant[130];
+
+bool cmp(partic a, partic b)
+{
+    if (a.s == b.s)
+        return a.p < b.p;
+    return (a.s > b.s);
+}
 
 int main(int argc, char const *argv[])
 {
@@ -20,39 +34,24 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t;
 
     cin >> t;
 
     while (t--)
     {
+        int n;
+
         cin >> n;
-        vector<int> x, y;
-        int dx, dy;
 
-        bool isOdd = n & 1;
-
-        while (n--)
+        REP(i, 0, n)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
+            cin >> participant[i].name >> participant[i].s >> participant[i].p;
         }
-        sort(all(x));
-        sort(all(y));
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+        sort(participant, participant + n, cmp);
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+        cout << participant[0].name << endl;
     }
 
     return 0;

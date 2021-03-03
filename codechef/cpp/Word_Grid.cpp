@@ -14,6 +14,8 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<int> start[26], endt[26];
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
@@ -27,31 +29,26 @@ int main(int argc, char const *argv[])
     while (t--)
     {
         cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        vector<string> sv;
+        string s;
 
-        bool isOdd = n & 1;
-
-        while (n--)
+        REP(i, 0, n)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
+            cin >> s;
+            sv.push_back(s);
+
+            start[s[0] - 'a'].push_back(i);
+            endt[s.front() - 'a'].push_back(i);
         }
-        sort(all(x));
-        sort(all(y));
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+        int cnt = 0;
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
+        REP(i, 0, 26)
+        {
+            if (start[i].size() >= 2)
+            {
+                
+            }
         }
     }
 

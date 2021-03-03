@@ -20,39 +20,40 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t, n, k;
+    string s;
 
     cin >> t;
 
     while (t--)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        cin >> n >> k;
+        cin >> s;
 
-        bool isOdd = n & 1;
-
-        while (n--)
+        for (int i = 0; i < n; i++)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
+            if (i == n - 1)
+            {
+                int v = s[i] - 'a';
+                v = (v + k) % 26;
+                s[i] = char(v + 'a');
+                break;
+            }
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+            int v = s[i] - 'a';
+            int reqV = 26 - v;
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
+            if (reqV <= k && v)
+            {
+                k -= reqV;
+                s[i] = 'a';
+            }
+
+            if (k == 0)
+                break;
         }
+
+        cout << s << endl;
     }
 
     return 0;

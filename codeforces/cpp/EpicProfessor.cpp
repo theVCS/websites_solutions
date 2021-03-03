@@ -13,6 +13,18 @@ using namespace std;
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// while (T < q[i].t)
+//     do_update(++T);
+// while (T > q[i].t)
+//     undo(T--);
+// while (R < q[i].r)
+//     add(++R);
+// while (L > q[i].l)
+//     add(--L);
+// while (R > q[i].r)
+//     remove(R--);
+// while (L < q[i].l)
+//     remove(L++);
 
 int main(int argc, char const *argv[])
 {
@@ -20,39 +32,33 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t;
 
     cin >> t;
 
     while (t--)
     {
+        int n;
+
         cin >> n;
-        vector<int> x, y;
-        int dx, dy;
 
-        bool isOdd = n & 1;
+        int arr[n], maxV = 0;
 
-        while (n--)
+        REP(i, 0, n)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
+            cin >> arr[i];
+            maxV = max(maxV, arr[i]);
         }
-        sort(all(x));
-        sort(all(y));
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+        int pass = 0;
+        int diff = 100 - maxV;
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
+        REP(i,0,n)
+        {
+            if(diff + arr[i] >= 50)pass++;
         }
+
+        cout << pass << endl;
     }
 
     return 0;

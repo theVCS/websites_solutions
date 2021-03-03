@@ -14,45 +14,43 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int pi[maxN];
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t;
+    string s;
 
     cin >> t;
 
     while (t--)
     {
-        cin >> n;
-        vector<int> x, y;
-        int dx, dy;
+        int res = 0;
+        cin >> s;
+        int n = s.size();
 
-        bool isOdd = n & 1;
-
-        while (n--)
+        for (int i = 1; i < n; i++)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
+            int j = pi[i - 1];
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
+            while (j && s[i] != s[j])
+            {
+                j = pi[i - 1];
+            }
+            if (s[i] == s[j])
+                j++;
 
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
+            pi[i] = j;
+
+            if (j == 0)
+                res = i;
         }
+
+        cout << res +  1 << endl;
     }
 
     return 0;

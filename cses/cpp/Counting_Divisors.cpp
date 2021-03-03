@@ -14,11 +14,50 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int sieve[maxN];
+vector<pii> numDiv[maxN]; // stores the factorization of number
+int maxPower[maxN];       // stores the maximum power of a factor
+
+void init()
+{
+    for (int i = 2; i < maxN; i++)
+    {
+        if (sieve[i] == 0)
+        {
+            for (int j = i; j < maxN; j += i)
+            {
+                if (sieve[j] == 0)
+                    sieve[j] = i;
+            }
+        }
+    }
+}
+
+void divisors(int n)
+{
+    map<int, int> count;
+
+    while (sieve[n])
+    {
+        count[sieve[n]]++;
+        n = n / sieve[n];
+    }
+
+    int res = 1;
+
+    for (auto e : count)
+    {
+        maxPower[e.first] = max(maxPower[e.first], e.second);
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
+
+    init();
 
     int t, n;
 
@@ -27,32 +66,7 @@ int main(int argc, char const *argv[])
     while (t--)
     {
         cin >> n;
-        vector<int> x, y;
-        int dx, dy;
-
-        bool isOdd = n & 1;
-
-        while (n--)
-        {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
-        }
-        sort(all(x));
-        sort(all(y));
-
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
-
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+        cout << divCount(n) << endl;
     }
 
     return 0;

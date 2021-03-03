@@ -7,12 +7,14 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 100001
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+ll arr[maxN];
 
 int main(int argc, char const *argv[])
 {
@@ -20,39 +22,29 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    int t;
 
     cin >> t;
 
     while (t--)
     {
+        int n;
         cin >> n;
-        vector<int> x, y;
-        int dx, dy;
 
-        bool isOdd = n & 1;
+        REP(i, 0, n)
+        cin >> arr[i];
 
-        while (n--)
+        sort(arr, arr + n);
+
+        ll res = -1 * __LONG_LONG_MAX__;
+
+        REP(i, 0, n - 1)
         {
-            cin >> dx >> dy;
-            x.push_back(dx), y.push_back(dy);
+            res = max({res, arr[0] * arr[i + 1] - arr[0] + arr[i + 1]});
+            res = max({res, arr[n - 1] * arr[i] + arr[n - 1] - arr[i]});
         }
-        sort(all(x));
-        sort(all(y));
 
-        if (isOdd)
-        {
-            cout << 1 << endl;
-        }
-        else
-        {
-            int mid1 = x.size() / 2;
-            int mid2 = mid1 - 1;
-
-            dx = x[mid1] - x[mid2] + 1;
-            dy = y[mid1] - y[mid2] + 1;
-            cout << 1LL * dx * dy << endl;
-        }
+        cout << res << endl;
     }
 
     return 0;
