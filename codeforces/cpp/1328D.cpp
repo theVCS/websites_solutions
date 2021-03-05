@@ -14,12 +14,82 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int col[maxN];
+int arr[maxN], ans[maxN];
 
-int solve(int n, int i = 0, int col = 0)
+void solve()
 {
-    
+    int n;
+    cin >> n;
+
+    bool flag = true;
+
+    cin >> arr[0];
+
+    REP(i, 1, n)
+    {
+        cin >> arr[i];
+
+        if (arr[i] != arr[i - 1])
+            flag = false;
+    }
+
+    if (flag)
+    {
+        cout << 1 << endl;
+        REP(i, 0, n)
+        cout << 1 << " ";
+        cout << endl;
+        return;
+    }
+
+    if (n % 2 == 0)
+    {
+        cout << 2 << endl;
+        int c = 0;
+        REP(i, 0, n)
+        {
+            cout << c + 1 << " ";
+            c ^= 1;
+        }
+        return;
+    }
+
+    REP(i, 0, n)
+    {
+        if (arr[i] == arr[(i + 1) % n])
+        {
+            cout << 2 << endl;
+
+            int c = 0;
+            for (int j = i + 1; j < n; j++)
+            {
+                ans[j] = c + 1;
+                c ^= 1;
+            }
+
+            c = 0;
+            for (int j = i; j >= 0; j--)
+            {
+                ans[j] = c + 1;
+                c ^= 1;
+            }
+
+            REP(i, 0, n)
+            cout << ans[i] << " ";
+            cout << endl;
+            return;
+        }
+    }
+
+    int c = 0;
+    cout << 3 << endl;
+    REP(i, 0, n - 1)
+    {
+        cout << c + 1 << " ";
+        c ^= 1;
+    }
+    cout << 3 << endl;
+    return;
 }
 
 int main(int argc, char const *argv[])
@@ -28,16 +98,13 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t;
+    int t = 1;
 
     cin >> t;
 
     while (t--)
     {
-        int n;
-
-        REP(i, 0, n)
-        cin >> arr[i];
+        solve();
     }
 
     return 0;
