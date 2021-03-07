@@ -20,6 +20,7 @@
         "*.tcc": "cpp",
         "cmath": "cpp",
         "chrono": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "iosfwd": "cpp"
     }
 }

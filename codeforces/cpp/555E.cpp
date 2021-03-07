@@ -4,27 +4,34 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
+#define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 200001
+#define all(x) (x).begin(), (x).end()
+#define endl "\n"
+
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 vector<int> arr[maxN];
-bool vis[maxN], hasBridge;
-int intime[maxN], low[maxN], timer;
+bool vis[maxN];
+int intime[maxN], low[maxN], cc[maxN], timer, cccnt;
 
-void dfs(int node = 1, int par = -1)
+void dfs(int node, int par = -1)
 {
     vis[node] = true;
-    intime[node] = low[node] = ++timer;
+    intime[node] = low[node] = timer++;
+    cc[node] = cccnt;
+    int pcnt = 0;
 
     for (int child : arr[node])
     {
-        if (child == par)
+        if (pcnt == 0 && child == par)
         {
+            pcnt++;
             continue;
         }
         else if (vis[child])
@@ -35,14 +42,78 @@ void dfs(int node = 1, int par = -1)
         {
             dfs(child, node);
             low[node] = min(low[node], low[child]);
-
-            if (intime[node] < low[child])
-            {
-                hasBridge = true;
-                return;
-            }
         }
     }
+}
+
+void solve()
+{
+    int n, m, q, a, b;
+
+    cin >> n >> m >> q;
+
+    REP(i, 0, m)
+    {
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
+    }
+
+    bool flag = true;
+    bool firstTime = true;
+
+    while (q--)
+    {
+        cin >> a >> b;
+
+        if (vis[a] == false)
+            dfs(a), cccnt++;
+
+        if (vis[b] == false)
+            dfs(b), cccnt++;
+
+        if (firstTime)
+        {
+            if (cc[a] == cc[b] && low[a] <= low[b])
+                continue;
+            else
+                flag = false;
+
+            firstTime = false;
+        }
+        else
+        {
+            if (flag)
+            {
+                if (cc[a] == cc[b] && low[a] <= low[b])
+                    continue;
+                else
+                {
+                    cout << "No";
+                    return;
+                }
+            }
+            else
+            {
+                if (cc[a] == cc[b] && low[a] >= low[b])
+                    continue;
+                else
+                {
+                    cout << "No";
+                    return;
+                }
+            }
+        }
+
+        if (cc[a] == cc[b] && low[a] <= low[b])
+            continue;
+        else
+        {
+            cout << "No";
+            return;
+        }
+    }
+
+    cout << "Yes";
 }
 
 int main(int argc, char const *argv[])
@@ -51,31 +122,13 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, q;
+    int t = 1;
 
-    cin >> n >> m >> q;
+    // cin >> t;
 
-    while (m--)
+    while (t--)
     {
-        cin >> a >> b;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
-    }
-
-    dfs();
-
-    while (q--)
-    {
-        cin >> a >> b;
-    }
-
-    if (hasBridge)
-    {
-        cout << "No";
-    }
-    else
-    {
-        cout << "Yes";
+        solve();
     }
 
     return 0;
