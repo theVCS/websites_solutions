@@ -8,9 +8,8 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 100001
-#define endl "\n"
+// #define endl "\n"
 #define all(x) (x).begin(), (x).end()
-const ll INF = 1e17;
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
@@ -28,54 +27,66 @@ const ll INF = 1e17;
 // while (L < q[i].l)
 //     remove(L++);
 
-struct edge
+struct user
 {
-    int u, v;
-    ll w;
-};
+    int charger, mobile;
+} User[maxN];
+map<int, int> charger;
+map<int, int> mobile;
+vector<int> arr[maxN];
+bool vis[maxN];
 
-vector<edge> arr(2 * maxN);
-vector<ll> dis(maxN, INF);
-
-void bellmanFord(int m)
+void dfs(int node)
 {
-    dis[1] = 0;
+    vis[node] = true;
+    charger[User[node].charger]++;
+    mobile[User[node].mobile]++;
 
-    while (true)
+    for (int child : arr[node])
     {
-        bool flag = true;
-
-        REP(j, 0, m)
-        {
-            if (dis[arr[j].u] < INF && dis[arr[j].v] > dis[arr[j].u] + arr[j].w)
-            {
-                flag = false;
-                dis[arr[j].v] = dis[arr[j].u] + arr[j].w;
-            }
-        }
-
-        if (flag)
-            break;
+        if (vis[child])
+            continue;
+        dfs(child);
     }
 }
 
 void solve()
 {
-    int n, m;
-    edge e;
+    int n, m, x, a, b;
 
-    cin >> n >> m;
+    cin >> n >> m >> x;
+
+    REP(i, 1, n + 1)
+    {
+        cin >> User[i].mobile >> User[i].charger;
+    }
 
     REP(i, 0, m)
     {
-        cin >> e.u >> e.v >> e.w;
-        arr[i] = e;
+        cin >> a >> b;
+        a++, b++;
+        arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    bellmanFord(m);
+    int res = 0;
 
     REP(i, 1, n + 1)
-    cout << dis[i] << " ";
+    {
+        if (vis[i] == false)
+        {
+            charger.clear();
+            mobile.clear();
+
+            dfs(i);
+
+            for (auto ch : charger)
+            {
+                res += min(ch.second, mobile[ch.first]);
+            }
+        }
+    }
+
+    cout << n - res << endl;
 }
 
 int main(int argc, char const *argv[])

@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 1000001
 #define endl "\n"
 #define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
@@ -16,30 +16,13 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int inValid[maxN];
-
 void solve()
 {
-    int n;
+    int n, m;
 
-    cin >> n;
-    vector<int> res(n);
+    cin >> n >> m;   
 
-    REP(i, 1, n + 1)
-    {
-        cin >> arr[i];
-        inValid[i] = n;
-    }
-
-    int ans = INF;
-
-    for (int i = n; i > 0; i--)
-    {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
-    }
+    
 }
 
 int main(int argc, char const *argv[])

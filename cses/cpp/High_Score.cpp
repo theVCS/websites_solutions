@@ -7,39 +7,56 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 5001
 #define endl "\n"
-#define INF 0x3f3f3f3f
+#define INF 1000000000000
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int inValid[maxN];
+struct edge
+{
+    int a, b;
+    ll w;
+} arr[maxN];
+
+vector<ll> dis(2501, -1 * INF);
+
+void bellmanFord(int m)
+{
+    dis[1] = 0;
+
+    while (true)
+    {
+        bool flag = true;
+
+        REP(i, 0, m)
+        {
+            if (dis[arr[i].a] != -1 * INF && dis[arr[i].b] < dis[arr[i].a] + arr[i].w)
+            {
+                dis[arr[i].b] = dis[arr[i].a] + arr[i].w;
+                flag = false;
+            }
+        }
+
+        if (flag)
+            break;
+    }
+}
 
 void solve()
 {
-    int n;
+    int n, m;
+    cin >> n >> m;
 
-    cin >> n;
-    vector<int> res(n);
+    REP(i, 0, m)
+    cin >> arr[i].a >> arr[i].b >> arr[i].w;
 
-    REP(i, 1, n + 1)
-    {
-        cin >> arr[i];
-        inValid[i] = n;
-    }
+    bellmanFord(m);
 
-    int ans = INF;
-
-    for (int i = n; i > 0; i--)
-    {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
-    }
+    cout << dis[n];
 }
 
 int main(int argc, char const *argv[])

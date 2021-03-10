@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 500001
 #define endl "\n"
 #define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
@@ -16,30 +16,58 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int inValid[maxN];
+vector<int> arr[maxN];
+int leafCount[maxN];
+
+void dfs0(int node, int par = -1)
+{
+    bool flag = true;
+
+    for (int child : arr[node])
+    {
+        if (child == par)
+            continue;
+        
+        dfs0(child, node);
+        
+        leafCount[node] += leafCount[child];
+        flag = false;
+    }
+
+    if(flag)leafCount[node] = 1;
+}
+
+void dfs1(int node, int par = -1)
+{
+    if(par != -1)
+    {
+        int parAns = leafCount[par] - leafCount[node];
+        leafCount[node] += parAns;        
+    }
+
+    for(int child: arr[node])
+    {
+        if(child == par)continue;
+        dfs1(child, node);
+    }
+}
 
 void solve()
 {
-    int n;
+    int n, k, a, b;
 
-    cin >> n;
-    vector<int> res(n);
+    cin >> n >> k;
 
-    REP(i, 1, n + 1)
+    REP(i, 0, n - 1)
     {
-        cin >> arr[i];
-        inValid[i] = n;
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    int ans = INF;
+    dfs0(1);
+    dfs1(1);
 
-    for (int i = n; i > 0; i--)
-    {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
-    }
+    REP(i,1,n+1)cout << i << " -> " << leafCount[i] << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -56,7 +84,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

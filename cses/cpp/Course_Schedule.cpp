@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 100001
 #define endl "\n"
 #define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
@@ -16,30 +16,58 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int inValid[maxN];
+vector<int> arr[maxN];
+int indegree[maxN];
 
-void solve()
+void kahn(int n)
 {
-    int n;
-
-    cin >> n;
-    vector<int> res(n);
+    queue<int> q;
 
     REP(i, 1, n + 1)
     {
-        cin >> arr[i];
-        inValid[i] = n;
+        if (indegree[i] == 0)
+            q.push(i);
     }
 
-    int ans = INF;
+    vector<int> res;
 
-    for (int i = n; i > 0; i--)
+    while (!q.empty())
     {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
+        int node = q.front();
+        q.pop();
+
+        res.push_back(node);
+
+        for (int child : arr[node])
+        {
+            indegree[child]--;
+
+            if (indegree[child] == 0)
+                q.push(child);
+        }
     }
+
+    if (res.size() == n)
+        for (int e : res)
+            cout << e << " ";
+    else
+        cout << "IMPOSSIBLE";
+}
+
+void solve()
+{
+    int n, m, a, b;
+
+    cin >> n >> m;
+
+    REP(i, 0, m)
+    {
+        cin >> a >> b;
+        arr[a].push_back(b);
+        indegree[b]++;
+    }
+
+    kahn(n);
 }
 
 int main(int argc, char const *argv[])

@@ -7,40 +7,25 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 1001
 #define endl "\n"
-#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-
-int arr[maxN];
-int inValid[maxN];
-
-void solve()
-{
-    int n;
-
-    cin >> n;
-    vector<int> res(n);
-
-    REP(i, 1, n + 1)
-    {
-        cin >> arr[i];
-        inValid[i] = n;
-    }
-
-    int ans = INF;
-
-    for (int i = n; i > 0; i--)
-    {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
-    }
-}
+// while (T < q[i].t)
+//     do_update(++T);
+// while (T > q[i].t)
+//     undo(T--);
+// while (R < q[i].r)
+//     add(++R);
+// while (L > q[i].l)
+//     add(--L);
+// while (R > q[i].r)
+//     remove(R--);
+// while (L < q[i].l)
+//     remove(L++);
 
 int main(int argc, char const *argv[])
 {
@@ -48,23 +33,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream filptr("input.txt");
-    // ofstream outpter("output.txt");
+    // ifstream fi("input.txt");
+    // ofstream fo("output.txt");
 
-    // filptr >> input;
-    // outpter << output;
+    // fi >> input;
+    // fo << output;
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    //fi.close();
+    //fo.close();
 
     return 0;
 }

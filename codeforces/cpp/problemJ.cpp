@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500011
+#define maxN 500001
 #define endl "\n"
 #define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
@@ -16,30 +16,63 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int inValid[maxN];
+struct jedi
+{
+    ll sum, minSum;
+    int index;
+} jd[maxN];
+ll ans[maxN];
+
+bool cmp(jedi a, jedi b)
+{
+    return a.minSum < b.minSum;
+}
+
+void binarySearchCount(int n, int i)
+{
+    int l = 0, r = n - 1;
+    while (l <= r)
+    {
+        int mid = (l + r) / 2;
+        if (jd[mid].minSum <= jd[i].sum)
+        {
+            ans[jd[i].index] = mid;
+            if (mid < i)
+                ans[jd[i].index]++;
+            l = mid + 1;
+        }
+        else
+        {
+            r = mid - 1;
+        }
+    }
+}
 
 void solve()
 {
     int n;
+    ll arr[3];
 
     cin >> n;
-    vector<int> res(n);
 
-    REP(i, 1, n + 1)
+    REP(i, 0, n)
     {
-        cin >> arr[i];
-        inValid[i] = n;
+        cin >> arr[0] >> arr[1] >> arr[2];
+        sort(arr,arr+3);
+        jd[i].sum = arr[0] + arr[1] + arr[2];
+        jd[i].minSum = arr[0] + arr[1] + 2;
+        jd[i].index = i;
     }
 
-    int ans = INF;
+    sort(jd, jd + n, cmp);
 
-    for (int i = n; i > 0; i--)
+    REP(i, 0, n)
     {
-        ans = min(ans+1, inValid[abs(arr[i])] - (i - 1));
-        inValid[abs(arr[i])] = i - 1;
-        cout << ans << " ";
+        binarySearchCount(n, i);
     }
+
+    REP(i, 0, n)
+    cout << ans[i] << " ";
 }
 
 int main(int argc, char const *argv[])
