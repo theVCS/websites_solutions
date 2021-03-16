@@ -7,60 +7,66 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 5001
+#define maxN 300001
 #define endl "\n"
-#define INF 1000000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct edge
+struct node
 {
-    int a, b;
-    ll w;
+    ll degree;
+    ll xorVal;
 } arr[maxN];
 
-vector<ll> dis(2501, INF);
-
-void bellmanFord(int m, int n)
-{
-    dis[1] = 0;
-
-    REP(k, 0, n - 1)
-    {
-        bool flag = true;
-
-        REP(i, 0, m)
-        {
-            if (dis[arr[i].a] == INF)
-                continue;
-
-            if (dis[arr[i].b] > dis[arr[i].a] + arr[i].w)
-            {
-                dis[arr[i].b] = dis[arr[i].a] + arr[i].w;
-                flag = false;
-            }
-        }
-
-        if (flag)
-            break;
-    }
-}
+vector<pair<ll, ll>> edge;
+queue<pair<ll, ll>> q;
 
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
+    ll n;
 
-    REP(i, 0, m)
-    cin >> arr[i].a >> arr[i].b >> arr[i].w, arr[i].w *= -1;
+    cin >> n;
 
-    bellmanFord(m, n);
+    REP(i, 0, n)
+    {
+        cin >> arr[i].degree >> arr[i].xorVal;
 
-    cout << (dis[n] == INF ? -1 : -1 * dis[n]);
-    // cout << dis[n];
+        if (arr[i].degree == 1)
+        {
+            // there is a edge between arr[i].xor and i;
+            q.push({i, arr[i].xorVal});
+        }
+    }
+
+    while (!q.empty())
+    {
+        ll node = q.front().first;
+        ll par = q.front().second;
+        q.pop();
+
+        if (arr[node].degree == 0)
+            continue;
+
+        edge.push_back({node, par});
+        arr[node].degree--;
+        arr[node].xorVal = 0;
+
+        arr[par].xorVal ^= node;
+
+        if (--arr[par].degree == 1)
+            q.push({par, arr[par].xorVal});
+    }
+
+    cout << edge.size() << endl;
+
+    for (pii e : edge)
+    {
+        cout << e.first << " " << e.second << endl;
+    }
 }
 
 int main(int argc, char const *argv[])

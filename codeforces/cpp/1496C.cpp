@@ -7,60 +7,49 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 5001
+#define maxN 1000001
 #define endl "\n"
-#define INF 1000000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct edge
-{
-    int a, b;
-    ll w;
-} arr[maxN];
-
-vector<ll> dis(2501, INF);
-
-void bellmanFord(int m, int n)
-{
-    dis[1] = 0;
-
-    REP(k, 0, n - 1)
-    {
-        bool flag = true;
-
-        REP(i, 0, m)
-        {
-            if (dis[arr[i].a] == INF)
-                continue;
-
-            if (dis[arr[i].b] > dis[arr[i].a] + arr[i].w)
-            {
-                dis[arr[i].b] = dis[arr[i].a] + arr[i].w;
-                flag = false;
-            }
-        }
-
-        if (flag)
-            break;
-    }
-}
+vector<ll> x, y;
 
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
+    x.clear(), y.clear();
 
-    REP(i, 0, m)
-    cin >> arr[i].a >> arr[i].b >> arr[i].w, arr[i].w *= -1;
+    int n;
+    ll a, b;
 
-    bellmanFord(m, n);
+    cin >> n;
 
-    cout << (dis[n] == INF ? -1 : -1 * dis[n]);
-    // cout << dis[n];
+    REP(i, 0, 2 * n)
+    {
+        cin >> a >> b;
+
+        if (a == 0)
+            x.push_back(abs(b));
+        else
+            y.push_back(abs(a));
+    }
+
+    sort(all(x));
+    sort(all(y));
+
+    long double res = 0;
+
+    REP(i, 0, min(y.size(), x.size()))
+    {
+        ll a1 = x[i] * x[i];
+        ll a2 = y[i] * y[i];
+        res += sqrt(a1 + a2);
+    }
+
+    cout << fixed << setprecision(12) << res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -77,7 +66,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

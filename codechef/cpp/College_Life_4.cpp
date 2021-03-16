@@ -18,6 +18,16 @@ using namespace std;
 
 void solve()
 {
+    ll n, e, h, a, b, c;
+
+    cin >> n >> e >> h >> a >> b >> c;
+
+    ll res = __LONG_LONG_MAX__;
+
+    for (int y = 0; y <= e+h-2*n; y++)
+    {
+        
+    }
     
 }
 
@@ -35,7 +45,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

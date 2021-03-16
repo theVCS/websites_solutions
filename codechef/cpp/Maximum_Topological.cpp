@@ -46,7 +46,7 @@ int main(int argc, char const *argv[]){
     
     int t = 1;
     
-    //cin >> t;
+    cin >> t;
     
     while (t--)
     {

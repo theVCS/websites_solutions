@@ -21,7 +21,7 @@ int parent[maxN][20], intime[maxN], level[maxN], timer;
 
 void dfs(int node = 1, int par = -1, int l = 0)
 {
-    intime[node] = timer++;
+    intime[node] = ++timer;
     level[node] = l;
     parent[node][0] = par;
 
@@ -35,7 +35,7 @@ void dfs(int node = 1, int par = -1, int l = 0)
 
 void init(int n)
 {
-    dfs();
+    dfs(1);
 
     for (int j = 1; j < 20; j++)
     {
@@ -100,6 +100,8 @@ void solve()
         universities.push_back(a);
     }
 
+    int nodeX = 1;
+
     REP(i, 0, n - 1)
     {
         cin >> a >> b;
@@ -112,13 +114,13 @@ void solve()
 
     // for(int e: universities)cout << e << " ";
 
-    int i = 0, j = 2 * q - 1, res = 0;
+    int i = 0;
+    ll res = 0;
 
-    while (i < j)
+    while (i < q)
     {
-        res += dist(universities[i], universities[j]);
+        res += 1LL * dist(universities[i], universities[i+q]);
         i++;
-        j--;
     }
     cout << res;
 }

@@ -7,60 +7,57 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 5001
+#define maxN 100001
 #define endl "\n"
-#define INF 1000000000000
+#define INF 2000000000
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct edge
+int arr[maxN];
+
+bool isValid(int c, int n, int dist)
 {
-    int a, b;
-    ll w;
-} arr[maxN];
+    int cnt = 0, prev = -1 * INF;
 
-vector<ll> dis(2501, INF);
-
-void bellmanFord(int m, int n)
-{
-    dis[1] = 0;
-
-    REP(k, 0, n - 1)
+    REP(i, 1, n + 1)
     {
-        bool flag = true;
-
-        REP(i, 0, m)
-        {
-            if (dis[arr[i].a] == INF)
-                continue;
-
-            if (dis[arr[i].b] > dis[arr[i].a] + arr[i].w)
-            {
-                dis[arr[i].b] = dis[arr[i].a] + arr[i].w;
-                flag = false;
-            }
-        }
-
-        if (flag)
-            break;
+        if (arr[i] - prev >= dist)
+            cnt++, prev = arr[i];
+        if (cnt >= c)
+            return true;
     }
+
+    return false;
 }
 
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
+    int n, c;
+    int ans = 0;
 
-    REP(i, 0, m)
-    cin >> arr[i].a >> arr[i].b >> arr[i].w, arr[i].w *= -1;
+    cin >> n >> c;
 
-    bellmanFord(m, n);
+    REP(i, 1, n + 1)
+    cin >> arr[i];
 
-    cout << (dis[n] == INF ? -1 : -1 * dis[n]);
-    // cout << dis[n];
+    sort(arr + 1, arr + n + 1);
+
+    int start = 0, end = arr[n] - arr[1];
+
+    while (start <= end)
+    {
+        int mid = (start + end) / 2;
+
+        if (isValid(c, n, mid))
+            ans = max(ans, mid), start = mid + 1;
+        else
+            end = mid - 1;
+    }
+
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -77,7 +74,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

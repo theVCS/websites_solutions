@@ -16,9 +16,62 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+map<ll, int> mp;
+vector<ll> arr;
+
+int findFirstMissing(int start, int end)
+{
+    if (start > end)
+        return end + 1;
+
+    if (start != arr[start])
+        return start;
+
+    int mid = (start + end) / 2;
+
+    if (arr[mid] == mid)
+        return findFirstMissing(mid + 1, end);
+
+    return findFirstMissing(start, mid);
+}
+
 void solve()
 {
-    
+    int n, k;
+    ll dum;
+
+    mp.clear();
+    arr.clear();
+
+    cin >> n >> k;
+
+    REP(i, 0, n)
+    {
+        cin >> dum;
+        mp[dum]++;
+        arr.push_back(dum);
+    }
+
+    sort(all(arr));
+
+    if (k)
+    {
+        ll ele = findFirstMissing(0, n - 1);
+        ll newEle = ceil((ele + arr[n - 1]) / 2.0);
+
+        if (newEle > arr[n - 1])
+        {
+            cout << mp.size() + k << endl;
+            return;
+        }
+
+        mp[newEle]++;
+        cout << mp.size() << endl;
+    }
+    else
+    {
+        cout << mp.size() << endl;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -35,7 +88,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

@@ -9,58 +9,61 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 5001
 #define endl "\n"
-#define INF 1000000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct edge
+vector<pii> arr[maxN];
+int n, par[maxN];
+
+int dfs(int node, int timer)
 {
-    int a, b;
-    ll w;
-} arr[maxN];
+    if (node == 1)
+        return 1;
 
-vector<ll> dis(2501, INF);
+    int res = INT_MIN;
 
-void bellmanFord(int m, int n)
-{
-    dis[1] = 0;
-
-    REP(k, 0, n - 1)
+    for (pii child : arr[node])
     {
-        bool flag = true;
-
-        REP(i, 0, m)
+        if (child.second <= timer)
         {
-            if (dis[arr[i].a] == INF)
-                continue;
+            int temp = dfs(child.first, timer - child.second);
 
-            if (dis[arr[i].b] > dis[arr[i].a] + arr[i].w)
+            if (res < temp)
             {
-                dis[arr[i].b] = dis[arr[i].a] + arr[i].w;
-                flag = false;
+                res = temp;
+                par[child.first] = node;
             }
         }
-
-        if (flag)
-            break;
     }
+
+    return 1 + res;
 }
 
 void solve()
 {
-    int n, m;
-    cin >> n >> m;
+    int m, t, a, b, c;
+
+    cin >> n >> m >> t;
 
     REP(i, 0, m)
-    cin >> arr[i].a >> arr[i].b >> arr[i].w, arr[i].w *= -1;
+    {
+        cin >> a >> b >> c;
+        arr[b].push_back({a, c});
+    }
 
-    bellmanFord(m, n);
+    cout << dfs(n, t) << endl;
 
-    cout << (dis[n] == INF ? -1 : -1 * dis[n]);
-    // cout << dis[n];
+    int node = 1;
+
+    while (node)
+    {
+        cout << node << " ";
+        node = par[node];
+    }
 }
 
 int main(int argc, char const *argv[])

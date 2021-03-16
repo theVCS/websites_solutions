@@ -1,103 +1,128 @@
 #include <bits/stdc++.h>
+//#include <boost/multiprecision/cpp_int.hpp>
+//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
+//#define bint cpp_int
+#define pii pair<int, int>
+#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 200001
+#define endl "\n"
+#define INF 0x3f3f3f3f
+#define all(x) (x).begin(), (x).end()
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-const int blk = 1000;
+vector<int> tree[maxN];
+int col[maxN], n;
 
-// initialization
-ll val[maxN], last[maxN];
-vector<int> arr[maxN];
-int nu, nq;
 int intime[maxN], outime[maxN], FT[2 * maxN], timer;
-
-// processing queries
-int nodeFre[maxN];
-ll res, ans[maxN];
-bool use[maxN];
-
-void init(int node = 1, int par = -1)
+void dfs(int node = 1, int par = -1)
 {
     intime[node] = ++timer;
     FT[timer] = node;
 
-    for (int child : arr[node])
+    for (int child : tree[node])
     {
-        if (child != par)
-        {
-            init(child, node);
-        }
+        if (child == par)
+            continue;
+        dfs(child, node);
     }
 
     outime[node] = ++timer;
     FT[timer] = node;
 }
 
-struct query
+ll segTree[8 * maxN];
+void build(int si, int ss, int se)
 {
-    int l, r, index, t, lb, rb;
-} Q[maxN];
-
-struct update
-{
-    int node;
-    ll prev_val, new_val;
-} U[maxN];
-
-void add(int index)
-{
-    int node = FT[index];
-
-    nodeFre[node]++;
-
-    if (nodeFre[node] == 2)
+    if (ss == se)
     {
-        use[node] = true;
-        res += val[node];
-        // cout << "added " << node << endl;
+        segTree[si] = col[FT[ss]];
+    }
+    else
+    {
+        int mid = (ss + se) / 2;
+        build(2 * si, ss, mid);
+        build(2 * si + 1, mid + 1, se);
+        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
     }
 }
 
-void remove(int index)
+ll query(int si, int ss, int se, int qs, int qe)
 {
-    int node = FT[index];
+    if (ss > qe || se < qs)
+        return 0;
 
-    nodeFre[node]--;
+    if (qs <= ss && qe >= se)
+        return segTree[si];
 
-    if (nodeFre[node] == 1)
-    {
-        use[node] = false;
-        res -= val[node];
-        // cout << "removed " << node << endl;
-    }
+    int mid = (ss + se) / 2;
+    return query(2 * si, ss, mid, qs, qe) + query(2 * si + 1, mid + 1, se, qs, qe);
 }
 
-void reflect_update(int node, ll v)
+void update(int si, int ss, int se, int qi)
 {
-    if (!use[node])
+    if (ss == se)
     {
-        val[node] = v;
+        segTree[si] = col[FT[ss]];
         return;
     }
-    res -= val[node];
-    val[node] = v;
-    res += val[node];
+
+    int mid = (ss + se) / 2;
+
+    if (qi <= mid)
+        update(2 * si, ss, mid, qi);
+    else
+        update(2 * si + 1, mid + 1, se, qi);
+
+    segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
 }
 
-void do_update(int index)
+void solve()
 {
-    reflect_update(U[index].node, U[index].new_val);
-}
+    int q, a, b;
 
-void undo(int index)
-{
-    reflect_update(U[index].node, U[index].prev_val);
-}
+    cin >> n >> q;
 
-bool cmp(query a, query b)
-{
-    return (a.lb < b.lb) || (a.lb == b.lb && a.rb < b.rb) || (a.lb == b.lb && a.rb == b.rb && a.t < b.t);
+    REP(i, 1, n + 1)
+    {
+        cin >> col[i];
+    }
+
+    REP(i, 0, n - 1)
+    {
+        cin >> a >> b;
+        tree[a].push_back(b), tree[b].push_back(a);
+    }
+
+    dfs();
+    build(1, 1, timer);
+
+    // cout << segTree[1] << endl;
+
+    int code;
+
+    while (q--)
+    {
+        cin >> code;
+
+        if (code == 1)
+        {
+            cin >> a >> b;
+            col[a] = b;
+            update(1, 1, timer, intime[a]);
+            update(1, 1, timer, outime[a]);
+        }
+        else
+        {
+            cin >> a;
+            cout << query(1, 1, timer, intime[a], outime[a]) / 2 << endl;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -106,76 +131,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, code, nod;
-    ll v;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    scanf("%d %d", &n, &m);
-    // cin >> n >> m;
+    // filptr >> input;
+    // outpter << output;
 
-    REP(i, 1, n + 1)
-    scanf("%lld", val + i), last[i] = val[i];
+    int t = 1;
 
-    REP(i, 0, n - 1)
+    //cin >> t;
+
+    while (t--)
     {
-        scanf("%d %d", &a, &b);
-        // cin >> a >> b;
-        arr[a].push_back(b), arr[b].push_back(a);
+        solve();
     }
 
-    init();
-
-    REP(i, 1, m + 1)
-    {
-        scanf("%d", &code);
-        // cin >> code;
-
-        if (code == 1)
-        {
-            nu++;
-            scanf("%d %lld", &nod, &v);
-            // cin >> nod >> v;
-            U[nu].node = nod;
-            U[nu].prev_val = last[nod];
-            U[nu].new_val = v;
-            last[nod] = v;
-        }
-        else
-        {
-            nq++;
-            scanf("%d", &nod);
-            // cin >> nod;
-            Q[nq].index = nq;
-            Q[nq].l = intime[nod];
-            Q[nq].r = outime[nod];
-            Q[nq].t = nu;
-            Q[nq].lb = intime[nod] / blk;
-            Q[nq].rb = outime[nod] / blk;
-        }
-    }
-
-    sort(Q + 1, Q + 1 + nq, cmp);
-
-    for (int i = 1, L = 1, R = 0, T = 0; i <= nq; i++)
-    {
-        while (T < Q[i].t)
-            do_update(++T);
-        while (T > Q[i].t)
-            undo(T--);
-        while (R < Q[i].r)
-            add(++R);
-        while (L > Q[i].l)
-            add(--L);
-        while (R > Q[i].r)
-            remove(R--);
-        while (L < Q[i].l)
-            remove(L++);
-
-        ans[Q[i].index] = res;
-    }
-
-    REP(i, 1, nq + 1)
-    printf("%lld\n", ans[i]);
-    // cout << ans[i] << "\n";
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }
