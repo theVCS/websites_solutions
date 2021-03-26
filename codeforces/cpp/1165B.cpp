@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 200001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,23 +16,32 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int arr[maxN];
+
 void solve()
 {
     int n;
+
     cin >> n;
 
-    REP(i, 0, 500)
-    {
-        int fir = 2020 * i;
-        int sec = n - fir;
+    REP(i,1,n+1)cin>>arr[i];
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+    sort(arr+1,arr+1+n);
+
+    int index = 1;
+    int day = 1;
+    int cnt = 0;
+        
+    while (index <= n)
+    {
+        if(arr[index] >= day)
         {
-            cout << "YES" << endl;
-            return;
+            cnt++;
+            day++;
         }
+        index++;
     }
-    cout << "NO" << endl;
+    cout << cnt;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +58,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

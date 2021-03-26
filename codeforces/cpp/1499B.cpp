@@ -9,29 +9,73 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int arr[101];
+int ch[101];
+int cnt;
+
+bool isValid(int index)
+{
+    // removing ones
+    REP(i, 1, index)
+    {
+        if (ch[i] == 1 && arr[i] > 1)
+        {
+            return false;
+        }
+    }
+
+    REP(i, index + 1, cnt + 1)
+    {
+        if (ch[i] == 0 && arr[i] > 1)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void solve()
 {
-    int n;
-    cin >> n;
+    string s;
 
-    REP(i, 0, 500)
+    cin >> s;
+
+    cnt = 1;
+
+    arr[1] = 1;
+    ch[1] = s[0] - '0';
+
+    for (int i = 1; i < s.size(); i++)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        if (s[i] == s[i - 1])
+            arr[cnt]++;
+        else
+        {
+            arr[++cnt] = 1;
+            ch[cnt] = s[i] - '0';
+        }
+    }
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+    int left = 0;
+
+    while (left <= s.size() + 1)
+    {
+        if (isValid(left))
         {
             cout << "YES" << endl;
             return;
         }
+        left++;
     }
+
     cout << "NO" << endl;
 }
 

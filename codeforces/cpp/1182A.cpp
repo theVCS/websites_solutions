@@ -21,18 +21,15 @@ void solve()
     int n;
     cin >> n;
 
-    REP(i, 0, 500)
+    if(n % 2)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        cout << 0;
+        return;
     }
-    cout << "NO" << endl;
+    else
+    {
+        cout << (1 << (n/2));
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +46,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

@@ -9,7 +9,7 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
@@ -18,21 +18,18 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, m, maxPeo = 0, sumPeo = 0, dum;
 
-    REP(i, 0, 500)
+    cin >> n >> m;
+
+    REP(i, 0, n)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        cin >> dum;
+        maxPeo = max(dum, maxPeo);
+        sumPeo += dum;
     }
-    cout << "NO" << endl;
+    
+    
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +46,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

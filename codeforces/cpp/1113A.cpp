@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 101
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,23 +16,41 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int dp[maxN][maxN];
+
+int price(int city, int fuel, int n, int v)
+{
+    if (city == n)
+        return 0;
+    else if (dp[city][fuel] != -1)
+        return dp[city][fuel];
+    else
+    {
+        int mn = INF;
+
+        int i = 0;
+
+        if (fuel == 0)
+            i = 1;
+
+        while (fuel + i <= v)
+        {
+            mn = min(mn, city * i + price(city + 1, fuel + i - 1, n, v));
+            i++;
+        }
+
+        return dp[city][fuel] = mn;
+    }
+}
+
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, v;
+    cin >> n >> v;
 
-    REP(i, 0, 500)
-    {
-        int fir = 2020 * i;
-        int sec = n - fir;
+    memset(dp, -1, sizeof(dp));
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
-    }
-    cout << "NO" << endl;
+    cout << price(1, 0, n, v);
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +67,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

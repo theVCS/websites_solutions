@@ -1,204 +1,130 @@
-#include <conio.h>
-#include <cstdio>
 #include <iostream>
+#include <fstream>
+#include <process.h>
 #include <string.h>
-#include <cstdlib>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <conio.h>
+#include <direct.h>
+#include <windows.h>
+#include <time.h>
+#include <algorithm>
 using namespace std;
-static int p = 0;
 
-class a
+void gotoxy(int x, int y)
 {
-    char busn[5], driver[10], arrival[5], depart[5], from[10], to[10], seat[8][4][10];
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+class product_detail
+{
+private:
+    int pid;
+    string pname;
+    float pquantity;
 
 public:
-    void install();
-    void allotment();
-    void empty();
-    void show();
-    void avail();
-    void position(int i);
-} bus[10];
-void vline(char ch)
+    void add_product();
+    void delete_product();
+    void modify_product();
+    void display_product();
+};
+void product_detail ::display_product()
 {
-    for (int i = 80; i > 0; i--)
-        cout << ch;
-}
-void vline(char ch)
-{
-    for (int i = 5; i > 0; i--)
-        cout << ch;
-}
-void a::install()
-{
-    cout << "Enter bus no: ";
-    cin >> bus[p].busn;
-    cout << "\nEnter Driver's name: ";
-    cin >> bus[p].driver;
-    cout << "\nArrival time: ";
-    cin >> bus[p].arrival;
-    cout << "\nDeparture: ";
-    cin >> bus[p].depart;
-    cout << "\nFrom: \t\t\t";
-    cin >> bus[p].from;
-    cout << "\nTo: \t\t\t";
-    cin >> bus[p].to;
-    bus[p].empty();
-    p++;
-}
-void a::allotment()
-{
-    int seat;
-    char number[5];
-top:
-    cout << "Bus no: ";
-    cin >> number;
-    int n;
-    for (n = 0; n <= p; n++)
-    {
-        if (strcmp(bus[n].busn, number) == 0)
-            break;
-    }
-    while (n <= p)
-    {
-        cout << "\nSeat Number: ";
-        cin >> seat;
-        if (seat > 32)
-        {
-            cout << "\nThere are only 32 seats available in this bus.";
-        }
-        else
-        {
-            if (strcmp(bus[n].seat[seat / 4][(seat % 4) - 1], "Empty") == 0)
-            {
-                cout << "Enter passanger's name: ";
-                cin >> bus[n].seat[seat / 4][(seat % 4) - 1];
-                break;
-            }
-            else
-                cout << "The seat no. is already reserved.\n";
-        }
-    }
-    if (n > p)
-    {
-        cout << "Enter correct bus no.\n";
-        goto top;
-    }
-}
-void a::empty()
-{
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            strcpy(bus[p].seat[i][j], "Empty");
-        }
-    }
-}
-void a::show()
-{
-    int n;
-    char number[5];
-    cout << "Enter bus no: ";
-    cin >> number;
-    for (n = 0; n <= p; n++)
-    {
-        if (strcmp(bus[n].busn, number) == 0)
-            break;
-    }
-    while (n <= p)
-    {
-        vline('*');
-        cout << "Bus no: \t" << bus[n].busn << "\nDriver: \t" << bus[n].driver << "\t\tArrival time: \t" << bus[n].arrival << "\tDeparture time:" << bus[n].depart << "\nFrom: \t\t" << bus[n].from << "\t\tTo: \t\t" << bus[n].to << "\n";
-        vline('*');
-        bus[0].position(n);
-        int a = 1;
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 4; j++)
-            {
-                a++;
-                if (strcmp(bus[n].seat[i][j], "Empty") != 0)
-                    cout << "\nThe seat no " << (a - 1) << " is reserved for " << bus[n].seat[i][j] << ".";
-            }
-        }
-        break;
-    }
-    if (n > p)
-        cout << "Enter correct bus no: ";
-}
-void a::position(int l)
-{
-    int s = 0;
+    char choice;
+    system("CLS");
 
-    for (int i = 0; i < 8; i++)
+    ifstream fp("PRODUCT_DETAIL.txt");
+
+    int row = 6, found = 0;
+    gotoxy(30, 2);
+    cout << "LIST OF ITEMS";
+    gotoxy(3, 4);
+    cout << "PRODUCT ID   PRODUCT NAME    PRODUCT QUANTITY  ";
+    gotoxy(2, 5);
+    cout << "**************************************************";
+
+    product_detail obj;
+
+    while (!fp.eof())
     {
-        cout << "\n";
-        for (int j = 0; j < 4; j++)
-        {
-            if (strcmp(bus[l].seat[i][j], "Empty") == 0)
-            {
-                cout.width(5);
-                cout.fill(' ');
-                cout << s << ".";
-                cout.width(10);
-                cout.fill(' ');
-                cout << bus[l].seat[i][j];
-                s++;
-            }
-            else
-            {
-                cout.width(5);
-                cout.fill(' ');
-                cout << s << ".";
-                cout.width(10);
-                cout.fill(' ');
-                cout << bus[l].seat[i][j];
-            }
-        }
+        found = 1;
+
+        fp >> obj.pid;
+
+        if (obj.pid == 0)
+            break;
+
+        fp >> obj.pname;
+        fp >> obj.pquantity;
+
+        gotoxy(5, row);
+        cout << obj.pid;
+        gotoxy(20, row);
+        cout << obj.pname;
+        gotoxy(37, row);
+        cout << obj.pquantity;
+        row++;
     }
-    cout << "\n\nThere are " << s << " seats empty in Bus No: " << bus[l].busn;
-}
-void a::avail()
-{
-    for (int n = 0; n < p; n++)
+    fp.close();
+    if (found == 0)
     {
-        vline('*');
-        cout << "Bus no: \t" << bus[n].busn << "\nDriver: \t" << bus[n].driver << "\t\tArrival time: \t" << bus[n].arrival << "\tDeparture Time: \t" << bus[n].depart << "\nFrom: \t\t" << bus[n].from << "\t\tTo: \t\t\t" << bus[n].to << "\n";
-        vline('*');
-        vline('_');
+        gotoxy(5, 10);
+        cout << "\nRecords not found\n";
+    }
+    gotoxy(1, 25);
+    cout << endl;
+    cout << "DO YOU WANT TO ADD ANY PRODUCT DETAIL(Y/N)\n";
+    choice = getche();
+    choice = toupper(choice);
+    if (choice == 'Y')
+    {
+        product_detail c;
+        c.add_product();
+    }
+}
+void product_detail ::add_product()
+{
+    char choice;
+    cout << "\nenter product id:";
+    cin >> pid;
+    cout << "enter product name:";
+    cin.ignore();
+    getline(cin, pname);
+    transform(pname.begin(), pname.end(), pname.begin(), ::toupper);
+    cout << "enter quantity of the product:";
+    cin >> pquantity;
+    cout << "\nDO YOU WANT TO SAVE THIS PRODUCT(Y/N)";
+    choice = getche();
+    choice = toupper(choice);
+
+    if (choice == 'Y')
+    {
+        ofstream fp("PRODUCT_DETAIL.txt", ios::app);
+        fp << pid << " " << pname << " " << pquantity << endl;
+        fp.close();
     }
 }
 int main()
 {
-    system("cls");
-    int w;
+    system("CLS");
+    char ch;
     while (1)
     {
-
-        cout << "\n\n\n\n\n";
-        cout << "\t\t\t1.Install\n\t\t\t"
-             << "2.Reservation\n\t\t\t"
-             << "3.Show\n\t\t\t"
-             << "4.Buses Available. \n\t\t\t"
-             << "5.Exit";
-        cout << "\n\t\t\tEnter your choice:-> ";
-        cin >> w;
-        switch (w)
+        system("CLS");
+        cout << "\n1: PRODUCT DETAIL";
+        cout << "\n0: QUIT";
+        cout << "\nEnter Your Choice :\n ";
+        cin >> ch;
+        if (ch == '1')
         {
-        case 1:
-            bus[p].install();
-            break;
-        case 2:
-            bus[p].allotment();
-            break;
-        case 3:
-            bus[0].show();
-            break;
-        case 4:
-            bus[0].avail();
-            break;
-        case 5:
-            exit(0);
+            system("CLS");
+            product_detail p;
+            p.display_product();
         }
     }
     return 0;

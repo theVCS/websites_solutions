@@ -9,30 +9,45 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll a, b, c;
+
+bool f(ll t)
+{
+    ll all = (c * a + b - 1) / b;
+    return ((all * (b - a) + a * t) >= 0);
+}
+
 void solve()
 {
-    int n;
-    cin >> n;
+    cin >> a >> b >> c;
 
-    REP(i, 0, 500)
+    int start = 1, end = 1000000000;
+
+    while (start <= end)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        int mid = (start + end) / 2;
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+        if (f(mid) == true && f(mid - 1) == false)
         {
-            cout << "YES" << endl;
+            cout << mid;
             return;
         }
+        else if (f(mid))
+        {
+            end = mid - 1;
+        }
+        else
+        {
+            start = mid + 1;
+        }
     }
-    cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +64,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

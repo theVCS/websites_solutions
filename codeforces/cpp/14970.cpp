@@ -9,30 +9,45 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<int>arr;
+
 void solve()
 {
-    int n;
+    arr.clear();
+
+    int n, dum;
+    
     cin >> n;
 
-    REP(i, 0, 500)
+    REP(i,0,n)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        cin >> dum;
+        arr.push_back(dum);
     }
-    cout << "NO" << endl;
+
+    sort(all(arr));
+    vector<int>ar;
+
+    REP(i,0,n)
+    {
+        if(i && arr[i] == arr[i - 1])
+        {
+            ar.push_back(arr[i]);
+            continue;
+        }
+        cout << arr[i] << " ";
+    }
+
+    for(int e: ar)
+    cout << e << " ";
+    cout << endl;
 }
 
 int main(int argc, char const *argv[])

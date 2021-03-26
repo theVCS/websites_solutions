@@ -3,36 +3,50 @@
 //using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
-//#define bint cpp_int
+#define bint cpp_int
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll f(ll m, ll n)
+{
+    return ((m * (m + 1)) / 2) - (n - m);
+}
+
 void solve()
 {
-    int n;
-    cin >> n;
+    ll n, k, m;
 
-    REP(i, 0, 500)
+    cin >> n >> k;
+
+    ll start = 0, end = 1000000000;
+    while (start <= end)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        ll mid = (start + end) / 2;
+        ll fn = f(mid, n);
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+        if (fn == k)
         {
-            cout << "YES" << endl;
+            cout << n - mid << endl;
             return;
         }
+        else if (fn < k)
+        {
+            start = mid + 1;
+        }
+        else
+        {
+            end = mid - 1;
+        }
     }
-    cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +63,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

@@ -18,21 +18,16 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    ll n, m, x;
 
-    REP(i, 0, 500)
-    {
-        int fir = 2020 * i;
-        int sec = n - fir;
+    cin >> n >> m >> x;
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
-    }
-    cout << "NO" << endl;
+    ll col = ceil(x * 1.0/ n) ;
+    ll row = x - n * (col - 1);
+
+    // cout << col << " " << row << endl;
+
+    cout << m * (row - 1) + col << endl;
 }
 
 int main(int argc, char const *argv[])

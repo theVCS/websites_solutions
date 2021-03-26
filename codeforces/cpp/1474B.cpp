@@ -16,9 +16,46 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+bool isPrime[maxN];
+vector<int> prime;
+
+void init()
+{
+    isPrime[0] = isPrime[1] = true;
+
+    for (int i = 2; i * i <= maxN; i++)
+    {
+        for (int j = i * i; j < maxN; j += i)
+        {
+            isPrime[j] = true;
+        }
+    }
+
+    REP(i, 2, maxN)
+    {
+        if (isPrime[i] == false)
+            prime.push_back(i);
+    }
+}
+
 void solve()
 {
-    
+    int d;
+    cin >> d;
+
+    ll res = 1;
+
+    int p1 = lower_bound(all(prime), d + 1) - prime.begin();
+    p1 = prime[p1];
+
+    res *= p1;
+
+    p1 = lower_bound(all(prime), d + p1) - prime.begin();
+    p1 = prime[p1];
+
+    res *= p1;
+
+    cout << res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -33,9 +70,10 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
+    init();
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

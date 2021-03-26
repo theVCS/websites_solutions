@@ -19,20 +19,17 @@ using namespace std;
 void solve()
 {
     int n;
+
     cin >> n;
 
-    REP(i, 0, 500)
-    {
-        int fir = 2020 * i;
-        int sec = n - fir;
+    int cnt = 0;
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+    REP(i,0,32)
+    {
+        if(1 << i & n)cnt++;
     }
-    cout << "NO" << endl;
+
+    cout << cnt;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +46,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

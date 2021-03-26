@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 1001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,19 +16,59 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int arr[maxN];
+
+struct info
+{
+    int num;
+    int index;
+} prefix[maxN], suffix[maxN];
+
 void solve()
 {
     int n;
     cin >> n;
 
-    REP(i, 0, 500)
-    {
-        int fir = 2020 * i;
-        int sec = n - fir;
+    prefix[0].num = suffix[n + 1].num = INF;
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+    REP(i, 1, n + 1)
+    cin >> arr[i];
+
+    REP(i, 1, n + 1)
+    {
+        if (arr[i] < prefix[i - 1].num)
+        {
+            prefix[i].num = arr[i];
+            prefix[i].index = i;
+        }
+        else
+        {
+            prefix[i] = prefix[i - 1];
+        }
+    }
+
+    for (int i = n; i >= 1; i--)
+    {
+        if (arr[i] < suffix[i + 1].num)
+        {
+            suffix[i].num = arr[i];
+            suffix[i].index = i;
+        }
+        else
+        {
+            suffix[i] = suffix[i + 1];
+        }
+    }
+
+    REP(i, 2, n)
+    {
+        int mn1 = prefix[i - 1].num;
+        int mn2 = suffix[i + 1].num;
+
+        if(arr[i] > mn1 && arr[i] > mn2)
         {
             cout << "YES" << endl;
+            cout << prefix[i - 1].index << " " << i << " " << suffix[i + 1].index << endl;
             return;
         }
     }

@@ -16,23 +16,43 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int rooms[10];
+
 void solve()
 {
     int n;
     cin >> n;
+    string s;
+    cin >> s;
 
-    REP(i, 0, 500)
+    REP(i, 0, n)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+        if (s[i] == 'L')
         {
-            cout << "YES" << endl;
-            return;
+            REP(i, 0, 10)
+            if (rooms[i] == 0)
+            {
+                rooms[i] = 1;
+                break;
+            }
+        }
+        else if (s[i] == 'R')
+        {
+            for (int i = 9; i >= 0; i--)
+                if (rooms[i] == 0)
+                {
+                    rooms[i] = 1;
+                    break;
+                }
+        }
+        else
+        {
+            rooms[s[i] - '0'] = 0;
         }
     }
-    cout << "NO" << endl;
+
+    REP(i, 0, 10)
+        cout << rooms[i];
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +69,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

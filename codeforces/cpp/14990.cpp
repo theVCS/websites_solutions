@@ -9,7 +9,7 @@ using namespace std;
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
@@ -18,21 +18,29 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, k1, k2,w,b;
 
-    REP(i, 0, 500)
+    cin >> n >> k1 >> k2 >> w >> b;
+
+    int cnt1 = min(k1, k2) + abs(k1 - k2) / 2;
+
+    if(cnt1 < w)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        cout << "NO" << endl;
+        return;
     }
-    cout << "NO" << endl;
+
+    k1 = n - k1;
+    k2 = n - k2;
+    cnt1 = min(k1, k2) + abs(k1 - k2) / 2;
+
+    if(cnt1 < b)
+    {
+        cout << "NO" << endl;
+        return;
+    }
+
+    cout <<"YES" << endl;
 }
 
 int main(int argc, char const *argv[])

@@ -18,21 +18,39 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, d;
+    string s;
 
-    REP(i, 0, 500)
+    cin >> n >> d;
+    cin >> s;
+
+    int i = 0;
+    int cnt = 0;
+
+    while (true)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        int j = min(i + d, n - 1);
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+        while (s[j] == '0')
         {
-            cout << "YES" << endl;
+            j--;
+        }
+        
+        if(j == i)
+        {
+            cout << -1 << endl;
+            return;
+        }
+
+        i = j;
+        cnt++;
+
+        if(i == n - 1)
+        {
+            cout << cnt;
             return;
         }
     }
-    cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +67,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

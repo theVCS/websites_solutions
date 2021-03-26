@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 1001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,21 +18,47 @@ using namespace std;
 
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, m, x, y;
+    char dum;
 
-    REP(i, 0, 500)
+    cin >> n >> m >> x >> y;
+
+    int dp[maxN];
+
+    dp[0] = 0;
+    dp[1] = x;
+
+    REP(i,2,m+1)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        dp[i] = min(x+dp[i - 1], y + dp[i - 2]);
     }
-    cout << "NO" << endl;
+
+    int res = 0;
+    int cnt = 0;
+
+    REP(i,1,n+1)
+    {
+        cnt = 0;
+
+        REP(j,1,m+1)
+        {
+            cin>>dum;
+
+            if(dum == '.')
+            {
+                cnt++;
+            }
+            else
+            {
+                res += dp[cnt];
+                cnt = 0;
+            }
+        }
+
+        if(cnt)res += dp[cnt];
+    }
+
+    cout << res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +75,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    cin >> t;   
 
     while (t--)
     {

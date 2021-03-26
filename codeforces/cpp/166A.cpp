@@ -7,32 +7,75 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 151
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+struct team
+{
+    int ques;
+    int penalty;
+} arr[maxN];
+
+bool cmp(team a, team b)
+{
+    if (a.ques == b.ques)
+        return a.penalty < b.penalty;
+    return a.ques > b.ques;
+}
+
+int parent[maxN];
+
+int find(int a)
+{
+    if (parent[a] < 0)
+        return a;
+    else
+        return parent[a] = find(parent[a]);
+}
+
+void merge(int a, int b)
+{
+    a = find(a), b = find(b);
+
+    if (a == b)
+        return;
+
+    if (parent[a] > parent[b])
+        swap(a, b);
+
+    parent[a] += parent[b];
+    parent[b] = a;
+}
+
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, k;
 
-    REP(i, 0, 500)
+    cin >> n >> k;
+
+    REP(i, 0, n)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        cin >> arr[i].ques >> arr[i].penalty;
+        parent[i + 1] = -1;
+    }
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
+    sort(arr, arr + n, cmp);
+
+    REP(i, 1, n)
+    {
+        if (arr[i].ques == arr[i - 1].ques && arr[i].penalty == arr[i - 1].penalty)
         {
-            cout << "YES" << endl;
-            return;
+            merge(i + 1, i);
         }
     }
-    cout << "NO" << endl;
+
+    cout << -1 * parent[find(k)];
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +92,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

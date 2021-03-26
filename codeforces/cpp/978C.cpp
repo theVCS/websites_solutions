@@ -7,32 +7,39 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 200001
 #define endl "\n"
-#define INF 1000000000
+#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<ll> arr;
+
 void solve()
 {
-    int n;
-    cin >> n;
+    int n, m;
+    ll room;
 
-    REP(i, 0, 500)
+    cin >> n >> m;
+
+    arr.push_back(0);
+    REP(i, 1, n + 1)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
-
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        cin >> room;
+        arr.push_back(room);
+        arr[i] += arr[i - 1];
     }
-    cout << "NO" << endl;
+    cout << endl;
+
+    REP(i, 0, m)
+    {
+        cin >> room;
+        int index = lower_bound(all(arr), room) - arr.begin();
+        cout << index << " " << room - arr[index - 1] << endl;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -49,7 +56,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

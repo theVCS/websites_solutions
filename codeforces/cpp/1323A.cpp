@@ -18,21 +18,36 @@ using namespace std;
 
 void solve()
 {
-    int n;
+    int n, dum;
+
     cin >> n;
+    vector<int> even, odd;
 
-    REP(i, 0, 500)
+    REP(i, 1, n + 1)
     {
-        int fir = 2020 * i;
-        int sec = n - fir;
+        cin >> dum;
 
-        if (fir >= 0 && sec >= 0 && sec % 2021 == 0)
-        {
-            cout << "YES" << endl;
-            return;
-        }
+        if (dum % 2)
+            odd.push_back(i);
+        else
+            even.push_back(i);
     }
-    cout << "NO" << endl;
+
+    if (even.size() == 0 && odd.size() == 1)
+    {
+        cout << -1 << endl;
+        return;
+    }
+
+    if(even.size())
+    {
+        cout << 1 << endl;
+        cout << even[0] << endl;
+        return;
+    }
+    
+    cout << 2 << endl;
+    cout << odd[0] << " " << odd[1] << endl;
 }
 
 int main(int argc, char const *argv[])
