@@ -16,35 +16,70 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+vector<int>arr1,arr2;
+
 void solve()
 {
-    int n;
-
+    int n, dum;
     cin >> n;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
-
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
+    REP(i,0,n)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        cin >> dum;
+        arr1.push_back(dum);
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
+    REP(i,0,n-1)
     {
-        cout << e.first << " " << e.second << endl;
+        cin >> dum;
+        arr2.push_back(dum);
+    }
+
+    sort(all(arr1));
+    sort(all(arr2));
+
+    bool flag = true;
+
+    REP(i,0,arr2.size())
+    {
+        if(arr1[i] != arr2[i])
+        {
+            cout << arr1[i] << endl;
+            flag = false;
+            break;
+        }
+    }
+
+    if(flag)
+    {
+        cout << arr1.back() << endl;
+    }
+
+    arr1.clear();
+
+    REP(i,0,n-2)
+    {
+        cin >> dum;
+        arr1.push_back(dum);
+    }
+
+    sort(all(arr1));
+
+    flag = true;
+
+    REP(i,0,arr1.size())
+    {
+        if(arr1[i] != arr2[i])
+        {
+            cout << arr2[i] << endl;
+            flag = false;
+            break;
+        }
+    }
+
+    if(flag)
+    {
+        cout << arr2.back() << endl;
     }
 }
 
@@ -62,7 +97,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

@@ -4,10 +4,10 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define pii pair<int, int>
+#define pii pair<int,int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
+#define maxN 1000001
 #define INF 1000000000
 #define endl "\n"
 #define all(x) (x).begin(), (x).end()
@@ -27,63 +27,34 @@ using namespace std;
 //     remove(R--);
 // while (L < q[i].l)
 //     remove(L++);
-
-int arr[101];
-int cnt[101];
-int N;
-
-void fun(int n = 1, int maxV = 0)
-{
-    if (n == N + 1)
-    {
-        REP(i, 1, N + 1)
-        cout << arr[i] << " ";
-        cout << endl;
-        return;
-    }
-
-    REP(i,1,maxV+1)
-    {
-        arr[n] = i;
-        fun(n+1,maxV);
-    }
-
-    REP(i,maxV+1,N+1)
-    {
-        arr[n] = i;
-        fun(n+1,i);
-    }
-}
-
+    
 void solve()
 {
-    cin >> N;
-    fun();
+    
 }
-
-int main(int argc, char const *argv[])
-{
+    
+int main(int argc, char const *argv[]){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
-
+    
     // ifstream fi("input.txt");
     // ofstream fo("output.txt");
-
+    
     // fi >> input;
     // fo << output;
-
+    
     int t = 1;
-
-    //cin >> t;
-
+    
+    cin >> t;
+    
     while (t--)
     {
         solve();
     }
-
+    
     //fi.close();
     //fo.close();
-
+    
     return 0;
 }

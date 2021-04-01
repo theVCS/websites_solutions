@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 101
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,36 +16,42 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll wt[maxN], val[maxN];
+ll dp[maxN][100001];
+
+ll ks(ll n, ll weight)
+{
+    REP(i, 1, n + 1)
+    {
+        REP(j, 1, weight + 1)
+        {
+            if (wt[i] <= j)
+            {
+                dp[i][j] = max(val[i] + dp[i - 1][j - wt[i]], dp[i - 1][j]);
+            }
+            else
+            {
+                dp[i][j] = dp[i - 1][j];
+            }
+        }
+    }
+
+    return dp[n][weight];
+}
+
 void solve()
 {
-    int n;
+    ll n, w;
 
-    cin >> n;
+    cin >> n >> w;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
-
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
+    REP(i, 1, n + 1)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        cin >> wt[i];
+        cin >> val[i];
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    cout << ks(n, w);
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +68,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

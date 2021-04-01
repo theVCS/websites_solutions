@@ -1,130 +1,119 @@
-#include <iostream>
-#include <fstream>
-#include <process.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <conio.h>
-#include <direct.h>
-#include <windows.h>
-#include <time.h>
-#include <algorithm>
+//#pragma GCC optimize("O3")
+//#pragma GCC optimize("Ofast")
+//#pragma GCC optimize("unroll-loops")
+//#pragma GCC target("avx,avx2")
+#include <bits/stdc++.h>
+//#include<chrono>
+//#include<random>
+constexpr auto INF = 9223372036854775807;
+typedef long long int ll;
+typedef unsigned long long int ull;
+
+#define f(i, a, b) for (ll i = (ll)a; i < (ll)b; i += 1)
+#define rf(i, a, b) for (ll i = (ll)a; i >= (ll)b; i -= 1)
+#define endl '\n'
+#define MaxN 100005
+#define N (ll)998244353 // prime modulo value
+#define all(x) x.begin(), x.end()
+#define watch(x) cout << (#x) << " is " << (x) << endl
 using namespace std;
 
-void gotoxy(int x, int y)
+pair<ll, ll> t[4 * MaxN];
+
+void build(vector<ll> &arr, ll v, ll tl, ll tr)
 {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-
-class product_detail
-{
-private:
-    int pid;
-    string pname;
-    float pquantity;
-
-public:
-    void add_product();
-    void delete_product();
-    void modify_product();
-    void display_product();
-};
-void product_detail ::display_product()
-{
-    char choice;
-    system("CLS");
-
-    ifstream fp("PRODUCT_DETAIL.txt");
-
-    int row = 6, found = 0;
-    gotoxy(30, 2);
-    cout << "LIST OF ITEMS";
-    gotoxy(3, 4);
-    cout << "PRODUCT ID   PRODUCT NAME    PRODUCT QUANTITY  ";
-    gotoxy(2, 5);
-    cout << "**************************************************";
-
-    product_detail obj;
-
-    while (!fp.eof())
+    if (tl == tr)
     {
-        found = 1;
-
-        fp >> obj.pid;
-
-        if (obj.pid == 0)
-            break;
-
-        fp >> obj.pname;
-        fp >> obj.pquantity;
-
-        gotoxy(5, row);
-        cout << obj.pid;
-        gotoxy(20, row);
-        cout << obj.pname;
-        gotoxy(37, row);
-        cout << obj.pquantity;
-        row++;
+        t[v].first = arr[tl];
+        if (arr[tl] == 1)
+        {
+            t[v].second = tl;
+        }
+        else
+            t[v].second = -1;
     }
-    fp.close();
-    if (found == 0)
+    else
     {
-        gotoxy(5, 10);
-        cout << "\nRecords not found\n";
-    }
-    gotoxy(1, 25);
-    cout << endl;
-    cout << "DO YOU WANT TO ADD ANY PRODUCT DETAIL(Y/N)\n";
-    choice = getche();
-    choice = toupper(choice);
-    if (choice == 'Y')
-    {
-        product_detail c;
-        c.add_product();
+        ll tm = (tl + tr) / 2;
+        build(arr, 2 * v, tl, tm);
+        build(arr, 2 * v + 1, tm + 1, tr);
+        t[v].first = t[2 * v].first + t[2 * v + 1].first;
+        t[v].second = max(t[2 * v].second, t[2 * v + 1].second);
     }
 }
-void product_detail ::add_product()
-{
-    char choice;
-    cout << "\nenter product id:";
-    cin >> pid;
-    cout << "enter product name:";
-    cin.ignore();
-    getline(cin, pname);
-    transform(pname.begin(), pname.end(), pname.begin(), ::toupper);
-    cout << "enter quantity of the product:";
-    cin >> pquantity;
-    cout << "\nDO YOU WANT TO SAVE THIS PRODUCT(Y/N)";
-    choice = getche();
-    choice = toupper(choice);
 
-    if (choice == 'Y')
+ll query(ll v, ll tl, ll tr, ll k)
+{
+    if (tl == tr)
     {
-        ofstream fp("PRODUCT_DETAIL.txt", ios::app);
-        fp << pid << " " << pname << " " << pquantity << endl;
-        fp.close();
+        while (t[v] == t[v - 1])
+            v--;
+        return t[v].first;
+    }
+    // return t[v].second;
+    ll tm = (tl + tr) / 2;
+    if (t[2 * v].first < k)
+    {
+        return query(2 * v + 1, tm + 1, tr, k);
+    }
+    else
+    {
+        return query(2 * v, tl, tm, k);
     }
 }
+
+void update(ll v, ll tl, ll tr, ll pos, ll val)
+{
+    if (tl == tr)
+    {
+        t[v].first = val;
+        if (val == 1)
+            t[v].second = pos;
+        else
+            t[v].second = -1;
+    }
+    else
+    {
+        ll tm = (tl + tr) / 2;
+        if (pos <= tm)
+            update(2 * v, tl, tm, pos, val);
+        else
+            update(2 * v + 1, tm + 1, tr, pos, val);
+        t[v].first = t[2 * v].first + t[2 * v + 1].first;
+        t[v].second = max(t[2 * v].second, t[2 * v + 1].second);
+    }
+}
+
 int main()
 {
-    system("CLS");
-    char ch;
-    while (1)
+    ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+    //freopen("inputD.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    // __int128
+    ll n, m;
+    cin >> n >> m;
+    vector<ll> arr(n, 0);
+    for (ll i = 0; i < n; i += 1)
+        cin >> arr[i];
+    build(arr, 1, 0, n - 1);
+    //for(ll i=0;i<5;i+=1)cout<<t[i].first<<" "<<t[i].second<<endl;
+    for (ll i = 0; i < m; i += 1)
     {
-        system("CLS");
-        cout << "\n1: PRODUCT DETAIL";
-        cout << "\n0: QUIT";
-        cout << "\nEnter Your Choice :\n ";
-        cin >> ch;
-        if (ch == '1')
+        ll q;
+        cin >> q;
+        if (q == 1)
         {
-            system("CLS");
-            product_detail p;
-            p.display_product();
+            ll pos;
+            cin >> pos;
+            arr[pos] = 1 - arr[pos];
+            update(1, 0, n - 1, pos, arr[pos]);
+        }
+        else
+        {
+            ll k;
+            cin >> k;
+            k += 1;
+            cout << query(1, 0, n - 1, k) << endl;
         }
     }
     return 0;

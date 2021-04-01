@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 1001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,36 +16,40 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int n;
+char arr[maxN][maxN];
+int dp[maxN][maxN];
+
 void solve()
 {
-    int n;
-
     cin >> n;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
+    REP(i, 1, n + 1)
+    REP(j, 1, n + 1)
+    cin >> arr[i][j];
 
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
+    if (arr[n][n] == '.')
+        dp[n][n] = 1;
 
-    while (q.size() > 1)
+    for (int i = n - 1; i >= 1; i--)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        if (arr[i][n] == '.')
+            dp[i][n] = dp[i + 1][n];
+        if (arr[n][i] == '.')
+            dp[n][i] = dp[n][i + 1];
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
+    for (int i = n - 1; i > 0; i--)
     {
-        cout << e.first << " " << e.second << endl;
+        for (int j = n - 1; j > 0; j--)
+        {
+            if (arr[i][j] == '.')
+            {
+                dp[i][j] = (dp[i + 1][j] + dp[i][j + 1]) % mod;
+            }
+        }
     }
+    cout << dp[1][1];
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +66,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

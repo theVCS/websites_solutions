@@ -16,36 +16,49 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll dp[maxN];
+
+int ways(int n)
+{
+    if (n <= 0)
+    {
+        return 0;
+    }
+    else if (dp[n] != -1)
+    {
+        return dp[n];
+    }
+    else
+    {
+        dp[n] = 0;
+        dp[n] = (dp[n] + ways(n - 1)) % mod;
+        dp[n] = (dp[n] + ways(n - 2)) % mod;
+        dp[n] = (dp[n] + ways(n - 3)) % mod;
+        dp[n] = (dp[n] + ways(n - 4)) % mod;
+        dp[n] = (dp[n] + ways(n - 5)) % mod;
+        dp[n] = (dp[n] + ways(n - 6)) % mod;
+
+        return dp[n];
+    }
+}
+
 void solve()
 {
     int n;
 
     cin >> n;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
+    memset(dp, -1, sizeof(dp));
 
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
+    dp[0] = 0;
+    dp[1] = 1;
+    dp[2] = 2;
+    dp[3] = 4;
+    dp[4] = 8;
+    dp[5] = 16;
+    dp[6] = 32;
 
-    while (q.size() > 1)
-    {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
-    }
-
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    cout << ways(n);
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +75,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

@@ -16,36 +16,45 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int n, x;
+int arr[maxN];
+ll dp[maxN];
+
+int ways(int sum)
+{
+    if (sum < 0)
+    {
+        return 0;
+    }
+    else if (sum == 0)
+    {
+        return 1;
+    }
+    else if (dp[sum] != -1)
+    {
+        return dp[sum];
+    }
+    else
+    {
+        ll w = 0;
+
+        REP(i, 1, n + 1)
+        w = (w + ways(sum - arr[i])) % mod;
+
+        return dp[sum] = w;
+    }
+}
+
 void solve()
 {
-    int n;
+    cin >> n >> x;
 
-    cin >> n;
+    REP(i, 1, n + 1)
+    cin >> arr[i];
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
+    memset(dp, -1, sizeof(dp));
 
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
-    {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
-    }
-
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    cout << ways(x);
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +71,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

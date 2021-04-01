@@ -18,34 +18,22 @@ using namespace std;
 
 void solve()
 {
-    int n;
+    map<int,int>mp;
+    bool flag = false;
 
+    int n, dum;
     cin >> n;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
-
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
+    REP(i,0,n)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
+        cin >> dum;
+        mp[dum]++;
 
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        if (mp[dum] > 1)flag = true;
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    if(flag)cout << "YES" << endl;
+    else cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])

@@ -18,34 +18,30 @@ using namespace std;
 
 void solve()
 {
-    int n;
+    ll n;
+    cin>>n;
 
-    cin >> n;
+    int cnt = 0;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
-
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
+    while (n % 2 == 0)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        n /= 2;
+        cnt++;
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
+    if(cnt == 0)
     {
-        cout << e.first << " " << e.second << endl;
+        cout << "Odd" << endl;
     }
+    else if (cnt == 1)
+    {
+        cout << "Same" << endl;
+    }
+    else
+    {
+        cout << "Even" << endl;
+    }
+    
 }
 
 int main(int argc, char const *argv[])

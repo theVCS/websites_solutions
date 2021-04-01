@@ -16,36 +16,39 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int ways(int n)
+{
+    if (n == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        vector<bool> dig(10, false);
+        int k = n;
+
+        while (k)
+        {
+            int ed = k % 10;
+            k /= 10;
+            dig[ed] = true;
+        }
+
+        for (int i = 9; i > 0; i--)
+        {
+            if (dig[i])
+            {
+                return 1 + ways(n - i);
+            }
+        }
+    }
+}
+
 void solve()
 {
     int n;
-
     cin >> n;
-
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
-
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
-
-    while (q.size() > 1)
-    {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
-    }
-
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    cout << ways(n);
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +65,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

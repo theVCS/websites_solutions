@@ -16,36 +16,30 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int arr[101];
+int dp[maxN];
+
 void solve()
 {
-    int n;
+    int n, x;
 
-    cin >> n;
+    cin >> n >> x;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
+    REP(i, 1, n + 1)
+    cin >> arr[i];
 
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
+    dp[0] = 1;
 
-    while (q.size() > 1)
+    REP(j, 1, n + 1)
     {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
-
-        res.push_back({ele1,ele2});
-
-        q.push((ele1 + ele2 + 1) / 2);
+        REP(i, 1, x + 1)
+        {
+            if (i - arr[j] >= 0)
+                dp[i] = (dp[i] + dp[i - arr[j]]) % mod;
+        }
     }
 
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    cout << dp[x];
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +56,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

@@ -16,36 +16,44 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int sum(int n)
+{
+    return (n * (n + 1)) / 2;
+}
+
+vector<int>res;
+
+void dp(int sum, int nTerm = 1)
+{
+    if(2 * nTerm + 1 <= sum)
+    {
+        res.push_back(nTerm);
+        dp(sum - nTerm, nTerm + 1);
+    }
+    else
+    {
+        res.push_back(sum);
+    }
+}
+
 void solve()
 {
     int n;
 
     cin >> n;
 
-    priority_queue<int, vector<int>> q;
-    vector<pii> res;
+    // int x = (-1 + sqrt(8*n+1)) / 2;
+    
+    // cout << x << endl;
 
-    for (int i = 1; i <= n; i += 1)
-        q.push(i);
+    // REP(i,1,x)cout << i << " ";
+    // cout << n - sum(x - 1);
 
-    while (q.size() > 1)
-    {
-        int ele1 = q.top();
-        q.pop();
-        int ele2 = q.top();
-        q.pop();
+    dp(n);
 
-        res.push_back({ele1,ele2});
+    cout << res.size() << endl;
 
-        q.push((ele1 + ele2 + 1) / 2);
-    }
-
-    cout << q.top() << endl;
-
-    for (pii e : res)
-    {
-        cout << e.first << " " << e.second << endl;
-    }
+    for(int e: res)cout << e << " ";
 }
 
 int main(int argc, char const *argv[])
@@ -62,7 +70,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
     while (t--)
     {

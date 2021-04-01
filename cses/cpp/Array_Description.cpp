@@ -28,37 +28,56 @@ using namespace std;
 // while (L < q[i].l)
 //     remove(L++);
 
-int arr[101];
-int cnt[101];
-int N;
-
-void fun(int n = 1, int maxV = 0)
-{
-    if (n == N + 1)
-    {
-        REP(i, 1, N + 1)
-        cout << arr[i] << " ";
-        cout << endl;
-        return;
-    }
-
-    REP(i,1,maxV+1)
-    {
-        arr[n] = i;
-        fun(n+1,maxV);
-    }
-
-    REP(i,maxV+1,N+1)
-    {
-        arr[n] = i;
-        fun(n+1,i);
-    }
-}
+int arr[maxN];
+ll dp[111][maxN+10];
 
 void solve()
 {
-    cin >> N;
-    fun();
+    int n, x;
+    cin >> n >> x;
+
+    REP(i, 1, n + 1)
+    cin >> arr[i];
+
+    REP(i, 1, n + 1)
+    {
+        if (i == 1)
+        {
+            if (arr[i] == 0)
+                REP(j, 1, x + 1)
+                {
+                    dp[j][i] = 1;
+                }
+            else
+                dp[arr[i]][i] = 1;
+            continue;
+        }
+
+        if (arr[i] == 0)
+        {
+            REP(j, 1, x + 1)
+            {
+                dp[j][i] = (dp[j - 1][i - 1] + (dp[j][i - 1] + dp[j + 1][i - 1]) % mod) % mod;
+            }
+        }
+        else
+        {
+            dp[arr[i]][i] = ((dp[arr[i] - 1][i - 1] + dp[arr[i]][i - 1]) % mod + dp[arr[i] + 1][i - 1]) % mod;
+        }
+    }
+
+    ll ways = 0;
+
+    if (arr[n] == 0)
+    {
+        REP(i, 1, x + 1)
+        ways = (ways + dp[i][n]) % mod;
+    }
+    else
+    {
+        ways = dp[arr[n]][n];
+    }
+    cout << ways;
 }
 
 int main(int argc, char const *argv[])
