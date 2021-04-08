@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 300001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,47 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
-{
-    if (node == v)
-    {
-        cols.insert(col);
-        return;
-    }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
-    {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
-    }
-
-    vis[node] = false;
-}
+ll arr[maxN];
+vector<ll> suffix;
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    int n;
+    suffix.clear();
 
-    REP(i, 0, m)
+    cin >> n;
+
+    ll minimum = INT_MAX;
+    bool flag = false;
+
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i];
+
+        if(arr[i] > minimum)flag = true;
+
+        if (i > 1 && arr[i] < arr[i - 1])
+        {
+            if (arr[i - 1] < minimum)
+            {
+                minimum = arr[i-1];
+                suffix.push_back(i - 1);
+            }
+            else
+            {
+                flag = true;
+            }
+        }
     }
 
-    int q;
-    cin >> q;
-
-    while (q--)
+    if (flag)
     {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        cout << "NO" << endl;
+        return;
     }
+
+    cout << "YES" << endl;
+    cout << suffix.size() << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -82,7 +73,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

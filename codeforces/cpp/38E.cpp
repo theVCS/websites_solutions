@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 3001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,53 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
+struct marble
 {
-    if (node == v)
+    ll index, price;
+} arr[maxN];
+
+bool cmp(marble a, marble b)
+{
+    return (a.index < b.index);
+}
+
+int n;
+ll dp[maxN][maxN];
+
+ll cost(int index, int prevIndex)
+{
+    if (index >= n + 1)
     {
-        cols.insert(col);
-        return;
+        return 0;
     }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    else if (dp[index][prevIndex] != -1)
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        return dp[index][prevIndex];
     }
-
-    vis[node] = false;
+    else
+    {
+        // we may pin index-th marble or may not pin
+        return dp[index][prevIndex] = min(arr[index].index - arr[prevIndex].index + cost(index + 1, prevIndex), arr[index].price + cost(index + 1, index));
+    }
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> n;
 
-    REP(i, 0, m)
+
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i].index >> arr[i].price;
     }
 
-    int q;
-    cin >> q;
+    memset(dp, -1, sizeof(dp));
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    sort(arr + 1, arr + 1 + n, cmp);
+
+    // always required to pin left most
+    ll ans = arr[1].price + cost(2, 1);
+    cout << ans;
 }
 
 int main(int argc, char const *argv[])

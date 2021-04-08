@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 200001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,71 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
+struct project
 {
-    if (node == v)
+    int start, end;
+    ll price;
+} arr[maxN];
+int n;
+
+bool cmp(project a, project b)
+{
+    return a.end < b.end;
+}
+
+int bs(int lindex)
+{
+    int maxDay = arr[lindex].start;
+    int start = 1, end = lindex - 1;
+
+    while (start <= end)
     {
-        cols.insert(col);
-        return;
-    }
+        int mid = (start + end) / 2;
 
-    vis[node] = true;
-
-    for (pii child : arr[node])
-    {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
+        if (arr[mid].end < maxDay && arr[mid + 1].end >= maxDay)
         {
-            ways(child.first, child.second);
+            return mid;
+        }
+        else if (arr[mid].end >= maxDay)
+        {
+            end = mid - 1;
+        }
+        else
+        {
+            start = mid + 1;
         }
     }
 
-    vis[node] = false;
+    return -1;
+}
+
+ll dp[maxN];
+
+ll fun(int index)
+{
+    if (index <= 0)
+        return 0;
+    else if (dp[index] != -1)
+        return dp[index];
+    else
+    {
+        return dp[index] = max(arr[index].price + fun(bs(index)), fun(index - 1));
+    }
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> n;
 
-    REP(i, 0, m)
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i].start >> arr[i].end >> arr[i].price;
+        dp[i] = -1;
     }
 
-    int q;
-    cin >> q;
+    sort(arr + 1, arr + 1 + n, cmp);
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    cout << fun(n);
 }
 
 int main(int argc, char const *argv[])

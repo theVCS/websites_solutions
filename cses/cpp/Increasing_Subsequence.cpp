@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 200001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,64 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+int n;
+int arr[maxN];
+int ft[maxN];
+map<int, int> mp;
 
-void ways(int node, int col = 0)
+int query(int index)
 {
-    if (node == v)
+    int res = 0;
+
+    while (index)
     {
-        cols.insert(col);
-        return;
+        res = max(ft[index], res);
+        index -= (index & -1 * index);
     }
 
-    vis[node] = true;
+    return res;
+}
 
-    for (pii child : arr[node])
+void update(int index, int val)
+{
+    while (index <= n)
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        ft[index] = max(ft[index], val);
+        index += (index & -1 * index);
     }
-
-    vis[node] = false;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> n;
 
-    REP(i, 0, m)
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i];
+        mp[arr[i]];
     }
 
-    int q;
-    cin >> q;
+    int timer = 0;
 
-    while (q--)
+    for (auto &e : mp)
+        e.second = ++timer;
+
+    REP(i, 1, n + 1)
     {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        arr[i] = mp[arr[i]];
     }
+    cout << endl;
+
+    int res = 0;
+
+    REP(i, 1, n + 1)
+    {
+        int hres = 1 + query(arr[i]-1);
+        update(arr[i], hres);
+        res = max(res, hres);
+    }
+
+    cout << res;
 }
 
 int main(int argc, char const *argv[])

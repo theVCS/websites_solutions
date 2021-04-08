@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 300001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,55 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
-{
-    if (node == v)
-    {
-        cols.insert(col);
-        return;
-    }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
-    {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
-    }
-
-    vis[node] = false;
-}
+int pre_one[maxN];
+int pre_zer[maxN];
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    string s, t;
+    int n;
+    cin >> n;
+    cin >> s >> t;
 
-    REP(i, 0, m)
+    REP(i, 0, s.size())
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        pre_one[i] = (s[i] == '1');
+        pre_zer[i] = (s[i] == '0');
+
+        if (i)
+        {
+            pre_one[i] += pre_one[i - 1];
+            pre_zer[i] += pre_zer[i - 1];
+        }
     }
 
-    int q;
-    cin >> q;
+    int updated = 0;
 
-    while (q--)
+    for (int i = n - 1; i >= 0; i--)
     {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        // now updating
+        if (updated)
+        {
+            if (s[i] == '1')
+                s[i] = '0';
+            else
+                s[i] = '1';
+        }
+
+        if (s[i] != t[i])
+        {
+            if (pre_zer[i] == pre_one[i])
+            {
+                updated = (updated + 1) % 2;
+            }
+            else
+            {
+                cout << "NO" << endl;
+                return;
+            }
+        }
     }
+    cout << "YES" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -82,7 +81,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

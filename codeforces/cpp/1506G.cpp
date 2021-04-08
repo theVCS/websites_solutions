@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define maxN 1000011
 #define INF 1000000000
 #define endl "\n"
 #define all(x) (x).begin(), (x).end()
@@ -26,44 +26,62 @@ using namespace std;
 // while (R > q[i].r)
 //     remove(R--);
 // while (L < q[i].l)
-//     remove(L++);3
+//     remove(L++);
 
-int n;
-int low, high;
-ll e, o;
-ll dp[maxN][2];
-
-ll ways(int n, int odd)
-{
-    if (n == 0)
-    {
-        return odd == 0;
-    }
-    else if (dp[n][odd] != -1)
-    {
-        return dp[n][odd];
-    }
-    else
-    {
-        dp[n][0] = (o * ways(n - 1, 1) + e * ways(n - 1, 0)) % mod;
-        dp[n][1] = (o * ways(n - 1, 0) + e * ways(n - 1, 1)) % mod;
-
-        return dp[n][odd];
-    }
-}
+string s, res;
+int n, cnt[maxN][26];
+set<pair<char, int>> charSet[maxN];
+int use[26];
 
 void solve()
 {
-    cin >> n >> low >> high;
+    cin >> s;
 
-    int ele = high - low + 1;
+    n = s.size();
 
-    o = ele / 2;
-    e = ele - o;
+    REP(i, 0, 26)
+    use[i] = -1;
 
-    memset(dp, -1, sizeof(dp));
+    for (int i = n - 1; i >= 0; i--)
+    {
+        use[s[i] - 'a'] = 0;
+        charSet[i].clear();
 
-    cout << ways(n, 0);
+        for (pair<char, int> c : charSet[i + 1])
+            charSet[i].insert(c);
+
+        REP(j, 0, 26)
+        {
+            cnt[i][j] = 0;
+            cnt[i][j] += cnt[i + 1][j];
+        }
+
+        cnt[i][s[i] - 'a']++;
+        charSet[i].insert({s[i], i});
+    }
+
+    int index = 0;
+    cout << res << endl;
+
+    while (index < n)
+    {
+        for (int i = 25; i >= 0; i--)
+        {
+            if (charSet[index + 1].find(char(i + 'a')) == charSet[index + 1].end())
+            {
+                continue;
+            }
+
+            REP(i, 0, 26)
+            {
+                if (use[i] == 0 && cnt[index + 1][i])
+                {
+                }
+            }
+        }
+
+        index++;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -80,7 +98,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 1000001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,52 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
-{
-    if (node == v)
-    {
-        cols.insert(col);
-        return;
-    }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
-    {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
-    }
-
-    vis[node] = false;
-}
+int fre[maxN];
+stack<int> st;
+int s[maxN], e[maxN];
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    string str;
+    cin >> str;
+    int maxFre = -1;
 
-    REP(i, 0, m)
+    REP(i, 0, str.size())
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        if (str[i] == ')')
+        {
+            if (st.empty())
+            {
+                s[i] = e[i] = -1;
+                continue;
+            }
+
+            int index = st.top();
+            st.pop();
+
+            s[i] = e[i] = index;
+
+            if (index >= 1 && s[index - 1] >= 0 && str[index - 1] == ')')
+                e[i] = e[index - 1];
+
+            int len = i - e[i] + 1;
+
+            fre[len]++;
+            maxFre = max(maxFre, len);
+        }
+        else
+        {
+            st.push(i);
+        }
     }
 
-    int q;
-    cin >> q;
-
-    while (q--)
+    if (maxFre == -1)
     {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        cout << 0 << " " << 1;
+        return;
     }
+
+    cout << maxFre << " " << fre[maxFre];
 }
 
 int main(int argc, char const *argv[])

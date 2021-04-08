@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 1000001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,40 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+int dp[101][101][11][11];
 
-void ways(int node, int col = 0)
+int n1, n2, k1, k2;
+int ways(int type1, int type2, int sum_1 = 0, int sum_2 = 0)
 {
-    if (node == v)
+    if (type1 == 0 && type2 == 0)
+        return 1;
+
+    if (dp[type1][type2][sum_1][sum_2] != -1)
     {
-        cols.insert(col);
-        return;
+        return dp[type1][type2][sum_1][sum_2];
     }
 
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    int ans = 0;
+    // trying to place type1 soldier
+    if (sum_1 < k1 && type1)
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        ans = ways(type1 - 1, type2, sum_1 + 1, 0);
     }
 
-    vis[node] = false;
+    // trying to place type2 soldier
+    if (sum_2 < k2 && type2)
+    {
+        ans = (ans + ways(type1, type2 - 1, 0, sum_2 + 1)) % 100000000;
+    }
+
+    return dp[type1][type2][sum_1][sum_2] = ans;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
-
-    REP(i, 0, m)
-    {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
-    }
-
-    int q;
-    cin >> q;
-
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    cin >> n1 >> n2 >> k1 >> k2;
+    memset(dp, -1, sizeof(dp));
+    cout << ways(n1, n2);
 }
 
 int main(int argc, char const *argv[])

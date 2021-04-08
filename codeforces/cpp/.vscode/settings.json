@@ -21,6 +21,7 @@
         "cmath": "cpp",
         "chrono": "cpp",
         "limits": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "numeric": "cpp"
     }
 }

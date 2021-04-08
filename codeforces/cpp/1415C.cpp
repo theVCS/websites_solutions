@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,45 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+ll n, p, k;
+string s;
+ll x, y;
+ll dp[maxN];
 
-void ways(int node, int col = 0)
+// we could remove 1 cell or make a platform on a given cell
+ll fun(int index = 1)
 {
-    if (node == v)
+    if (index > n)
+        return 0;
+
+    if (dp[index] != -1)
+        return dp[index];
+
+    if (s[index - 1] == '1')
     {
-        cols.insert(col);
-        return;
+        return dp[index] = min(fun(index + k), y + fun(index + 1));
     }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    else
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        return dp[index] = min(x + fun(index + k), y + fun(index + 1));
     }
-
-    vis[node] = false;
 }
+
+int platforms[maxN];
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> n >> p >> k;
+    cin >> s;
+    cin >> x >> y;
 
-    REP(i, 0, m)
+    REP(i,1,n+1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        
     }
 
-    int q;
-    cin >> q;
-
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    // memset(dp, -1, sizeof(dp));
+    // cout << fun(p) << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -82,7 +71,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

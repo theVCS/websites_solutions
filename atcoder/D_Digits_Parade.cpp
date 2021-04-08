@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,45 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+string s;
+int n;
+int dp[maxN][13];
 
-void ways(int node, int col = 0)
+int ways(int index = 0, int rem = 0)
 {
-    if (node == v)
+    if (index == n)
     {
-        cols.insert(col);
-        return;
+        return (rem == 5);
     }
 
-    vis[node] = true;
+    if (dp[index][rem] != -1)
+        return dp[index][rem];
 
-    for (pii child : arr[node])
+    if (s[index] == '?')
     {
-        if (vis[child.first])
-            continue;
+        int ans = 0;
 
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        REP(i, 0, 10)
+        ans = (ans + ways(index + 1, (rem * 10 + i) % 13)) % mod;
+
+        return dp[index][rem] = ans;
     }
-
-    vis[node] = false;
+    else
+    {
+        return dp[index][rem] = ways(index + 1, (rem * 10 + (s[index] - '0')) % 13);
+    }
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> s;
+    n = s.size();
 
-    REP(i, 0, m)
-    {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
-    }
-
-    int q;
-    cin >> q;
-
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    REP(i,0,n+1)
+    REP(j,0,13)
+    dp[i][j]=-1;
+    
+    cout << ways();
 }
 
 int main(int argc, char const *argv[])

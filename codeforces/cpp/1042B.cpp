@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 1000001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,66 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
-
-void ways(int node, int col = 0)
+struct juice
 {
-    if (node == v)
+    ll price;
+    int a, b, c;
+
+    juice()
     {
-        cols.insert(col);
-        return;
+        a = b = c = 0;
     }
+} arr[1001];
 
-    vis[node] = true;
+ll dp[1001][2][2][2];
 
-    for (pii child : arr[node])
+ll price(int n, int a = 0, int b = 0, int c = 0)
+{
+    if (a && b && c)
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        return 0;
     }
-
-    vis[node] = false;
+    else if (n == 0)
+    {
+        return INT_MAX;
+    }
+    else if (dp[n][a][b][c] != -1)
+    {
+        return dp[n][a][b][c];
+    }
+    else
+    {
+        return dp[n][a][b][c] = min(arr[n].price + price(n - 1, a || arr[n].a, b || arr[n].b, c || arr[n].c), price(n - 1, a, b, c));
+    }
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    int n;
+    string s;
+    cin >> n;
 
-    REP(i, 0, m)
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i].price;
+        cin >> s;
+
+        for (char c : s)
+        {
+            if (c == 'A')
+                arr[i].a = 1;
+            else if (c == 'B')
+                arr[i].b = 1;
+            else
+                arr[i].c = 1;
+        }
     }
 
-    int q;
-    cin >> q;
+    memset(dp, -1, sizeof(dp));
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    ll ans = price(n);
+
+    cout << (ans == INT_MAX ? -1 : ans);
 }
 
 int main(int argc, char const *argv[])

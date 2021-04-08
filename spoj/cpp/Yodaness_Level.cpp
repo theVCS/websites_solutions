@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 1000001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,73 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+vector<string> yedi;
+map<string, int> act;
+vector<int> arr;
+int ft[30001];
 
-void ways(int node, int col = 0)
+int query(int index)
 {
-    if (node == v)
+    int sum = 0;
+
+    while (index)
     {
-        cols.insert(col);
-        return;
+        sum += ft[index];
+        index -= (index & -1 * index);
     }
 
-    vis[node] = true;
+    return sum;
+}
 
-    for (pii child : arr[node])
+void update(int index)
+{
+    while (index < 30001)
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        ft[index]++;
+        index += (index & -1 * index);
     }
-
-    vis[node] = false;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    yedi.clear();
+    act.clear();
+    arr.clear();
 
-    REP(i, 0, m)
+    int n;
+    cin >> n;
+    string s;
+
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> s;
+        yedi.push_back(s);
+        ft[i] = 0;
     }
 
-    int q;
-    cin >> q;
-
-    while (q--)
+    REP(i, 1, n + 1)
     {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        cin >> s;
+        act[s] = i;
     }
+
+    for (string s : yedi)
+    {
+        arr.push_back(act[s]);
+        // cout << act[s] << " ";
+    }
+    // cout << endl;
+
+    // now counting no of inversions
+    int res = 0;
+
+    REP(i, 0, n)
+    {
+        res += query(n) - query(arr[i]);
+        update(arr[i]);
+    }
+
+    cout << res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -82,7 +99,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

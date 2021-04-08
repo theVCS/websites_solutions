@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,55 +16,40 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+int t, k;
+int dp[maxN];
 
-void ways(int node, int col = 0)
+int ways(int flowers = maxN - 1)
 {
-    if (node == v)
+    if (flowers < 0)
+        return 0;
+    else if (flowers == 0)
+        return 1;
+    else if (dp[flowers] != -1)
     {
-        cols.insert(col);
-        return;
+        return dp[flowers];
     }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    else
     {
-        if (vis[child.first])
-            continue;
-
-        if (col == 0 || col == child.second)
-        {
-            ways(child.first, child.second);
-        }
+        return dp[flowers] = (ways(flowers - k) + ways(flowers - 1)) % mod;
     }
-
-    vis[node] = false;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> t >> k;
+    memset(dp, -1, sizeof(dp));
 
-    REP(i, 0, m)
+    int ans = ways();
+    int a, b;
+
+    REP(i, 1, maxN)
+    dp[i] = (dp[i] + dp[i - 1]) % mod;
+
+    while (t--)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
-    }
-
-    int q;
-    cin >> q;
-
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
+        cin >> a >> b;
+        cout << (dp[b] - dp[a - 1] + mod) % mod << endl;
     }
 }
 

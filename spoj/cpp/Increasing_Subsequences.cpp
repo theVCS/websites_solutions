@@ -5,9 +5,9 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
+#define mod 5000000
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 100011
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,62 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+int n, k;
+ll arr[maxN];
+ll ft[maxN][51];
 
-void ways(int node, int col = 0)
+ll query(int index, int x) // query from 1 to index where level is x;
 {
-    if (node == v)
+    int sum = 0;
+
+    while (index)
     {
-        cols.insert(col);
-        return;
+        sum = (sum + ft[index][x]) % mod;
+        index -= (index & -1 * index);
     }
 
-    vis[node] = true;
+    return sum;
+}
 
-    for (pii child : arr[node])
+void update(int index, int x, ll val)
+{
+    while (index < maxN)
     {
-        if (vis[child.first])
-            continue;
+        ft[index][x] = (ft[index][x] + val) % mod;
+        index += (index & -1 * index);
+    }
+}
 
-        if (col == 0 || col == child.second)
+ll ans = 0;
+
+void init()
+{
+    REP(i, 1, n + 1)
+    {
+        REP(lev, 1, k + 1)
         {
-            ways(child.first, child.second);
+            ll sum = lev == 1 ? 1 : query(arr[i] - 1, lev - 1);
+            update(arr[i], lev, sum);
+
+            if (lev == k)
+                ans = (ans + sum) % mod;
         }
     }
-
-    vis[node] = false;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    cin >> n >> k;
 
-    REP(i, 0, m)
+    REP(i, 1, n + 1)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cin >> arr[i];
+        arr[i]++;
     }
 
-    int q;
-    cin >> q;
+    init();
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    cout << ans;
 }
 
 int main(int argc, char const *argv[])

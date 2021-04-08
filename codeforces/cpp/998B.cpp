@@ -16,56 +16,55 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+int arr[maxN];
+int dp[maxN][maxN][maxN];
 
-void ways(int node, int col = 0)
+int fun(int l, int r, int b)
 {
-    if (node == v)
+    if (r - l <= 1)
     {
-        cols.insert(col);
-        return;
+        return 0;
     }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    else if (dp[l][r][b] != -1)
     {
-        if (vis[child.first])
-            continue;
+        return dp[l][r][b];
+    }
+    else
+    {
+        int evnCnt = 0;
+        int oddCnt = 0;
+        int mxCut = 0;
 
-        if (col == 0 || col == child.second)
+        REP(i, l, r)
         {
-            ways(child.first, child.second);
-        }
-    }
+            if (arr[i] & 1)
+                oddCnt++;
+            else
+                evnCnt++;
 
-    vis[node] = false;
+            // checking if evens  = odds and making cuts
+            if (evnCnt == oddCnt && b >= abs(arr[i] - arr[i + 1]))
+            {
+                // cout << i << endl;
+                mxCut = max({mxCut, 1 + fun(l, i, b - abs(arr[i] - arr[i + 1])), 1 + fun(i + 1, r, b - abs(arr[i] - arr[i + 1]))});
+            }
+        }
+
+        return dp[l][r][b] = mxCut;
+    }
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    int n, b;
+    cin >> n >> b;
 
-    REP(i, 0, m)
-    {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
-    }
+    REP(i, 1, n + 1)
+    cin >> arr[i];
 
-    int q;
-    cin >> q;
+    memset(dp,-1,sizeof(dp));
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    cout << fun(1, n, b);
 }
 
 int main(int argc, char const *argv[])

@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define maxN 501
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -16,56 +16,67 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pii> arr[maxN];
-set<int> cols;
-int u, v;
-bool vis[maxN];
+ll reqSum;
+ll dp[501][62627];
 
-void ways(int node, int col = 0)
+ll fun(int n, int sum)
 {
-    if (node == v)
+    if (sum == 0)
     {
-        cols.insert(col);
-        return;
+        return 1;
     }
-
-    vis[node] = true;
-
-    for (pii child : arr[node])
+    else if (n == 0)
     {
-        if (vis[child.first])
-            continue;
+        return 0;
+    }
+    else if (dp[n][sum] != -1)
+    {
+        return dp[n][sum];
+    }
+    else if (sum >= n)
+    {
+        return dp[n][sum] = (fun(n - 1, sum - n) + fun(n - 1, sum)) % mod;
+    }
+    else
+    {
+        return dp[n][sum] = fun(n - 1, sum) % mod;
+    }
+}
 
-        if (col == 0 || col == child.second)
+ll binExp(ll a = 2, ll power = mod - 2)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if(power & 1)
         {
-            ways(child.first, child.second);
+            res = (res * a) % mod;
         }
+        a = (a * a) % mod;
+        power >>= 1;
     }
-
-    vis[node] = false;
+    return res;
 }
 
 void solve()
 {
-    int n, m, a, b, c;
-    cin >> n >> m;
+    int n;
+    cin >> n;
+    reqSum = (n * (n + 1)) / 2;
 
-    REP(i, 0, m)
+    if (reqSum % 2)
     {
-        cin >> a >> b >> c;
-        arr[a].push_back({b, c}), arr[b].push_back({a, c});
+        cout << 0;
+        return;
     }
 
-    int q;
-    cin >> q;
+    reqSum /= 2;
 
-    while (q--)
-    {
-        cols.clear();
-        cin >> u >> v;
-        ways(u);
-        cout << cols.size() << endl;
-    }
+    // cout << binExp() << endl;
+
+    memset(dp, -1, sizeof(dp));
+    cout << (fun(n, reqSum) * 500000004) % mod;
 }
 
 int main(int argc, char const *argv[])
