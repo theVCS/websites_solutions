@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,46 +18,48 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+int col[maxN];
+bool res[maxN];
+vector<int> arr[maxN];
+map<int, int> mp;
+
+void dfs(int node = 1, int par = -1)
+{
+    mp[col[node]]++;
+
+    if (mp[col[node]] == 1)
+        res[node] = true;
+
+    for (int child : arr[node])
+    {
+        if (child == par)
+            continue;
+        dfs(child, node);
+    }
+
+    mp[col[node]]--;
+}
 
 void solve()
 {
-    int n, m, l, r;
+    int n, a, b;
     cin >> n;
-    cin >> m;
 
-    REP(i, 1, m)
+    REP(i, 1, n)
+    cin >> col[i];
+
+    REP(i, 1, n - 1)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    int maxFre = -INF;
+    dfs();
 
     REP(i, 1, n)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
-    }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        if (res[i])
+            cout << i << endl;
     }
 }
 

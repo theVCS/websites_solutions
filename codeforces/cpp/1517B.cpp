@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 101
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,48 +18,39 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+struct path
+{
+    int wgth;
+    int n, m;
+};
+
+int arr[maxN][maxN];
+bool use[maxN][maxN];
+int res[maxN][maxN];
+vector<path> pth;
+
+bool cmp(path a, path b)
+{
+    return a.wgth < b.wgth;
+}
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
+    int n, m, ele;
+    cin >> n >> m;
 
     REP(i, 1, n)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        REP(j, 1, m)
+        {
+            cin >> arr[i][j];
+            path e;
+            e.n = i, e.m = j, e.wgth = arr[i][j];
+            pth.push_back(e);
+        }
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
-}
+    sort(all(pth), cmp);
 
 int main(int argc, char const *argv[])
 {
@@ -75,7 +66,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

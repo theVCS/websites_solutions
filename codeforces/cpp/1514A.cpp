@@ -18,47 +18,34 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+bool isSqu(int a)
+{
+    int x = sqrt(a);
+    return x * x == a;
+}
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
+    int n;
+    cin>>n;
+    int dum;
+    bool flag = true;
 
-    REP(i, 1, m)
+    REP(i,1,n)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        cin>>dum;
+        if(isSqu(dum) == false)flag = false;
     }
 
-    int maxFre = -INF;
-
-    REP(i, 1, n)
+    if(flag)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        cout<<"NO"<<endl;
     }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
+    else
     {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        cout<<"YES"<<endl;
     }
+    
 }
 
 int main(int argc, char const *argv[])
@@ -75,7 +62,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

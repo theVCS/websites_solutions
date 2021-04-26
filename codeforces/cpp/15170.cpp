@@ -18,46 +18,47 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
-
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
+    string str;
+    ll n = 0;
 
-    REP(i, 1, m)
+    cin >> str;
+
+    for (char c : str)
+        n = n * 10 + (c - '0');
+
+    ll num = 2050;
+
+    if (n < num)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        cout << -1 << endl;
+        return;
     }
 
-    int maxFre = -INF;
+    REP(i, 1, str.size() - 4)
+    num *= 10;
 
-    REP(i, 1, n)
+    int cnt = 0;
+
+    while (true)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
-    }
+        ll in = n / num;
+        n -= in * num;
+        num /= 10;
+        cnt += in;
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
+        if (n == 0)
+        {
+            cout << cnt << endl;
+            return;
+        }
 
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        if (n < 2050)
+        {
+            cout << -1 << endl;
+            return;
+        }
     }
 }
 
@@ -75,7 +76,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

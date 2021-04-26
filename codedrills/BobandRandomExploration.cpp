@@ -4,7 +4,7 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define pii pair<int, int>
+#define pii pair<int,int>
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
@@ -27,67 +27,34 @@ using namespace std;
 //     remove(R--);
 // while (L < q[i].l)
 //     remove(L++);
-
-// int mapping[26];
-// int cnt;
-bool flag[26];
-map<char, char> mp;
-
-string mappedString(string &S)
-{
-    string uniStr;
-    string order;
-
-    for (char c : S)
-    {
-        if (flag[c - 'a'] == true)
-            continue;
-        uniStr = uniStr + c;
-        order = order + c;
-        flag[c - 'a'] = true;
-    }
-
-    sort(all(order));
     
-    REP(i, 0, uniStr.size())
-    {
-        if(mp[uniStr[i]] >= 'a' && mp[uniStr[i]] <= 'z')continue;
-        mp[uniStr[i]] = order[i];
-    }
-
-    for (char &c : S)
-        c = mp[c];
-
-    return S;
-}
-
-int main(int argc, char const *argv[])
+void solve()
 {
+    
+}
+    
+int main(int argc, char const *argv[]){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout.tie(NULL);
-
+    
     // ifstream fi("input.txt");
     // ofstream fo("output.txt");
-
+    
     // fi >> input;
     // fo << output;
-
-    // int t = 1;
-
-    // //cin >> t;
-
-    // while (t--)
-    // {
-    //     solve();
-    // }
-
-    string s;
-    cin >> s;
-    cout << mappedString(s);
-
+    
+    int t = 1;
+    
+    //cin >> t;
+    
+    while (t--)
+    {
+        solve();
+    }
+    
     //fi.close();
     //fo.close();
-
+    
     return 0;
 }

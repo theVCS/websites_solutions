@@ -18,47 +18,41 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+vector<int> vec;
+vector<int> prod;
 
 void solve()
 {
-    int n, m, l, r;
+    int n;
     cin >> n;
-    cin >> m;
 
-    REP(i, 1, m)
+    vec.push_back(1);
+    prod.push_back(1);
+    ll pr = 1;
+
+    REP(i, 2, n - 1)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        if (__gcd(i, n) == 1)
+        {
+            vec.push_back(i);
+            pr = (pr * i) % n;
+            prod.push_back(pr);
+        }
     }
 
-    int maxFre = -INF;
+    int index = -1;
 
-    REP(i, 1, n)
+    RREP(i, prod.size() - 1, 0)
+    if (prod[i] == 1)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        index = i;
+        break;
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
+    cout << index + 1 << endl;
 
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    REP(i, 0, index)
+    cout << vec[i] << " ";
 }
 
 int main(int argc, char const *argv[])

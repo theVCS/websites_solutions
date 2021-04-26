@@ -18,47 +18,51 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+string str;
+vector<int> first, second;
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
+    cin >> str;
 
-    REP(i, 1, m)
+    if(str.size() == 1)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        cout<<"NO";
+        return;
     }
 
-    int maxFre = -INF;
-
-    REP(i, 1, n)
+    REP(i, 0, str.size() - 2)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        if (str[i] == 'A' && str[i + 1] == 'B')
+            first.push_back(i);
+        if (str[i] == 'B' && str[i + 1] == 'A')
+            second.push_back(i);
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
+    for (int ele : first)
     {
-        cin >> x;
+        int index = lower_bound(all(second), ele + 2) - second.begin();
 
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        if(index < second.size())
+        {
+            cout<<"YES";
+            return;
+        }
     }
+
+    for (int ele : second)
+    {
+        int index = lower_bound(all(first), ele + 2) - first.begin();
+
+        if(index < first.size())
+        {
+            cout<<"YES";
+            return;
+        }
+    }
+
+    cout<<"NO";
+    // cout<<(lower_bound(all(first),15) - first.begin());
 }
 
 int main(int argc, char const *argv[])

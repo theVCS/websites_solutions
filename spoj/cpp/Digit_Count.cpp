@@ -18,47 +18,57 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+int N;
+vector<int>vec;
+ll dp[10][10];
+
+ll fun(int n = 0, int prev = -1)
+{
+    if(n == N)
+    {
+        return 1;
+    }
+    else if(prev == -1)
+    {
+        ll res = 0;
+
+        for(int ele: vec)
+        {
+            res += fun(n + 1, ele);
+        }
+
+        return res;
+    }
+    else
+    {
+        ll res = 0;
+
+        for(int ele: vec)
+        {
+            if(abs(prev - ele) <= 2)
+            {
+                res+=fun(n+1,ele);
+            }
+        }
+
+        return res;
+    }
+}
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
+    int m, dum;
+    cin>>m>>N;
 
-    REP(i, 1, m)
+    vec.clear();
+
+    REP(i,1,m)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        cin>>dum;
+        vec.push_back(dum);
     }
 
-    int maxFre = -INF;
-
-    REP(i, 1, n)
-    {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
-    }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    cout<<fun()<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -75,10 +85,11 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
-    while (t--)
+    REP(i,1,t)
     {
+        cout<<"Case "<< i << ": ";
         solve();
     }
 

@@ -18,47 +18,24 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+ll binExp(ll a, ll power)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if(power & 1)res = (res * a) % mod;
+        a = (a * a) % mod;
+        power >>= 1;
+    }
+    return res;
+}
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
-
-    REP(i, 1, n)
-    {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
-    }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    int n, k;
+    cin>>n>>k;
+    cout<<binExp(n,k)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -75,7 +52,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

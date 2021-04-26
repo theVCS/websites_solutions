@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 111
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,46 +18,60 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+ll arr[maxN];
+int dp[101][200001];
+
+int fun(int n, int sum)
+{
+    if (sum == 0)
+        return 1;
+    else if (n == 0)
+        return 0;
+    else if (dp[n][sum] != -1)
+        return dp[n][sum];
+    else if (sum >= arr[n])
+        return dp[n][sum] = (fun(n - 1, sum - arr[n]) || fun(n - 1, sum));
+    else
+        return dp[n][sum] = fun(n - 1, sum);
+}
 
 void solve()
 {
-    int n, m, l, r;
+    int n, sum = 0;
+
     cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
 
     REP(i, 1, n)
+    cin >> arr[i], sum += arr[i];
+
+    memset(dp, -1, sizeof(dp));
+
+    if (sum % 2)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        cout << 0;
+        return;
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
+    if (fun(n, sum / 2))
     {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        while (true)
+        {
+            REP(i, 1, n)
+            {
+                if (arr[i] % 2 == 0)
+                    arr[i] /= 2;
+                else
+                {
+                    cout << 1 << endl
+                         << i;
+                    return;
+                }
+            }
+        }
+    }
+    else
+    {
+        cout << 0;
     }
 }
 

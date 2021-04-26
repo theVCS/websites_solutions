@@ -28,37 +28,36 @@ using namespace std;
 // while (L < q[i].l)
 //     remove(L++);
 
-// int mapping[26];
-// int cnt;
-bool flag[26];
-map<char, char> mp;
-
-string mappedString(string &S)
+void solve()
 {
-    string uniStr;
-    string order;
+    int n, k;
+    cin >> n >> k;
 
-    for (char c : S)
+    if (k > (n / 2) || (n <= 2 && k))
     {
-        if (flag[c - 'a'] == true)
-            continue;
-        uniStr = uniStr + c;
-        order = order + c;
-        flag[c - 'a'] = true;
+        cout << -1 << endl;
+        return;
     }
 
-    sort(all(order));
-    
-    REP(i, 0, uniStr.size())
+    int arr[n + 1];
+
+    memset(arr, -1, sizeof(arr));
+
+    int ele = n, j = 2;
+
+    while (k--)
     {
-        if(mp[uniStr[i]] >= 'a' && mp[uniStr[i]] <= 'z')continue;
-        mp[uniStr[i]] = order[i];
+        arr[j] = ele--;
+        j += 2;
     }
 
-    for (char &c : S)
-        c = mp[c];
-
-    return S;
+    REP(i, 1, n + 1)
+    {
+        if (arr[i] == -1)
+            arr[i] = ele--;
+        cout << arr[i] << " ";
+    }
+    cout << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -73,18 +72,14 @@ int main(int argc, char const *argv[])
     // fi >> input;
     // fo << output;
 
-    // int t = 1;
+    int t = 1;
 
-    // //cin >> t;
+    cin >> t;
 
-    // while (t--)
-    // {
-    //     solve();
-    // }
-
-    string s;
-    cin >> s;
-    cout << mappedString(s);
+    while (t--)
+    {
+        solve();
+    }
 
     //fi.close();
     //fo.close();

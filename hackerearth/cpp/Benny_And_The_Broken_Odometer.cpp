@@ -18,47 +18,58 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+string s;
+ll dp[11][2][2];
+
+ll fun(int n = 0, int tight = 1, int flag = 0)
+{
+    if (n == s.size())
+    {
+        return flag;
+    }
+    else if (dp[n][tight][flag] != -1)
+    {
+        return dp[n][tight][flag];
+    }
+    else if (tight)
+    {
+        ll res = 0;
+
+        REP(i, 0, s[n] - '0')
+        {
+            if (i == s[n] - '0')
+            {
+                res += fun(n + 1, 1, flag | i == 3);
+            }
+            else
+            {
+                res += fun(n + 1, 0, flag | i == 3);
+            }
+        }
+
+        return dp[n][tight][flag] = res;
+    }
+    else
+    {
+        ll res = 0;
+
+        REP(i, 0, 9)
+        {
+            res += fun(n + 1, 0, flag | i == 3);
+        }
+
+        return dp[n][tight][flag] = res;
+    }
+}
 
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
-
-    REP(i, 1, n)
-    {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
-    }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    ll n;
+    cin>>n;
+    s = to_string(n);
+    memset(dp, -1, sizeof(dp));
+    ll res = fun();
+    cout << n - res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -75,7 +86,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

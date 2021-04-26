@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 2011
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,47 +18,45 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+ll arr[maxN];
+ll prefix[maxN];
+ll suffix[maxN];
 
 void solve()
 {
-    int n, m, l, r;
+    int n;
     cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
 
     REP(i, 1, n)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        cin >> arr[i];
+        prefix[i] = prefix[i - 1] ^ arr[i];
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
+    suffix[n] = arr[n];
 
-    int q, x;
-    cin >> q;
+    RREP(i, n - 1, 1)
+    suffix[i] = suffix[i + 1] ^ arr[i];
 
-    while (q--)
+    if (prefix[n] == 0)
     {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        cout << "YES" << endl;
+        return;
     }
+
+    REP(i, 2, n - 1)
+    {
+        REP(j, i + 1, n)
+        {
+            if (prefix[i - 1] == suffix[j] && (prefix[j - 1] ^ prefix[i - 1]) == prefix[i - 1])
+            {
+                cout << "YES" << endl;
+                return;
+            }
+        }
+    }
+
+    cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -75,7 +73,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 401
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,46 +18,58 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+int n;
+char arr[maxN][maxN];
 
 void solve()
 {
-    int n, m, l, r;
     cin >> n;
-    cin >> m;
 
-    REP(i, 1, m)
+    int px1 = -1, py1, px2, py2;
+
+    REP(i, 0, n - 1)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        REP(j, 0, n - 1)
+        {
+            cin >> arr[i][j];
+
+            if (arr[i][j] == '*')
+            {
+                if (px1 == -1)
+                {
+                    px1 = i, py1 = j;
+                }
+                else
+                {
+                    px2 = i, py2 = j;
+                }
+            }
+        }
     }
 
-    int maxFre = -INF;
-
-    REP(i, 1, n)
+    if (px1 == px2)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        arr[(px1 + 1) % n][py1] = '*';
+        arr[(px2 + 1) % n][py2] = '*';
+    }
+    else if (py1 == py2)
+    {
+        arr[px1][(py1 + 1) % n] = '*';
+        arr[px2][(py1 + 1) % n] = '*';
+    }
+    else
+    {
+        arr[px1][py2] = '*';
+        arr[px2][py1] = '*';
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
+    REP(i, 0, n - 1)
     {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
+        REP(j, 0, n - 1)
+        {
+            cout << arr[i][j];
+        }
+        cout << endl;
     }
 }
 
@@ -75,7 +87,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

@@ -18,47 +18,33 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
-
 void solve()
 {
-    int n, m, l, r;
-    cin >> n;
-    cin >> m;
+    string s;
+    cin>>s;
 
-    REP(i, 1, m)
+    int cnt = 0;
+
+    RREP(i,s.size() - 1,0)
     {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
+        if(s[i] != '0')break;
+        else cnt++;
     }
 
-    int maxFre = -INF;
+    REP(i,1,cnt)s = '0'+ s;
 
-    REP(i, 1, n)
+    int i = 0, j = s.size() - 1;
+
+    while (i < j)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        if(s[i] != s[j])
+        {
+            cout<<"No";
+            return;
+        }
+        i++, j--;
     }
-
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
-
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    cout<<"Yes";
 }
 
 int main(int argc, char const *argv[])

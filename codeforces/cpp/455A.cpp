@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,47 +18,44 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int fre[maxN];
+ll arr[maxN];
+ll dp[maxN];
+
+ll fun(int n)
+{
+    if (n == 1)
+    {
+        return arr[n];
+    }
+    else if (n == 0)
+    {
+        return 0;
+    }
+    else if (dp[n] != -1)
+    {
+        return dp[n];   
+    }
+    else
+    {
+        return dp[n] = max(fun(n - 1), arr[n] * n + fun(n - 2));
+    }
+}
 
 void solve()
 {
-    int n, m, l, r;
+    int n, dum, ele = -1;
     cin >> n;
-    cin >> m;
-
-    REP(i, 1, m)
-    {
-        cin >> l >> r;
-        arr[l] += 1;
-        arr[r + 1] -= 1;
-    }
-
-    int maxFre = -INF;
 
     REP(i, 1, n)
     {
-        arr[i] += arr[i - 1];
-        fre[arr[i]]++;
-        maxFre = max(maxFre, arr[i]);
-        // cout << arr[i] << " ";
+        cin >> dum;
+        arr[dum]++;
+        ele = max(ele,dum);
     }
 
-    REP(i, 1, maxFre)
-    fre[i] += fre[i - 1];
+    memset(dp,-1,sizeof(dp));
 
-    int q, x;
-    cin >> q;
-
-    while (q--)
-    {
-        cin >> x;
-
-        if (x > maxFre)
-            cout << 0 << endl;
-        else
-            cout << fre[maxFre] - fre[x - 1] << endl;
-    }
+    cout << fun(ele);
 }
 
 int main(int argc, char const *argv[])
