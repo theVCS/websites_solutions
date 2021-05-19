@@ -18,65 +18,55 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
 string s;
-int dp[10][90][2][90];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+int build(char x, char y)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    int cnt = 0;
 
-        REP(i, 0, s[n] - '0')
+    for(char c: s)
+    {
+        if(c == x)
         {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
+            cnt++;
+            swap(x,y);
         }
-        return dp[n][sum][tight][rem] = res;
     }
-    else
-    {
-        int res = 0;
 
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
+    if(cnt & 1 && x != y)cnt--;
 
-        return dp[n][sum][tight][rem] = res;
-    }
+    return cnt;
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    cin >> s;
 
-    if(k > 90)
+    int cnt[10] = {0};
+
+    for (char c : s)
     {
-        cout<<0<<endl;
-        return;
+        cnt[c - '0']++;
     }
 
-    l--;
+    char ele;
+    int sz = 0;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
+    REP(i, 0, 9)
+    {
+        if (cnt[i] == 0)
+            continue;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
+        REP(j, 0, 9)
+        {
+            if (cnt[j] == 0)
+                continue;
+        
+            sz = max(sz,build(char('0'+i),char('0'+j)));
+        }
+    }
 
-    cout << ans1 - ans2 << endl;
+    cout << s.size() - sz << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -95,9 +85,8 @@ int main(int argc, char const *argv[])
 
     cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 1000011
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,67 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+vector<pii> vec;
+int ft[maxN];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+void update(int index, ll val)
 {
-    if (n == 1)
+    while (index < maxN)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
+        ft[index] += val;
+        index += (index & -1 * index);
+    }
+}
 
-        return;
+ll query(int index)
+{
+    ll sum = 0;
+
+    while (index)
+    {
+        sum += ft[index];
+        index -= (index & -1 * index);
     }
 
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
+    return sum;
 }
 
 void solve()
 {
+    int n, dum;
     cin >> n;
-    towerOfHanoi(n);
 
-    // vector<int>tow[3];
+    REP(I, 1, n)
+    {
+        int mx = -INF;
+        int mn = INF;
+        int k;
+        cin >> k;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+        REP(i, 1, k)
+        {
+            cin >> dum;
+            dum++;
+            mx = max(mx, dum);
+            mn = min(mn, dum);
+        }
+        vec.push_back({mx, mn});
+    }
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    ll res = 0;
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    for (pii e : vec)
+    {
+        update(e.second, 1);
+    }
+
+    for (pii e : vec)
+    {
+        cout << e.first << " " << e.second << endl;
+        cout << query(e.first - 1) << endl;
+    }
+
+    cout << res;
 }
 
 int main(int argc, char const *argv[])

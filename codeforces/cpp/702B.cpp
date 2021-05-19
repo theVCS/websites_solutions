@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 200001
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,98 +33,92 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-string s, t;
-int n, m;
-vector<int> arr[26];
-int mxIndex[maxN];
-int minIndex[maxN];
+int n;
+ll arr[maxN];
+vector<ll> power_2;
+vector<ll> segTree[4 * maxN];
 
-int bs(vector<int> &arr, int ele)
+void build(int si, int ss, int se)
 {
-    int n = arr.size();
-    int start = 0, end = n - 1;
-
-    while (start <= end)
+    if (ss == se)
     {
-        int mid = (start + end) / 2;
-
-        if (arr[mid] < ele && (mid == n - 1 || arr[mid + 1] >= ele))
-        {
-            return mid;
-        }
-        else if (arr[mid] >= ele)
-        {
-            end = mid - 1;
-        }
-        else
-        {
-            start = mid + 1;
-        }
+        segTree[si].push_back(arr[ss]);
     }
-
-    return -1;
+    else
+    {
+        int mid = (ss + se) / 2;
+        build(2 * si, ss, mid);
+        build(2 * si + 1, mid + 1, se);
+        merge(all(segTree[2 * si]), all(segTree[2 * si + 1]), back_inserter(segTree[si]));
+    }
 }
 
-int bs1(vector<int> &arr, int ele)
+bool bs(vector<ll> &vec, ll ele)
 {
-    int n = arr.size();
-    int start = 0, end = n - 1;
+    int start = 0, end = vec.size() - 1;
 
     while (start <= end)
     {
         int mid = (start + end) / 2;
 
-        if (arr[mid] > ele && (mid == 0 || arr[mid - 1] <= ele))
-        {
-            return mid;
-        }
-        else if (arr[mid] <= ele)
-        {
+        if (arr[mid] == ele)
+            return true;
+        else if (arr[mid] < ele)
             start = mid + 1;
-        }
         else
-        {
             end = mid - 1;
-        }
     }
 
-    return -1;
+    return false;
+}
+
+int query(int si, int ss, int se, int qs, int qe, ll ele)
+{
+    if (ss > qe || se < qs)
+        return 0;
+
+    if (qs <= ss && qe >= se)
+    {
+        return upper_bound(all(segTree[si]), ele) - lower_bound(all(segTree[si]), ele);
+    }
+
+    int mid = (ss + se) / 2;
+    return query(2 * si, ss, mid, qs, qe, ele) + query(2 * si + 1, mid + 1, se, qs, qe, ele);
 }
 
 void solve()
 {
-    cin >> n >> m;
-    cin >> s >> t;
+    ll i = 2;
 
-    REP(i, 0, n - 1)
+    while (i <= 2000000000)
     {
-        arr[s[i] - 'a'].push_back(i);
+        power_2.push_back(i);
+        i *= 2;
     }
 
-    int res = 0;
-    int mx = INF;
+    cin >> n;
 
-    RREP(i, m - 1, 0)
+    REP(i, 1, n)
+    cin >> arr[i];
+
+    build(1, 1, n);
+
+    // cout<<query(1,1,n,2,3,1)<<endl;
+
+    ll cnt = 0;
+
+    REP(i, 1, n)
     {
-        int currEle = t[i] - 'a';
-        int index = bs(arr[currEle], mx);
-        mx = arr[currEle][index];
-        mxIndex[i] = mx;
+        for (ll ele : power_2)
+        {
+            if (ele <= arr[i])
+                continue;
+
+            cnt += query(1, 1, n, i + 1, n, ele - arr[i]);
+        }
     }
 
-    int mn = -1;
-    REP(i, 0, m - 1)
-    {
-        int currEle = t[i] - 'a';
-        int index = bs1(arr[currEle], mn);
-        mn = arr[currEle][index];
-        minIndex[i] = mn;
-
-        if (i)
-            res = max(res, mxIndex[i] - minIndex[i - 1]);
-    }
-
-    cout << res;
+    cout << cnt;
 }
 
 int main(int argc, char const *argv[])

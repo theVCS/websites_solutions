@@ -18,65 +18,52 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
 string s;
-int dp[10][90][2][90];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+int fun(int n, int k, int a = 0, int b = 0, int val = 0)
 {
-    if (n == s.size())
+    if (n == 0)
     {
-        return (rem == 0) && (sum % k == 0);
+        return val;
     }
-    else if (dp[n][sum][tight][rem] != -1)
+    else if (k)
     {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
-
-        REP(i, 0, s[n] - '0')
+        if (s[n - 1] == 'a')
         {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
+            // we can exchange a by b
+            int res1 = fun(n - 1, k - 1, 0, b + 1, max({val, a, b + 1}));
+            int res2 = fun(n - 1, k, a + 1, 0, max({a + 1, val, b}));
+
+            return max(res1, res2);
         }
-        return dp[n][sum][tight][rem] = res;
+        else
+        {
+            // exchaging b by a
+            int res1 = fun(n - 1, k - 1, a + 1, 0, max({val, a + 1, b}));
+            int res2 = fun(n - 1, k, 0, b + 1, max({a, val, b + 1}));
+
+            return max(res1, res2);
+        }
     }
     else
     {
-        int res = 0;
-
-        REP(i, 0, 9)
+        if (s[n - 1] == 'a')
         {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
+            return fun(n - 1, 0, a + 1, 0, max({a + 1, b, val}));
         }
-
-        return dp[n][sum][tight][rem] = res;
+        else
+        {
+            return fun(n - 1, 0, 0, b + 1, max({val, a, b + 1}));
+        }
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
-
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
-
-    l--;
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    int n, k;
+    cin >> n >> k;
+    cin >> s;
+    cout << fun(n, k);
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +80,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

@@ -18,65 +18,35 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
 string s;
-int dp[10][90][2][90];
+ll powerRaised[10];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll fun(int n = 0, int rem = 0, int target = 1, int div = 1)
 {
-    if (n == s.size())
+    if(n == s.size())
     {
-        return (rem == 0) && (sum % k == 0);
+        return rem == 0;
     }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    else if (target)
+    {   
+        ll res = 0;
 
-        REP(i, 0, s[n] - '0')
+        REP(i,1,s[n]-'0')
         {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
+            int d = div * gcd(div,i);
+            res+=fun(n+1,(rem*10+i)%d,)
         }
-        return dp[n][sum][tight][rem] = res;
     }
     else
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
-
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
-
-    l--;
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    ll l, r;
+    cin >> l >> r;
 }
 
 int main(int argc, char const *argv[])
@@ -91,13 +61,22 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
+    powerRaised[1] = 1;
+    powerRaised[2] = 4;
+    powerRaised[3] = 27;
+    powerRaised[4] = 256;
+    powerRaised[5] = 3125;
+    powerRaised[6] = 46656;
+    powerRaised[7] = 823543;
+    powerRaised[8] = 16777216;
+    powerRaised[9] = 387420489;
+
     int t = 1;
 
     cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

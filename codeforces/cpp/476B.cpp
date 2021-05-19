@@ -13,70 +13,69 @@ using namespace std;
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
+#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
-
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    ll res = 1;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+string s;
+int n, pos;
+
+double prob(int x = 0, int index = 0, double pro = 1)
+{
+    if (index == n)
+    {
+        if (x == pos)
+            return pro;
+        else
+            return 0;
+    }
+    else if (s[index] == '+')
+    {
+        return prob(x + 1, index + 1, pro);
+    }
+    else if (s[index] == '-')
+    {
+        return prob(x - 1, index + 1, pro);
     }
     else
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        return prob(x + 1, index + 1, pro * 0.5) + prob(x - 1, index + 1, pro * 0.5);
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    string a;
 
-    if(k > 90)
+    cin >> a >> s;
+
+    n = s.size();
+
+    for (char c : a)
     {
-        cout<<0<<endl;
-        return;
+        if (c == '+')
+            pos++;
+        else
+            pos--;
     }
 
-    l--;
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    printd(prob());
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +92,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

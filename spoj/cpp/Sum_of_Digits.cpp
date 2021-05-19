@@ -18,63 +18,54 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
 string s;
-int dp[10][90][2][90];
+ll dp[10][82][2];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll fun(int n = 0, int sum = 0, int tight = 1)
 {
     if (n == s.size())
     {
-        return (rem == 0) && (sum % k == 0);
+        return sum;
     }
-    else if (dp[n][sum][tight][rem] != -1)
+    else if (dp[n][sum][tight] != -1)
     {
-        return dp[n][sum][tight][rem];
+        return dp[n][sum][tight];
     }
     else if (tight)
     {
-        int res = 0;
+        ll res = 0;
 
         REP(i, 0, s[n] - '0')
         {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
+            res += fun(n + 1, sum + i, i == (s[n] - '0'));
         }
-        return dp[n][sum][tight][rem] = res;
+
+        return dp[n][sum][tight] = res;
     }
     else
     {
-        int res = 0;
+        ll res = 0;
 
         REP(i, 0, 9)
         {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
+            res += fun(n + 1, sum + i, 0);
         }
 
-        return dp[n][sum][tight][rem] = res;
+        return dp[n][sum][tight] = res;
     }
 }
 
-void solve()
+void solve(int l, int r)
 {
-    int l, r;
-    cin >> l >> r >> k;
-
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
-
     l--;
 
-    memset(dp,-1,sizeof(dp));
     s = to_string(r);
-    int ans1 = fun();
+    memset(dp, -1, sizeof(dp));
+    ll ans1 = fun();
 
-    memset(dp,-1,sizeof(dp));
     s = to_string(l);
-    int ans2 = fun();
+    memset(dp, -1, sizeof(dp));
+    ll ans2 = fun();
 
     cout << ans1 - ans2 << endl;
 }
@@ -91,14 +82,18 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
-    int t = 1;
+    // int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (true)
     {
-        cout << "Case " << i << ": ";
-        solve();
+        int l, r;
+        cin>>l>>r;
+
+        if(l == -1 && r == -1)return 0;
+
+        solve(l,r);
     }
 
     //filptr.close();

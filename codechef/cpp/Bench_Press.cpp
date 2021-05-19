@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,39 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
-{
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
+ll wths[maxN];
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    ll n, w, wr, wi, tot_sum = 0;
+    cin >> n >> w >> wr;
 
-    // vector<int>tow[3];
+    tot_sum = wr;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    REP(i, 1, n)
+    {
+        cin >> wi;
+        wths[wi]++;
+    }
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    REP(i,1,maxN)
+    {
+        if(wths[i])
+        {
+            tot_sum += i * (wths[i] - (wths[i] % 2));
+            wths[i] = 0;
+        }
+    }
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    if(tot_sum >= w)
+    {
+        cout<<"YES"<<endl;
+    }
+    else
+    {
+        cout<<"NO"<<endl;
+    }
+    
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +82,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

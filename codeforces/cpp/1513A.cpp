@@ -6,7 +6,7 @@ using namespace std;
 //#define bint cpp_int
 #define pii pair<int, int>
 #define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
+#define REP(i, a, b) for (int i = a; i <= b; i++)
 #define maxN 1000001
 #define INF 1000000000
 #define endl "\n"
@@ -28,34 +28,47 @@ using namespace std;
 // while (L < q[i].l)
 //     remove(L++);
 
+int arr[101];
+
 void solve()
 {
     int n, k;
     cin >> n >> k;
 
-    if (k > (n / 2) || (n <= 2 && k))
+    if (k && (n == 1 || n == 2))
     {
         cout << -1 << endl;
         return;
     }
 
-    int arr[n + 1];
+    if (k > (n / 2))
+    {
+        cout << -1 << endl;
+        return;
+    }
 
-    memset(arr, -1, sizeof(arr));
+    memset(arr, 0, sizeof(arr));
 
-    int ele = n, j = 2;
+    int index = 2;
+    int N = n;
 
     while (k--)
     {
-        arr[j] = ele--;
-        j += 2;
+        arr[index] = N--;
+        index += 2;
     }
 
-    REP(i, 1, n + 1)
+    REP(i, 1, n)
     {
-        if (arr[i] == -1)
-            arr[i] = ele--;
-        cout << arr[i] << " ";
+        if (arr[i] == 0)
+        {
+            cout << N << " ";
+            N--;
+        }
+        else
+        {
+            cout << arr[i] << " ";
+        }
     }
     cout << endl;
 }

@@ -33,62 +33,67 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+string s;
+ll dp[19][11][2][2];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+ll fun(int index = 0, int prev_dig = 10, int tight = 1, int start_zero = true)
 {
-    if (n == 1)
+    if (index == s.size())
+        return 1;
+    else if (dp[index][prev_dig][tight][start_zero] != -1)
+        return dp[index][prev_dig][tight][start_zero];
+    else if (tight)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+        ll res = 0;
+
+        REP(i, 0, s[index] - '0')
         {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
+            if (start_zero && i == 0)
+                res += fun(index + 1, 0, ((s[index] - '0') == i), true);
+            else if (i == prev_dig)
+                continue;
+            else
+                res += fun(index + 1, i, ((s[index] - '0') == i), false);
         }
 
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
+        return dp[index][prev_dig][tight][start_zero] = res;
     }
     else
     {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
+        ll res = 0;
+
+        REP(i, 0, 9)
+        {
+            if (start_zero && i == 0)
+                res += fun(index + 1, 0, false, true);
+            else if (i == prev_dig)
+                continue;
+            else
+                res += fun(index + 1, i, false, false);
+        }
+
+        return dp[index][prev_dig][tight][start_zero] = res;
     }
 }
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    ll a, b;
+    cin >> a >> b;
+    a--;
 
-    // vector<int>tow[3];
+    memset(dp, -1, sizeof(dp));
+    s = to_string(b);
+    ll res = fun();
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    if (a >= 0)
+    {
+        memset(dp, -1, sizeof(dp));
+        s = to_string(a);
+        res -= fun();
+    }
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
-
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    cout << res;
 }
 
 int main(int argc, char const *argv[])

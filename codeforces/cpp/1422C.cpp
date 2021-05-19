@@ -33,62 +33,38 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
-{
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
+string s;
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    cin >> s;
 
-    // vector<int>tow[3];
+    ll rc = s.size() - 1;
+    ll po = 1;
+    ll helper = 0;
+    ll index = 0;
+    ll inv = binExp(10,mod-2);
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    ll res = 0;
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    RREP(i, s.size() - 1, 0)
+    {
+        helper = (helper + (((po * inv) % mod) * index) % mod) % mod;
+        index++;
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+        // cout<<helper<<endl;
+
+        // calculating for right numbers
+        res = (res + (((rc * (rc + 1)) / 2) % mod) * (s[i] - '0') * po) % mod;
+
+        // calculating for left child
+        res = (1LL * (s[i] - '0') * helper + res) % mod;
+
+        po = (po * 10) % mod;
+        rc--;
+    }
+
+    cout << res;
 }
 
 int main(int argc, char const *argv[])

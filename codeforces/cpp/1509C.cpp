@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 2001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -18,65 +18,36 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
+ll arr[maxN];
+ll dp[maxN][maxN];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll fun(int l, int r)
 {
-    if (n == s.size())
+    if(l >= r)
     {
-        return (rem == 0) && (sum % k == 0);
+        return 0;
     }
-    else if (dp[n][sum][tight][rem] != -1)
+    else if (dp[l][r] != -1)
     {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
-
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
+        return dp[l][r];
     }
     else
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        return dp[l][r] = arr[r] - arr[l] + min(fun(l+1,r),fun(l,r - 1));
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    int n;
+    cin>>n;
 
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
 
-    l--;
+    REP(i,1,n)cin>>arr[i];
+    sort(arr+1,arr+n+1);
 
     memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    cout<<fun(1,n);
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +64,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

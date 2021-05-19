@@ -13,70 +13,73 @@ using namespace std;
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
+#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
-
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    ll res = 1;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
-    }
-    else
+    while (power)
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
 }
+
+int arr[1001];
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    int n, k;
+    cin >> n >> k;
 
-    if(k > 90)
+    bool flag = false;
+    int mn = INF;
+    int res = 0;
+
+    REP(i, 1, n)
     {
-        cout<<0<<endl;
+        cin >> arr[i];
+
+        if (arr[i] > k)
+            flag = true;
+
+        mn = min(mn, arr[i]);
+    }
+
+    if (flag)
+    {
+        cout << 0 << endl;
         return;
     }
 
-    l--;
+    int mn2 = INF;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
+    flag = true;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
+    REP(i, 1, n)
+    {
+        if (flag && arr[i] == mn)
+        {
+            flag = false;
+            continue;
+        }
 
-    cout << ans1 - ans2 << endl;
+        int ans = ((k - arr[i]) / mn);
+        res += ans;
+        mn2 = min(mn2, ans*mn+arr[i]);
+    }
+
+    res += (k - mn) / mn2;
+
+    cout << res << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -95,9 +98,8 @@ int main(int argc, char const *argv[])
 
     cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

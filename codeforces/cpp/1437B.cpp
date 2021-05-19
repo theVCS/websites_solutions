@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 100001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,21 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
-{
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
-
 void solve()
 {
+    int n;
     cin >> n;
-    towerOfHanoi(n);
+    string s;
 
-    // vector<int>tow[3];
+    cin >> s;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    int cnt = 0;
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    REP(i, 0, n - 2)
+    if (s[i] == s[i + 1])
+        cnt++;
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    cout << (cnt + 1) / 2 << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +64,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

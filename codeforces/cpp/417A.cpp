@@ -18,65 +18,39 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+int c, d;
+int n, m;
 int k;
-string s;
-int dp[10][90][2][90];
+int dp[10001];
 
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+int fun(int tot)
 {
-    if (n == s.size())
+    if (tot <= 0)
     {
-        return (rem == 0) && (sum % k == 0);
+        return 0;
     }
-    else if (dp[n][sum][tight][rem] != -1)
+    else if (dp[tot] != -1)
     {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
-
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
+        return dp[tot];   
     }
     else
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        return dp[tot] = min(c + fun(tot - n), d + fun(tot - 1));
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
 
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
-
-    l--;
+    cin >> c >> d;
+    cin >> n >> m;
+    cin >> k;
 
     memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
+    int total = n * m - k;
 
-    cout << ans1 - ans2 << endl;
+    cout << fun(total);
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +67,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

@@ -33,62 +33,35 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
-{
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
+ll fact[21];
 
 void solve()
 {
+    fact[0] = 1;
+
+    for (ll i = 1; i <= 20; i++)
+    {
+        fact[i] = fact[i - 1] * i;
+    }
+
+    // if(fact[20] == 2432902008176640000)
+    // {
+    //     cout<<
+    // }
+
+    int n;
     cin >> n;
-    towerOfHanoi(n);
 
-    // vector<int>tow[3];
+    ll tot_grps = fact[n];
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    n /= 2;
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    tot_grps /= fact[n];
+    tot_grps /= fact[n];
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    tot_grps /= 2;
+
+    cout << tot_grps * fact[n - 1] * fact[n - 1];
 }
 
 int main(int argc, char const *argv[])

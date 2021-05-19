@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 200001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,92 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+int n, m;
+vector<int> friends[maxN];
+int cnt[maxN];
+int days[maxN];
+int daySize[maxN];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+bool cmp(int a, int b)
 {
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
+    return (daySize[a] >= daySize[b]);
 }
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    cin >> n >> m;
 
-    // vector<int>tow[3];
+    REP(i,1,n)friends[i].clear();
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    int tot = 0;
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    REP(i, 1, m)
+    {
+        int k, fri;
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+        cin >> k;
+        daySize[i] = k;
+        days[i] = 0;
+        cnt[i] = 0;
+
+        if (k == 1)
+        {
+            cin >> fri;
+            cnt[fri]++;
+            days[i] = fri;
+            // daySize[i]--;
+            tot++;
+        }
+        else
+        {
+            REP(j, 1, k)
+            {
+                cin >> fri;
+                friends[fri].push_back(i);
+            }
+        }
+    }
+
+    int mxVal = (m + 1) / 2;
+
+    REP(i, 1, n)
+    {
+        if (cnt[i] > mxVal)
+        {
+            cout << "NO";
+            return;
+        }
+
+        sort(all(friends[i]), cmp);
+
+        for (int day : friends[i])
+        {
+            if (cnt[i] == mxVal)
+            {
+                break;
+            }
+
+            if (days[day])
+                continue;
+
+            days[day] = i;
+            // daySize[i]--;
+            cnt[i]++;
+            tot++;
+        }
+    }
+
+    if (tot == m)
+    {
+        cout << "YES" << endl;
+
+        REP(i, 1, m)
+        cout << days[i] << " ";
+        cout << endl;
+        return;
+    }
+
+    cout << "NO" << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +135,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

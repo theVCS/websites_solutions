@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 501
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,56 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+int n, m;
+int arr[maxN][maxN];
+int dp[maxN][1024];
+vector<int> res;
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+int fun(int row = 1, int _xor = 0)
 {
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
+    if (row == n + 1)
+        return _xor > 0;
+    else if (dp[row][_xor] != -1)
+        return dp[row][_xor];
     else
     {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
+        int flag = 0;
+
+        REP(i, 1, m)
+        {
+            flag |= fun(row + 1, (_xor ^ arr[row][i]));
+
+            if (flag == 1)
+            {
+                res.push_back(i);
+                return dp[row][_xor] = flag;
+            }
+        }
+
+        return dp[row][_xor] = flag;
     }
 }
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    cin >> n >> m;
 
-    // vector<int>tow[3];
+    REP(i, 1, n)
+    REP(j, 1, m)
+    cin >> arr[i][j];
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    memset(dp, -1, sizeof(dp));
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    if (fun())
+    {
+        cout << "TAK" << endl;
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+        RREP(i,res.size() - 1, 0)cout<<res[i]<<" ";
+    }
+    else
+    {
+        cout << "NIE" << endl;
+    }
 }
 
 int main(int argc, char const *argv[])

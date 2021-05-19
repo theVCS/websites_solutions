@@ -18,65 +18,46 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
-
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    ll res = 1;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+string s;
+
+ll fun(int l, int r)
+{
+    if (l > r)
+    {
+        return 0;
+    }
+    else if (l == r)
+    {
+        return 1;
     }
     else
     {
-        int res = 0;
+        ll ways = 0;
 
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
+        REP(k, l, r - 1)
+        ways += fun(l, k) * fun(k + 1, r);
 
-        return dp[n][sum][tight][rem] = res;
+        return ways;
     }
 }
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
-
-    if(k > 90)
-    {
-        cout<<0<<endl;
-        return;
-    }
-
-    l--;
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    cin >> s;
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +74,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

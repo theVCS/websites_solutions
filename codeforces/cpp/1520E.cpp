@@ -33,62 +33,79 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+vector<int> arr;
+ll prefix[maxN];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+ll sum(ll n)
 {
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
+    if (n < 0)
+        return 0;
+    return (n * (n + 1)) / 2;
+}
 
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
+ll range(ll r, ll l)
+{
+    l--;
+    if (r <= l)
+        return 0;
+    return (sum(r) - sum(l));
 }
 
 void solve()
 {
+    arr.clear();
+
+    int n;
+    string s;
+
     cin >> n;
-    towerOfHanoi(n);
+    cin >> s;
 
-    // vector<int>tow[3];
+    REP(i, 0, n - 1)
+    {
+        if (s[i] == '*')
+            arr.push_back(i + 1);
+    }
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    n = arr.size();
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    if (n == 0)
+    {
+        cout << 0 << endl;
+        return;
+    }
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    REP(i, 1, n)
+    {
+        prefix[i] = 0;
+        prefix[i] = arr[i - 1] + prefix[i - 1];
+    }
+
+    ll ans = __LONG_LONG_MAX__;
+
+    REP(i, 1, n)
+    {
+        int ele = i - 1;
+
+        ll v1 = 0, v2 = 0;
+
+
+        if (ele)
+        {
+            v1 = range(arr[i - 1] - 1, arr[i - 1] - ele) - prefix[i - 1];
+        }
+
+        ele = n - i;
+
+        if (ele)
+        {
+            v2 = (prefix[n] - prefix[i]) - range(arr[i - 1] + ele, arr[i - 1] + 1);
+        }
+
+        ans = min(ans, v1 + v2);
+    }
+
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +122,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

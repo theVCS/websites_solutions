@@ -33,62 +33,24 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+ll dp[maxN][2];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+void init()
 {
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
+    dp[0][0] = dp[0][1] = 1;
 
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+    REP(i, 1, maxN - 1)
     {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
+        dp[i][0] = (4 * dp[i - 1][0] + dp[i - 1][1]) % mod;
+        dp[i][1] = (2 * dp[i - 1][1] + dp[i - 1][0]) % mod;
     }
 }
 
 void solve()
 {
+    int n;
     cin >> n;
-    towerOfHanoi(n);
-
-    // vector<int>tow[3];
-
-    // RREP(i,n,1)tow[0].push_back(i);
-
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
-
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    cout << (dp[n-1][0] + dp[n-1][1]) % mod << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -103,9 +65,11 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
+    init();
+
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

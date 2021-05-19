@@ -33,62 +33,74 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+int n, m;
+string s[10];
+bool flag = false;
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+bool check(string &str)
 {
-    if (n == 1)
+    REP(i, 0, n - 1)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+        int cnt = 0;
+
+        REP(j, 0, m - 1)
         {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
+            if (s[i][j] != str[j])
+                cnt++;
         }
 
-        return;
+        if (cnt > 1)
+            return false;
     }
 
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+    return true;
+}
+
+void varyString(string &s)
+{
+    string str = s;
+
+    REP(i, 0, m - 1)
     {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
+        REP(j, 0, 25)
+        {
+            if (s[i] == ('a' + j))
+                continue;
+            else
+            {
+                str[i] = ('a' + j);
+
+                if (check(str))
+                {
+                    cout << str << endl;
+                    flag = true;
+                    return;
+                }
+            }
+        }
+
+        str[i] = s[i];
     }
 }
 
 void solve()
 {
-    cin >> n;
-    towerOfHanoi(n);
+    flag = false;
 
-    // vector<int>tow[3];
+    cin >> n >> m;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    REP(i, 0, n - 1)
+    cin >> s[i];
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    REP(i, 0, n - 1)
+    {
+        varyString(s[i]);
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+        if (flag)
+            return;
+    }
+
+    cout << -1 << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +117,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

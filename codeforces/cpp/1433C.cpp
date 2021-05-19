@@ -8,75 +8,70 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 300001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
+#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
-
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    ll res = 1;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
-    }
-    else
+    while (power)
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
 }
+
+int n;
+int arr[maxN + 10];
+vector<int> vec;
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    cin >> n;
+    int mx = -1;
 
-    if(k > 90)
+    REP(i, 1, n)
     {
-        cout<<0<<endl;
+        cin >> arr[i];
+
+        if (mx < arr[i])
+            vec.clear();
+
+        if (mx <= arr[i])
+        {
+            mx = arr[i];
+            vec.push_back(i);
+        }
+    }
+
+    if(vec.size() == n)
+    {
+        cout<<-1<<endl;
         return;
     }
 
-    l--;
+    arr[0] = arr[n + 1] = INT_MAX;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
-
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    for (int index : vec)
+    {
+        if(arr[index - 1] < arr[index] || arr[index + 1] < arr[index])
+        {
+            cout<<index<<endl;
+            return;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -95,9 +90,8 @@ int main(int argc, char const *argv[])
 
     cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

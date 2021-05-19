@@ -16,7 +16,7 @@ using namespace std;
 #define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+int dx[] = {-1, 1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll binExp(ll a, ll power, ll m = mod)
@@ -34,61 +34,52 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-vector<pii> moves;
+int arr[5001];
+vector<int> person, empty_seats;
+ll dp[2501][5001];
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+ll fun(int per_size, int seat_size)
 {
-    if (n == 1)
+    // cout<<per_size<<" "<<seat_size<<endl;
+    if (per_size == 0)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
+        return 0;
     }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+    else if (dp[per_size][seat_size] != -1)
     {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
+        return dp[per_size][seat_size];   
+    }
+    else if (per_size < seat_size)
+    {
+        return dp[per_size][seat_size] = min(abs(person[per_size - 1] - empty_seats[seat_size - 1]) + fun(per_size - 1, seat_size - 1), fun(per_size, seat_size - 1));
     }
     else
     {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
+        return dp[per_size][seat_size] = abs(person[per_size - 1] - empty_seats[seat_size - 1]) + fun(per_size - 1, seat_size - 1);
     }
 }
 
 void solve()
 {
     cin >> n;
-    towerOfHanoi(n);
 
-    // vector<int>tow[3];
+    REP(i, 1, n)
+    {
+        cin >> arr[i];
 
-    // RREP(i,n,1)tow[0].push_back(i);
+        if (arr[i])
+        {
+            person.push_back(i);
+        }
+        else
+        {
+            empty_seats.push_back(i);
+        }
+    }
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    memset(dp, -1, sizeof(dp));
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    cout << fun(person.size(), empty_seats.size());
 }
 
 int main(int argc, char const *argv[])

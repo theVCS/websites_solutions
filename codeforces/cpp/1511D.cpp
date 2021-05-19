@@ -18,65 +18,59 @@ using namespace std;
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int k;
-string s;
-int dp[10][90][2][90];
-
-int fun(int n = 0, int sum = 0, int tight = 1, int rem = 0)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (n == s.size())
-    {
-        return (rem == 0) && (sum % k == 0);
-    }
-    else if (dp[n][sum][tight][rem] != -1)
-    {
-        return dp[n][sum][tight][rem];
-    }
-    else if (tight)
-    {
-        int res = 0;
+    ll res = 1;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'), (rem * 10 + i) % k);
-        }
-        return dp[n][sum][tight][rem] = res;
-    }
-    else
+    while (power)
     {
-        int res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0, (rem * 10 + i) % k);
-        }
-
-        return dp[n][sum][tight][rem] = res;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
 }
+
+string res = "a";
+bool vis[26][26];
 
 void solve()
 {
-    int l, r;
-    cin >> l >> r >> k;
+    int n, k;
+    cin >> n >> k;
 
-    if(k > 90)
+    REP(i, 0, k - 1)
     {
-        cout<<0<<endl;
+        REP(j, i, k - 1)
+        {
+            int prev = res.back() - 'a';
+
+            if(vis[prev][j] == false)
+            {
+                vis[prev][j] = true;
+                res.push_back(j + 'a');
+            }
+        }
+    }
+
+    // cout << res << endl;
+
+    if (res.size() >= n)
+    {
+        REP(i, 0, n - 1)
+        cout << res[i];
         return;
     }
 
-    l--;
+    int index = 0;
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(r);
-    int ans1 = fun();
+    while (res.size() < n)
+    {
+        res.push_back(res[index++]);
+    }
 
-    memset(dp,-1,sizeof(dp));
-    s = to_string(l);
-    int ans2 = fun();
-
-    cout << ans1 - ans2 << endl;
+    cout << res;
 }
 
 int main(int argc, char const *argv[])
@@ -93,11 +87,10 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    cin >> t;
+    //cin >> t;
 
-    REP(i, 1, t)
+    while (t--)
     {
-        cout << "Case " << i << ": ";
         solve();
     }
 

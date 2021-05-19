@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 200001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -34,61 +34,76 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
-{
-    if (n == 1)
-    {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-        {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
-        }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
-    }
-
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
+int university[maxN];
+ll progSki[maxN];
+vector<ll> uni[maxN];
+vector<pii> uniDat;
+set<int> uniSet;
 
 void solve()
 {
     cin >> n;
-    towerOfHanoi(n);
 
-    // vector<int>tow[3];
+    ll tot = 0;
+    int maxSize = 0;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    uniSet.clear();
+    uniDat.clear();
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    REP(i, 1, n)
+    {
+        cin >> university[i];
+        uni[university[i]].clear();
+        uniSet.insert(university[i]);
+    }
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    REP(i, 1, n)
+    {
+        cin >> progSki[i];
+        uni[university[i]].push_back(progSki[i]);
+        tot += progSki[i];
+    }
+
+    for (int u : uniSet)
+    {
+        uniDat.push_back({(int)uni[u].size(), u});
+
+        maxSize = max(maxSize, (int)uni[u].size());
+
+        sort(all(uni[u]), greater<>());
+
+        REP(i, 1, uni[u].size() - 1)
+        uni[u][i] += uni[u][i - 1];
+    }
+
+    sort(all(uniDat));
+
+    cout << tot << " ";
+
+    REP(i, 2, n)
+    {
+        ll temp = 0;
+
+        if (i > maxSize)
+        {
+            cout << 0 << " ";
+            continue;
+        }
+
+        pii p = {i, 0};
+
+        int index = lower_bound(all(uniDat), p) - uniDat.begin();
+
+        REP(j, index, uniDat.size() - 1)
+        {
+            int sz = uniDat[j].first;
+            temp += uni[uniDat[j].second][sz - 1 - (sz % i)];
+        }
+
+        cout << temp << " ";
+    }
+
+    cout << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -105,7 +120,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {

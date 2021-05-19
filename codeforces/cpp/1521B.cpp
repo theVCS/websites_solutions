@@ -8,7 +8,7 @@ using namespace std;
 #define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
+#define maxN 120001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
@@ -33,62 +33,66 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-vector<pii> moves;
+bool sieve[maxN];
+vector<int> primes;
 
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+void init()
 {
-    if (n == 1)
+    for (int i = 2; i * i <= maxN; i++)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+        if (sieve[i] == false)
         {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
+            for (int j = 2 * i; j < maxN; j += i)
+            {
+                sieve[j] = true;
+            }
         }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
     }
 
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+    REP(i, 2, maxN - 1)
+    if (sieve[i] == false)
     {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
+        primes.push_back(i);
+        // cout<<i<<" ";
     }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
+    // cout<<endl;
 }
+
+ll arr[100001];
 
 void solve()
 {
+    int n;
     cin >> n;
-    towerOfHanoi(n);
 
-    // vector<int>tow[3];
+    arr[0] = 1000000009;
 
-    // RREP(i,n,1)tow[0].push_back(i);
+    REP(i, 1, n)
+    cin >> arr[i];
 
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
+    if (n == 1)
+    {
+        cout << 0 << endl;
+        return;
+    }
 
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    if (n == 2)
+    {
+        cout << 1 << endl;
+        cout << 1 << " " << 2 << " " << mod << " " << min(arr[1], arr[2]) << endl;
+        return;
+    }
+
+    cout << n - 1 << endl;
+
+    REP(i, 1, n - 2)
+    {
+        cout << i << " " << i + 1 << " " << arr[i - 1] + 1 << " " << min(arr[i], arr[i + 1]) << endl;
+        arr[i + 1] = min(arr[i], arr[i + 1]);
+        arr[i] = arr[i - 1] + 1;
+    }
+
+    cout << n - 1 << " " << n << " " << mod << " " << min(arr[n - 1], arr[n]) << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -103,9 +107,11 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
+    // init();
+
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     while (t--)
     {
