@@ -2,6 +2,8 @@
     "files.associations": {
         "*.html": "html",
         "*.ejs": "html",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "iostream": "cpp",
+        "*.cp": "c"
     }
 }

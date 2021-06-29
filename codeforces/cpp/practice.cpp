@@ -4,91 +4,45 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define pii pair<int, int>
 #define mod 1000000007
-#define REP(i, a, b) for (int i = a; i <= b; i++)
-#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define REP(i, a, b) for (int i = a; i < b; i++)
 #define maxN 1000001
-#define endl "\n"
-#define INF 1000000000
-#define all(x) (x).begin(), (x).end()
-#define pi 3.141592653589793238
-#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll binExp(ll a, ll power, ll m = mod)
+int n, m, len;
+char arr[51][51];
+int dp[51][51];
+
+bool isValid(int x, int y, char c)
 {
-    ll res = 1;
-
-    while (power)
+    if (x < 1 || y < 1 || x > n || y > m || arr[x][y] != c + 1)
     {
-        if (power & 1)
-            res = (res * a) % m;
-        a = (a * a) % m;
-        power >>= 1;
+        return false;
     }
-    return res;
+    return true;
 }
 
-int n;
-vector<pii> moves;
-
-void towerOfHanoi(int n, char src = 'a', char hel = 'b', char des = 'c')
+int dfs(int x, int y)
 {
-    if (n == 1)
+    int res = 0;
+
+    if (dp[x][y] != -1)
     {
-        if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
+        return dp[x][y];
+    }
+
+    for (int i = 0; i < 8; i++)
+    {
+        if (isValid(x + dx[i], y + dy[i], arr[x][y]))
         {
-            cout << src << " " << hel << endl;
-            cout << hel << " " << des << endl;
-            // moves.push_back({src-'a', hel-'a'});
-            // moves.push_back({hel-'a', des-'a'});
+            res = max(dfs(x + dx[i], y + dy[i]), res);
         }
-        else
-        {
-            cout << src << " " << des << endl;
-            // moves.push_back({src-'a', des-'a'});
-        }
-
-        return;
     }
 
-    if ((src == 'b' || src == 'c') && (des == 'c' || des == 'b'))
-    {
-        towerOfHanoi(n, src, des, hel);
-        towerOfHanoi(n, hel, src, des);
-    }
-    else
-    {
-        towerOfHanoi(n - 1, src, des, hel);
-        cout << src << " " << des << endl;
-        // moves.push_back({src-'a', des-'a'});
-        towerOfHanoi(n - 1, hel, src, des);
-    }
-}
-
-void solve()
-{
-    cin >> n;
-    towerOfHanoi(n);
-
-    // vector<int>tow[3];
-
-    // RREP(i,n,1)tow[0].push_back(i);
-
-    // for(pii p: moves)
-    // {
-    //     tow[p.second].push_back(tow[p.first].back());
-    //     tow[p.first].pop_back();
-    // }
-
-    // for(int ele: tow[2])
-    // {
-    //     cout<<ele<<" ";
-    // }
+    return (dp[x][y] = res + 1);
 }
 
 int main(int argc, char const *argv[])
@@ -97,23 +51,44 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream filptr("input.txt");
-    // ofstream outpter("output.txt");
+    int res, t = 1;
 
-    // filptr >> input;
-    // outpter << output;
-
-    int t = 1;
-
-    //cin >> t;
-
-    while (t--)
+    while (true)
     {
-        solve();
-    }
+        cin >> n >> m;
 
-    //filptr.close();
-    //outpter.close();
+        if (n == 0 && m == 0)
+        {
+            return 0;
+        }
+
+        memset(dp, -1, sizeof(dp));
+
+        vector<pair<int, int>> src;
+
+        REP(i, 1, n + 1)
+        {
+            REP(j, 1, m + 1)
+            {
+                cin >> arr[i][j];
+
+                if (arr[i][j] == 'A')
+                {
+                    src.push_back({i, j});
+                }
+            }
+        }
+
+        int res = 0;
+    
+        for (pair<int, int> e : src)
+        {
+            res = max(res, dfs(e.first, e.second));
+        }
+
+        cout << "Case " << t << ": " << res << endl;
+        t++;
+    }
 
     return 0;
 }

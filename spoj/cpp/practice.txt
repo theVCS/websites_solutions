@@ -1,0 +1,13 @@
+1. creating user and setting name and password
+
+sudo adduser Nishant
+// after this many questions will be asked like password, room no etc;
+password - 19104059
+confirm password - 19104059
+
+
+2. disabling user
+sudo passwd -l Nishant
+
+3. deleting user
+sudo userdel -r Nishant

@@ -5,177 +5,320 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 400001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 400001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<int> arr[maxN], bridge;
-bool vis[maxN];
-map<int, map<int, int>> isBridge;
-int intime[maxN], low[maxN], timer;
-vector<int> orientedGraph[maxN];
-int sizeConCom[maxN];
-vector<int> nodes;
-vector<pii> res;
-map<int, map<int, int>> isOriented, edgeIntime;
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
 
-void dfs(int node = 1, int par = -1)
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, m;
+vector<pii> arr[maxN];
+vector<int> strCon[maxN];
+bool vis[maxN];
+
+void strConComFormer(int node = 1, int par = -1)
+{
+    vis[node] = true;
+
+    for (pii child : arr[node])
+    {
+        if (child.first == par)
+            continue;
+        else if (vis[child.first])
+            strCon[node].push_back(child.first);
+        else
+        {
+            strConComFormer(child.first, node);
+            strCon[node].push_back(child.first);
+        }
+    }
+}
+
+struct info
+{
+    int id, sz;
+} nodeInfo[maxN];
+
+bool onStack[maxN];
+int intime[maxN], low[maxN], timer, scc;
+stack<int> st;
+int ans;
+
+void dfs(int node)
 {
     vis[node] = true;
     intime[node] = low[node] = ++timer;
+    onStack[node] = true;
+    st.push(node);
 
-    for (int child : arr[node])
+    for (int child : strCon[node])
     {
-        if (child == par)
-            continue;
-        else if (vis[child])
+        if (vis[child] && onStack[child])
         {
             low[node] = min(low[node], intime[child]);
-            orientedGraph[node].push_back(child);
-            orientedGraph[child].push_back(node);
+        }
+        else if (!vis[child])
+        {
+            dfs(child);
+
+            if (onStack[child])
+            {
+                low[node] = min(low[node], low[child]);
+            }
+        }
+    }
+
+    if (intime[node] == low[node])
+    {
+        vector<int> ele;
+        scc++;
+
+        while (true)
+        {
+            int ut = st.top();
+            st.pop();
+            onStack[ut] = false;
+            ele.push_back(ut);
+            if (ut == node)
+            {
+                break;
+            }
+        }
+
+        ans = max(ans, (int)ele.size());
+
+        for (int e : ele)
+        {
+            nodeInfo[e].id = scc, nodeInfo[e].sz = ele.size();
+        }
+    }
+}
+
+pii res[maxN];
+
+void bridges(int node, int par = -1)
+{
+    intime[node] = low[node] = timer++;
+    vis[node] = true;
+
+    for (pii child : arr[node])
+    {
+        if (child.first == par)
+        {
+            continue;
+        }
+        else if (vis[child.first])
+        {
+            low[node] = min(low[node], intime[child.first]);
+
+            if (res[child.second].first == -1)
+            {
+                res[child.second] = {node, child.first};
+            }
         }
         else
         {
-            dfs(child, node);
+            bridges(child.first, node);
+            low[node] = min(low[node], low[child.first]);
 
-            low[node] = min(low[node], low[child]);
-
-            if (intime[node] < low[child])
+            if (low[child.first] > intime[node])
             {
-                isBridge[node][child] = 1;
-                bridge.push_back(node);
-                bridge.push_back(child);
+                if (res[child.second].first == -1)
+                {
+                    res[child.second] = {child.first, node};
+                }
             }
             else
             {
-                orientedGraph[node].push_back(child);
-                orientedGraph[child].push_back(node);
+                if (res[child.second].first == -1)
+                {
+                    res[child.second] = {node, child.first};
+                }
             }
         }
     }
-}
-
-int sizeX;
-
-void dfs0(int node)
-{
-    sizeX++;
-    vis[node] = true;
-    nodes.push_back(node);
-
-    for (int child : orientedGraph[node])
-    {
-        if (vis[child])
-            continue;
-        dfs0(child);
-    }
-}
-
-void orientor(int node, int par = -1)
-{
-    vis[node] = true;
-
-    for (int child : arr[node])
-    {
-        if (child == par)
-            continue;
-        else if (vis[child])
-        {
-            if (isOriented[node][child] || isOriented[child][node])
-            {
-                continue;
-            }
-            else
-            {
-                res.push_back({node, child});
-                isOriented[node][child] = 1;
-            }
-        }
-        else
-        {
-            orientor(child, node);
-
-            if (isOriented[node][child] || isOriented[child][node])
-            {
-                continue;
-            }
-            else if (isBridge[node][child] || isBridge[child][node])
-            {
-                res.push_back({child, node});
-                isOriented[node][child] = 1;
-            }
-            else
-            {
-                isOriented[node][child] = 1;
-                res.push_back({node, child});
-            }
-        }
-    }
-}
-
-bool cmp(pii a, pii b)
-{
-    return edgeIntime[a.first][a.second] < edgeIntime[b.first][b.second];
 }
 
 void solve()
 {
-    int n, m, a, b;
-
+    int u, v;
     cin >> n >> m;
 
-    REP(i, 0, m)
+    REP(i, 1, m)
     {
-        cin >> a >> b;
-        arr[a].push_back(b), arr[b].push_back(a);
-        edgeIntime[a][b] = i;
-        edgeIntime[b][a] = i;
+        res[i] = {-1, -1};
+        cin >> u >> v;
+        arr[u].push_back({v, i}), arr[v].push_back({u, i});
     }
 
-    dfs();
+    strConComFormer();
+    memset(vis, false, sizeof(vis));
+    dfs(1);
 
-    REP(i, 0, n + 1)
-    vis[i] = false;
+    cout << ans << endl;
+    int nodeX = -1;
 
-    int mainSize = 0, mainNode = 0;
-
-    for (int node : bridge)
+    timer = 0;
+    REP(i, 1, n)
     {
-        if (vis[node] == false)
+        if (nodeInfo[i].sz == ans)
         {
-            sizeX = 0;
-            nodes.clear();
-
-            dfs0(node);
-
-            if (mainSize < sizeX)
-            {
-                mainSize = sizeX;
-                mainNode = node;
-            }
-
-            for (int e : nodes)
-                sizeConCom[e] = sizeX;
+            nodeX = i;
         }
+
+        vis[i] = false;
     }
 
+    bridges(nodeX);
     memset(vis, false, sizeof(vis));
 
-    cout << mainSize << endl;
-
-    orientor(mainNode);
-
-    sort(all(res), cmp);
-
-    for (pii e : res)
+    REP(i,1,m)
     {
-        cout << e.first << " " << e.second << endl;
+        cout<<res[i].first<<" "<<res[i].second<<endl;
     }
 }
 

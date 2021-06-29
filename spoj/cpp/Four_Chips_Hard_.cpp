@@ -5,151 +5,274 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct cor
+ll binExp(ll a, ll power, ll m = mod)
 {
-    int a1, a2, a3, a4;
-};
+    ll res = 1;
 
-int position[5];
-int dis[71];
-int nodes[71];
-
-bool isValid(int x, cor e)
-{
-    if (x > 70)
-        return false;
-
-    int cnt = 0;
-
-    if (e.a2 == x)
-        cnt++;
-    if (e.a3 == x)
-        cnt++;
-    if (e.a2 == x)
-        cnt++;
-
-    return (cnt == 0);
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
 }
 
-void bfs1()
+int dp[71][71][71][71];
+
+int init(int c1 = 67, int c2 = 68, int c3 = 69, int c4 = 70)
 {
-    cor e;
-    queue<cor> q;
-    e.a1 = 1, e.a2 = 2, e.a3 = 3, e.a4 = 4;
-    q.push(e);
+    // cout<<c1<<" "<<c2<<" "<<c3<<" "<<c4<<endl;
+    if(c1 == 1 && c2 == 2 && c3 == 3 && c4 == 4)
+        return dp[c1][c2][c3][c4] = 0;
 
-    while (!q.empty())
+    if(dp[c1][c2][c3][c4] != -1)
+        return dp[c1][c2][c3][c4];
+    
+    int res = INF;
+
+    // moving c4 by one unit back
+    if(c3 != c4 - 1)
+    res = min(res, 1 + init(c1,c2,c3,c4-1));
+
+    // now moving c4 relative with c3
+    int newPos = c3 - (c4 - c3);
+
+    if(newPos > 0 && newPos != c1 && newPos != c2)
     {
-        cor ele = q.front();
-        q.pop();
-
-        int _a1 = ele.a2 + (ele.a2 - ele.a1);
-
-        if (isValid(_a1, ele))
-        {
-            if (dis[_a1] > dis[ele.a1] + 1)
-            {
-                dis[_a1] = dis[ele.a1] + 1;
-                cor _e = ele;
-                _e.a1 = _a1;
-                q.push(_e);
-                nodes[_a1] = 1;
-            }
-        }
-
-        _a1 = ele.a3 + (ele.a3 - ele.a1);
-
-        if (isValid(_a1, ele))
-        {
-            if (dis[_a1] > dis[ele.a1] + 1)
-            {
-                dis[_a1] = dis[ele.a1] + 1;
-                cor _e = ele;
-                _e.a1 = _a1;
-                q.push(_e);
-                nodes[_a1] = 1;
-            }
-        }
-
-        _a1 = ele.a4 + (ele.a4 - ele.a1);
-
-        if (isValid(_a1, ele))
-        {
-            if (dis[_a1] > dis[ele.a1] + 1)
-            {
-                dis[_a1] = dis[ele.a1] + 1;
-                cor _e = ele;
-                _e.a1 = _a1;
-                q.push(_e);
-                nodes[_a1] = 1;
-            }
-        }
-
-        int _a2 = ele.a3 + (ele.a3 - ele.a2);
-
-        if (isValid(_a2, ele))
-        {
-            if (dis[_a2] > dis[ele.a2] + 1)
-            {
-                dis[_a2] = dis[ele.a2] + 1;
-                cor _e = ele;
-                _e.a2 = _a2;
-                q.push(_e);
-                nodes[_a2] = 1;
-            }
-        }
-
-        _a2 = ele.a4 + (ele.a4 - ele.a2);
-
-        if (isValid(_a2, ele))
-        {
-            if (dis[_a2] > dis[ele.a2] + 1)
-            {
-                dis[_a2] = dis[ele.a2] + 1;
-                cor _e = ele;
-                _e.a2 = _a2;
-                q.push(_e);
-                nodes[_a2] = 1;
-            }
-        }
-
-        int _a3 = ele.a4 + (ele.a4 - ele.a3);
-
-        if (isValid(_a3, ele))
-        {
-            if (dis[_a3] > dis[ele.a3] + 1)
-            {
-                dis[_a3] = dis[ele.a3] + 1;
-                cor _e = ele;
-                _e.a3 = _a3;
-                q.push(_e);
-                nodes[_a3] = 1;
-            }
-        }
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(c2);
+        vec.push_back(c3);
+        vec.push_back(newPos);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
     }
+
+    // now moving c4 relative to c2
+    newPos = c2 - (c4 - c2);
+
+    if(newPos > 0 && newPos != c1)
+    {
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(c2);
+        vec.push_back(c3);
+        vec.push_back(newPos);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
+    }
+
+    // moving c4 relative to c1
+    newPos = c1 - (c4 - c1);
+
+    if(newPos > 0)
+    {
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(c2);
+        vec.push_back(c3);
+        vec.push_back(newPos);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
+    }
+
+    // now moving c3 by one unit
+    if(c2 != c3 - 1)
+        res = min(res,1+init(c1,c2,c3-1,c4));
+
+    // moving c3 relative to c2
+    newPos = c2 - (c3 - c2);
+    if(newPos > 0 && newPos != c1)
+    {
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(c2);
+        vec.push_back(newPos);
+        vec.push_back(c4);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
+    }
+
+    // moving c3 relative to c1
+    newPos = c1 - (c3 - c1);
+    if(newPos > 0)
+    {
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(c2);
+        vec.push_back(newPos);
+        vec.push_back(c4);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
+    }
+
+    // now moving c2 by one unit back
+    if(c1 != c2 - 1)
+        res = min(res,1+init(c1,c2-1,c3,c4));
+
+    // now moving c2 relative to c1
+    newPos = c1 - (c2 - c1);
+    if(newPos > 0)
+    {
+        vector<int>vec;
+        vec.push_back(c1);
+        vec.push_back(newPos);
+        vec.push_back(c3);
+        vec.push_back(c4);
+        sort(all(vec));
+        res = min(res,1+init(vec[0], vec[1], vec[2], vec[3]));
+    }
+
+    // now moving c1 by one unit
+    if(c1 > 1)
+        res = min(res,1+init(c1-1,c2,c3,c4));
+
+    return dp[c1][c2][c3][c4] = res;
 }
 
 void solve()
 {
-    cin >> position[1] >> position[2] >> position[3] >> position[4];
-    REP(i,0,71)dis[i] = INF;
-    dis[1] = dis[2] = dis[3] = dis[4] = 0;
-
-    bfs1();
-
-    // REP(i, 1, 15)
-    cout << dis[position[1]] << " ";
+    int c1, c2, c3, c4;
+    cin >> c1 >> c2 >> c3 >> c4;
+    cout<<init(c1,c2,c3,c4)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -164,8 +287,10 @@ int main(int argc, char const *argv[])
     // filptr >> input;
     // outpter << output;
 
-    int t = 1;
+    memset(dp,-1,sizeof(dp));
+    // init();
 
+    int t = 1;
     cin >> t;
 
     while (t--)

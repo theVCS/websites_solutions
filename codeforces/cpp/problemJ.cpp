@@ -6,80 +6,129 @@ using namespace std;
 //#define bint cpp_int
 #define pii pair<int, int>
 #define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 500001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define maxN 1000001
 #define endl "\n"
-#define INF 0x3f3f3f3f
+#define INF 1000000000
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-struct jedi
+ll binExp(ll a, ll power, ll m = mod)
 {
-    ll sum, minSum;
-    int index;
-} jd[maxN];
-ll ans[maxN];
+    ll res = 1;
 
-bool cmp(jedi a, jedi b)
-{
-    return a.minSum < b.minSum;
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
 }
 
-void binarySearchCount(int n, int i)
+int n;
+int arr[1001];
+int res[1001][1001];
+
+// 1 -> true
+// 2 -> false
+
+bool query(int i, int r)
 {
-    int l = 0, r = n - 1;
-    while (l <= r)
+    if (res[arr[i]][arr[r]])
     {
-        int mid = (l + r) / 2;
-        if (jd[mid].minSum <= jd[i].sum)
-        {
-            ans[jd[i].index] = mid;
-            if (mid < i)
-                ans[jd[i].index]++;
-            l = mid + 1;
-        }
+        if (res[arr[i]][arr[r]] == 1)
+            return true;
         else
+            return false;
+    }
+
+    cout << 1 << " " << arr[i] << " " << arr[r] << endl;
+    fflush(stdout);
+
+    string s;
+    cin >> s;
+
+    if (s[0] == 'Y')
+    {
+        res[arr[i]][arr[r]] = 2;
+        return false;
+    }
+    else
+    {
+        res[arr[i]][arr[r]] = 1;
+        return true;
+    }
+}
+
+int pivot(int l, int r)
+{
+    int i = l;
+
+    REP(j, l, r - 1)
+    {
+        if (query(j, r) == false)
         {
-            r = mid - 1;
+            swap(arr[j], arr[i++]);
         }
+    }
+
+    swap(arr[i], arr[r]);
+    return i;
+}
+
+int quickSort(int l, int r)
+{
+    if (l < r)
+    {
+        int index = pivot(l, r);
+        quickSort(l, index - 1);
+        quickSort(index + 1, r);
     }
 }
 
 void solve()
 {
-    int n;
-    ll arr[3];
-
     cin >> n;
 
-    REP(i, 0, n)
+    REP(i, 1, n)
+    arr[i] = i;
+
+    quickSort(1, n);
+
+    int i = 2;
+    while (i <= n)
     {
-        cin >> arr[0] >> arr[1] >> arr[2];
-        sort(arr,arr+3);
-        jd[i].sum = arr[0] + arr[1] + arr[2];
-        jd[i].minSum = arr[0] + arr[1] + 2;
-        jd[i].index = i;
+        if (query(i - 1, i))
+        {
+            cout << 0 << " ";
+            REP(j, 1, n)
+            cout << 0 << " ";
+            cout << endl;
+            return;
+        }
+        i++;
     }
 
-    sort(jd, jd + n, cmp);
-
-    REP(i, 0, n)
-    {
-        binarySearchCount(n, i);
-    }
-
-    REP(i, 0, n)
-    cout << ans[i] << " ";
+    cout << 0 << " ";
+    REP(i, 1, n)
+    cout << arr[i] << " ";
+    cout << endl;
+    return;
 }
 
 int main(int argc, char const *argv[])
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+    // ios_base::sync_with_stdio(false);
+    // cin.tie(NULL);
+    // cout.tie(NULL);
 
     // ifstream filptr("input.txt");
     // ofstream outpter("output.txt");

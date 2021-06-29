@@ -5,59 +5,236 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 700001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int perA[maxN], perB[maxN], perAlab[maxN], perBlab[maxN];
-vector<int> segTree1[4 * maxN], segTree2[4 * maxN];
-
-void build(int si, int ss, int se)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (ss == se)
+    ll res = 1;
+
+    while (power)
     {
-        segTree1[si].push_back(perA[ss]);
-        segTree2[si].push_back(perB[ss]);
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+ll k;
+int totNodes;
+vector<int> arr[maxN];
+
+int nodesAtBottom(ll k)
+{
+    return log2l(k);
+}
+
+void dfs(int currNode, ll k, int par)
+{
+    totNodes = currNode;
+
+    if (k == 1)
+    {
+        totNodes--;
+        return;
+    }
+    else if (k == 2)
+    {
+        arr[currNode].push_back(par);
+        arr[par].push_back(currNode);
+        return;
+    }
+    else if (k % 2)
+    {
+        // there is edge b/w par and currNode
+        arr[currNode].push_back(par);
+        arr[par].push_back(currNode);
+
+        dfs(currNode + 1, k - 1, currNode);
     }
     else
     {
-        int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-        merge(all(segTree1[2 * si]), all(segTree1[2 * si + 1]), back_inserter(segTree1[si]));
-        merge(all(segTree2[2 * si]), all(segTree2[2 * si + 1]), back_inserter(segTree2[si]));
+        arr[currNode].push_back(par);
+        arr[par].push_back(currNode);
+
+        arr[currNode + 1].push_back(par);
+        arr[par].push_back(currNode + 1);
+
+        if (k)
+            dfs(currNode + 2, (k / 2) - 1, currNode);
     }
 }
 
-int upperQuery(int si, int ss, int se, int qs, int qe, int val)
+void dfs2(int node = 1, int par = 0)
 {
-    if (ss > qe || se < qs)
-        return 0;
+    if(par)cout<<par<<" "<<node<<endl;
 
-    if (qs <= ss && qe >= se)
+    for(int child: arr[node])
     {
-        return lower_bound(all(segTree1[si]), val) - segTree1[si].begin();
+        if(child == par)continue;
+        dfs2(child,node);
     }
-    int mid = (ss + se) / 2;
-    return upperQuery(2 * si, ss, mid, qs, qe, val) + upperQuery(2 * si + 1, mid + 1, se, qs, qe, val);
 }
 
-int lowerQuery(int si, int ss, int se, int qs, int qe, int val)
+void solve()
 {
-    if (ss > qe || se < qs)
-        return 0;
+    cin >> k;
 
-    if (qs <= ss && qe >= se)
+    if(k == 2)
     {
-        return lower_bound(all(segTree2[si]), val) - segTree2[si].begin();
+        cout<<1;
+        return;
     }
-    int mid = (ss + se) / 2;
-    return lowerQuery(2 * si, ss, mid, qs, qe, val) + lowerQuery(2 * si + 1, mid + 1, se, qs, qe, val);
+
+    if (k % 2)
+    {
+        dfs(1, k, 0);
+    }
+    else
+    {
+        dfs(2, k - 1, 1);
+        // totNodes++;
+        // arr[1].push_back(2);
+        // arr[2].push_back(1);
+    }
+
+    cout << totNodes << endl;
+    dfs2();
 }
 
 int main(int argc, char const *argv[])
@@ -66,51 +243,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int t, n;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    cin >> t;
+    // filptr >> input;
+    // outpter << output;
+
+    int t = 1;
+
+    //cin >> t;
 
     while (t--)
     {
-        cin >> n;
-
-        REP(i, 0, 4 * n + 1)
-        segTree1[i].clear(), segTree2[i].clear();
-
-        REP(i, 1, n + 1)
-        {
-            cin >> perA[i];
-            perAlab[perA[i]] = i;
-        }
-        REP(i, 1, n + 1)
-        {
-            cin >> perB[i];
-            perBlab[perB[i]] = i;
-        }
-
-        build(1, 1, n);
-
-        int res = 0;
-        REP(i, 1, n + 1)
-        {
-            int index1 = perAlab[i];
-            int index2 = perBlab[i];
-
-            int left1, right1;
-            int left2, right2;
-
-            // finding number of numbers less than i in left
-            left1 = upperQuery(1, 1, n, 1, index1 - 1, i);
-            right2 = lowerQuery(1, 1, n, index2 + 1, n, i);
-            res += min(left1, right2);
-
-            right1 = upperQuery(1, 1, n, index1 + 1, n, i);
-            left2 = lowerQuery(1, 1, n, 1, index2 - 1, i);
-            res += min(right1, left2);
-        }
-
-        cout << res << endl;
+        solve();
     }
+
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

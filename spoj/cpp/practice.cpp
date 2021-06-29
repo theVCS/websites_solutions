@@ -1,94 +1,133 @@
-#include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+#include <cstdio>
+#include <iostream>
+#include <sstream>
+
+#include <algorithm>
+#include <numeric>
+#include <vector>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <set>
+#include <map>
+#include <tr1/unordered_map>
+
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <complex>
+
 using namespace std;
-#define ll long long int
-//#define bint cpp_int
-#define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
-#define INF 1000000000
-#define endl "\n"
-#define all(x) (x).begin(), (x).end()
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-// while (T < q[i].t)
-//     do_update(++T);
-// while (T > q[i].t)
-//     undo(T--);
-// while (R < q[i].r)
-//     add(++R);
-// while (L > q[i].l)
-//     add(--L);
-// while (R > q[i].r)
-//     remove(R--);
-// while (L < q[i].l)
-//     remove(L++);3
 
-int n;
-int low, high;
-ll e, o;
-ll dp[maxN][2];
+typedef long long int64;
 
-ll ways(int n, int odd)
+#define PB(x) push_back(x)
+#define SZ(c) ((int)((c).size()))
+#define MP(x, y) make_pair((x), (y))
+#define ALL(c) (c).begin(), (c).end()
+#define REP(i, n) for (int i = 0; i < (int)(n); ++i)
+#define FOR(i, b, e) for (int i = (int)b; i <= (int)(e); ++i)
+#define FOREACH(it, c) for (typeof((c).begin()) it = (c).begin(); it != (c).end(); ++it)
+#define DBG(x) cout << #x << " = " << x << endl
+
+const int MAXN = 100;
+
+typedef vector< char > state;
+
+int val[MAXN];
+char dist[MAXN][MAXN][MAXN][MAXN];
+
+int reached(state & s)
 {
-    if (n == 0)
-    {
-        return odd == 0;
-    }
-    else if (dp[n][odd] != -1)
-    {
-        return dp[n][odd];
-    }
-    else
-    {
-        dp[n][0] = (o * ways(n - 1, 1) + e * ways(n - 1, 0)) % mod;
-        dp[n][1] = (o * ways(n - 1, 0) + e * ways(n - 1, 1)) % mod;
-
-        return dp[n][odd];
-    }
+	return (int)dist[s[0]][s[1]][s[2]][s[3]];
 }
 
-void solve()
+void update(state & s, int d)
 {
-    cin >> n >> low >> high;
-
-    int ele = high - low + 1;
-
-    o = ele / 2;
-    e = ele - o;
-
-    memset(dp, -1, sizeof(dp));
-
-    cout << ways(n, 0);
+	dist[s[0]][s[1]][s[2]][s[3]] = d;
 }
 
-int main(int argc, char const *argv[])
+queue< state > Q;
+
+void resumeBFS(state target)
 {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    cout.tie(NULL);
+	while (!Q.empty())
+	{
+		state top = Q.front();
+		char d = reached(top);
+		Q.pop();
+		
+		REP(i, 4)
+		{
+			if ((i && top[i] - 1 != top[i - 1]) || (i == 0 && top[i] - 1 >= 0))
+			{
+				state nxt = top;
+				--nxt[i];
+				if (!reached(nxt))
+				{
+					update(nxt, d + 1);
+					Q.push(nxt);
+				}
+			}
+			if ((i < 3 && top[i] + 1 != top[i + 1]) || (i == 3 && top[i] + 1 < 70))
+			{
+				state nxt = top;
+				++nxt[i];
+				if (!reached(nxt))
+				{
+					update(nxt, d + 1);
+					Q.push(nxt);
+				}
+			}
+		}
+		
+		REP(i, 4)
+		REP(j, 4) if (j != i)
+		{
+			int npos = top[j] + (top[j] - top[i]);
+			if (npos < 0 || npos >= 70) continue ;
+			
+			bool ok = true;
+			REP(k, 4) if (top[k] == npos) { ok = false; break; }
+			
+			if (!ok) continue ;
+			state nxt = top;
+			nxt[i] = npos;
+			sort(ALL(nxt));
+			if (!reached(nxt))
+			{
+				update(nxt, d + 1);
+				Q.push(nxt);
+			}
+		}
+		
+		if (reached(target)) break;
+	}
+}
 
-    // ifstream fi("input.txt");
-    // ofstream fo("output.txt");
+int main()
+{
+	state start;
+	REP(i, 4) start.push_back(i);
+	update(start, 1);
+	Q.push(start);
 
-    // fi >> input;
-    // fo << output;
+	int T;
+	for (scanf( "%d", &T ); T--;)
+	{
+		state target;
+		REP(i, 4)
+		{
+			int x;
+			scanf( "%d", &x );
+			x--;
+			target.push_back(x);
+		}
+		sort(ALL(target));
+		
+		if (!reached(target)) resumeBFS(target);
+		printf( "%d\n", reached(target) - 1);
+	}
 
-    int t = 1;
-
-    //cin >> t;
-
-    while (t--)
-    {
-        solve();
-    }
-
-    //fi.close();
-    //fo.close();
-
-    return 0;
+	return 0;
 }

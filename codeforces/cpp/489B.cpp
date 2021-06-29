@@ -6,37 +6,85 @@ using namespace std;
 //#define bint cpp_int
 #define pii pair<int, int>
 #define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 101
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define maxN 1000001
 #define endl "\n"
 #define INF 1000000000
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+#define printd(x) cout << fixed << setprecision(10) << x
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int boys[maxN], girls[maxN];
-
-int ways(int n, int m)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if(n == 0 || m == 0)
+    ll res = 1;
+
+    while (power)
     {
-        return 0;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
+}
+
+int n, m;
+int boys[101];
+int girls[101];
+vector<int> boysPos[101];
+
+int fun(int girl, vector<bool> boysUsed)
+{
+    if (girl == m + 1)
+        return 0;
     else
     {
-        int ways   
+        int res = fun(girl+1,boysUsed);
+
+        for (int boy : boysPos[girl])
+        {
+            if (boysUsed[boy])
+                continue;
+
+            vector<bool> newBoyUsed = boysUsed;
+            newBoyUsed[boy] = true;
+            res = max(res, 1 + fun(girl + 1, newBoyUsed));
+        }
+
+        return res;
     }
 }
 
 void solve()
 {
-    int n, m;
-    cin>>n;
+    cin >> n;
+    vector<bool> boysUsed;
+    boysUsed.push_back(false);
 
-    REP(i,1,n+1)cin>>boys[i];
-    REP(i,1,m+1)cin>>girls[i];
+    REP(i, 1, n)
+    {
+        cin >> boys[i];
+        boysUsed.push_back(false);
+    }
+    cin >> m;
+
+    REP(i, 1, m)
+    {
+        cin >> girls[i];
+
+        REP(j, 1, n)
+        {
+            if (abs(boys[j] - girls[i]) <= 1)
+                boysPos[i].push_back(j);
+        }
+    }
+
+    cout<<fun(1,boysUsed);
 }
 
 int main(int argc, char const *argv[])
