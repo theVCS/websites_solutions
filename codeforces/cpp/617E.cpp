@@ -5,37 +5,164 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
+#define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 100001
+#define INF 1000000000
 #define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1000001
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-const int N = 1e5 + 1;
-int arr[N], k, res, ans[N], n, m, XOR[N];
-bool use[1000001];
-vector<int> pairs[N];
-
-void init()
+ll binExp(ll a, ll power, ll m = mod)
 {
-    for (int i = 1; i < n + 1; i++)
+    ll res = 1;
+
+    while (power)
     {
-        for (int j = i; j < n + 1; j++)
-        {
-            if ((XOR[j] ^ XOR[i - 1]) == k)
-            {
-                pairs[i].push_back(j);
-            }
-        }
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
 }
+
+int n, q;
+ll arr[maxN], fre[1 << 20], res, ans[maxN], k, prefix[maxN];
+const int blk = 900;
 
 struct query
 {
-    int l, r, lblk, index;
-} q[N];
+    int l, r, index, lblk;
+} Q[maxN];
 
 bool cmp(query a, query b)
 {
@@ -44,12 +171,56 @@ bool cmp(query a, query b)
 
 void add(int index)
 {
-    res += pairs[index].size();
+    ll ele = prefix[index];
+    res += fre[(ele ^ k)];
+    ++fre[ele];
 }
 
 void remove(int index)
 {
-    res -= pairs[index].size();
+    ll ele = prefix[index];
+    --fre[ele];
+    res -= fre[(ele ^ k)];
+}
+
+void solve()
+{
+
+    cin >> n >> q >> k;
+
+    REP(i, 1, n)
+    cin >> arr[i];
+
+    // prefix[0] = arr[1];
+
+    REP(i,1,n)
+    prefix[i] = (prefix[i - 1] ^ arr[i]);
+
+    REP(i, 1, q)
+    {
+        cin >> Q[i].l >> Q[i].r;
+        Q[i].index = i;
+        Q[i].lblk = (--Q[i].l) / blk;
+    }
+
+    sort(Q + 1, Q + q + 1, cmp);
+
+    for (int i = 1, L = 1, R = 0; i <= q; i++)
+    {
+        while (R < Q[i].r)
+            add(++R);
+        while (L > Q[i].l)
+            add(--L);
+        while (R > Q[i].r)
+            remove(R--);
+        while (L < Q[i].l)
+            remove(L++);
+
+        ans[Q[i].index] = res;
+    }
+
+    REP(i, 1, q)
+    cout << ans[i] << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -58,49 +229,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    cin >> n >> m >> k;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    const int blk = sqrt(n);
+    // filptr >> input;
+    // outpter << output;
 
-    REP(i, 1, n + 1)
+    int t = 1;
+
+    //cin >> t;
+
+    while (t--)
     {
-        cin >> arr[i];
-        XOR[i] = XOR[i - 1] ^ arr[i];
+        solve();
     }
 
-    init();
-
-    REP(i, 1, n + 1)
-    {
-        for (int child : pairs[i])
-            cout << child << " ";
-        cout << endl;
-    }
-
-    REP(i, 1, m + 1)
-    {
-        cin >> q[i].l >> q[i].r;
-        q[i].index = i, q[i].lblk = q[i].l / blk;
-    }
-
-    sort(q + 1, q + 1 + m, cmp);
-
-    for (int i = 1, L = 1, R = 0; i < m + 1; i++)
-    {
-        while (L < q[i].l)
-            remove(L++);
-        while (L > q[i].l)
-            add(++L);
-        while (R < q[i].r)
-            add(++R);
-        while (R > q[i].r)
-            remove(R--);
-
-        ans[q[i].index] = res;
-    }
-
-    REP(i, 1, m + 1)
-    cout << ans[i] << endl;
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

@@ -4,78 +4,205 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
+#define pii pair<ll, ll>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
 #define all(x) (x).begin(), (x).end()
-const ll INF = 1e17;
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 100001
+#define INF 1000000000000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-// while (T < q[i].t)
-//     do_update(++T);
-// while (T > q[i].t)
-//     undo(T--);
-// while (R < q[i].r)
-//     add(++R);
-// while (L > q[i].l)
-//     add(--L);
-// while (R > q[i].r)
-//     remove(R--);
-// while (L < q[i].l)
-//     remove(L++);
 
-struct edge
+ll binExp(ll a, ll power, ll m = mod)
 {
-    int u, v;
-    ll w;
-};
+    ll res = 1;
 
-vector<edge> arr(2 * maxN);
-vector<ll> dis(maxN, INF);
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
 
-void bellmanFord(int m)
+int n, m;
+vector<pii>arr[maxN];
+ll dis[maxN];
+
+void bfs()
 {
+    priority_queue<pii,vector<pii>, greater<>>pq;
+    pq.push({0,1});
     dis[1] = 0;
 
-    while (true)
+    while (!pq.empty())
     {
-        bool flag = true;
-
-        REP(j, 0, m)
+        pii node = pq.top();
+        pq.pop();
+        
+        if(dis[node.second] < node.first)continue;
+        
+        for(pii child: arr[node.second])
         {
-            if (dis[arr[j].u] < INF && dis[arr[j].v] > dis[arr[j].u] + arr[j].w)
+            ll cost = child.second + node.first;
+
+            if(dis[child.first] > cost)
             {
-                flag = false;
-                dis[arr[j].v] = dis[arr[j].u] + arr[j].w;
+                dis[child.first] = cost;
+                pq.push({cost, child.first});
             }
         }
-
-        if (flag)
-            break;
     }
+    
 }
 
 void solve()
 {
-    int n, m;
-    edge e;
+    ll a, b, c;
 
     cin >> n >> m;
 
-    REP(i, 0, m)
+    REP(i,1,n)dis[i] = INF;
+
+    REP(i,1,m)
     {
-        cin >> e.u >> e.v >> e.w;
-        arr[i] = e;
+        cin >> a >> b >> c;
+        arr[a].push_back({b,c});
     }
 
-    bellmanFord(m);
+    bfs();
 
-    REP(i, 1, n + 1)
-    cout << dis[i] << " ";
+    REP(i,1,n)cout<<dis[i]<<" ";
 }
 
 int main(int argc, char const *argv[])
@@ -84,11 +211,11 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream fi("input.txt");
-    // ofstream fo("output.txt");
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    // fi >> input;
-    // fo << output;
+    // filptr >> input;
+    // outpter << output;
 
     int t = 1;
 
@@ -99,8 +226,8 @@ int main(int argc, char const *argv[])
         solve();
     }
 
-    //fi.close();
-    //fo.close();
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

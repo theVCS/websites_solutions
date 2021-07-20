@@ -1,282 +1,398 @@
-//*******************************************************************
-//              author of this code is : horcrux903
-//*******************************************************************
-//        THERE IS ALWAYS A WAY TO GO IF YOU LOOK FOR IT
-//*******************************************************************
-
-//*******************************************************************
-
 #include <bits/stdc++.h>
-// #include <ext/pb_ds/assoc_container.hpp>
-// #include <ext/pb_ds/tree_policy.hpp>
-
-#define ll long long int
-#define ull unsigned long long int
-#define ld long double
-#define F(i, a, n) for (long long int i = a; i < n; i++)
-#define FO(i, a, n) for (long long int i = n - 1; i >= a; i--)
-#define fast()               \
-    ios::sync_with_stdio(0); \
-    cin.tie(0);              \
-    cout.tie(0);
-#define endl "\n"
-#define set0(a) memset(a, 0, sizeof(a))
-#define set1(a) memset(a, -1, sizeof(a))
-#define setf(a) memset(a, false, sizeof(a))
-#define pb(i) push_back(i)
-#define eb(i) emplace_back(i)
-#define len(s) s.length()
-#define precision 0.00000001
-#define M 1000000007
-#define mp make_pair
-#define PI 3.141592653589793238462643383279
-#define ss second
-#define ff first
-#define vll vector<long long int>
-#define vpair vector<pair<long long int, long long int>>
-#define vvpair vector<vector<pair<long long int, long long int>>>
-const long long int INF = 1e18L + 5;
-
+//#include <boost/multiprecision/cpp_int.hpp>
+//using namespace boost::multiprecision;
 using namespace std;
+#define ll long long int
+//#define bint cpp_int
+#define pii pair<int, int>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
+#define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
 
-// using namespace __gnu_pbds;
-// template <typename T>
-// using ordered_Set = tree<T, null_type, less<T>,
-//       rb_tree_tag, tree_order_statistics_node_update>;
-
-//*******************************************************************
-
-// mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-void input()
+struct point
 {
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-#endif
-}
+    ll x, y, z;
+    int index;
 
-//********************************************************************
-
-ll gcd(ll a, ll b)
-{
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
-// ll lcm(ll a, ll b)
-// {
-//     return (a * b) / gcd(a, b);
-// }
-
-//********************************************************************
-
-ll power(ll x, ll y, ll mod)
-{
-    ll ans = 1;
-
-    x = x % mod;
-
-    while (y > 0)
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
     {
-        if (y & 1)
-            ans = ((ans % mod) * (x % mod)) % mod;
-
-        y = y >> 1;
-        x = ((x % mod) * (x % mod)) % mod;
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
     }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
     return ans;
 }
 
-//********************************************************************
-
-// ll f[200006];
-
-// ll ncr(ll n, ll r)
-// {
-//     if (n < r)
-//     {
-//         return 0;
-//     }
-//     ll num = f[n];
-//     ll temp = (f[r] * (f[n - r])) % M;
-//     ll ans = num * power(temp, M - 2, M);
-//     return (ans % M);
-// }
-
-//********************************************************************
-
-// ll bs(vll &arr, ll target, ll end)
-// {
-//     ll start = 0;
-
-//     ll ans = -1;
-
-//     while (start <= end)
-//     {
-//         ll mid = start + (end - start) / 2;
-
-//         if (arr[mid] < target)
-//             start = mid + 1;
-
-//         else
-//         {
-//             ans = mid;
-//             end = mid - 1;
-//         }
-//     }
-
-//     return ans;
-// }
-
-//*******************************************************************
-
-// bool prime[10000006];
-// vll v, v1;
-
-// void SieveOfEratosthenes(int n)
-// {
-//     memset(prime, true, sizeof(prime));
-
-//     prime[0] = prime[1] = false;
-
-//     for (int p = 2; p * p <= n; p ++)
-//     {
-//         if (prime[p] == true)
-//         {
-//             for (int i = p * p; i <= n; i += p)
-//             {
-//                 prime[i] = false;
-//             }
-//         }
-//     }
-
-//     for (int p = 2; p <= n; p++)
-//         if (prime[p])
-//         {
-//             v.eb(p);
-//             v1.eb(p);
-//         }
-// }
-
-//*******************************************************************
-
-vll v[100005];
-bool vis[100005];
-
-ll mdist, mnode;
-
-void dfs(ll i, ll dist = 0)
+point cross(point a, point b)
 {
-    vis[i] = true;
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
 
-    if (dist >= mdist)
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
     {
-        mdist = dist;
-        mnode = i;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, m;
+
+// initialization
+vector<int> arr[maxN];
+int level[maxN], parent[maxN][19];
+
+// flattening tree
+int FT[2 * maxN], intime[maxN], outime[maxN], timer;
+int nodeFre[maxN];
+
+// answer
+ll ans[maxN], res;
+
+void euler(int node = 1, int par = -1, int l = 0)
+{
+    intime[node] = ++timer;
+    FT[timer] = node;
+    parent[node][0] = par;
+    level[node] = l;
+
+    for (int child : arr[node])
+    {
+        if (child != par)
+        {
+            euler(child, node, l + 1);
+        }
     }
 
-    for (auto x : v[i])
+    outime[node] = ++timer;
+    FT[timer] = node;
+}
+
+void init(int n)
+{
+    euler();
+
+    for (int j = 1; j < 19; j++)
     {
-        if (!vis[x])
+        for (int i = 1; i <= n; i++)
         {
-            dfs(x, dist + 1);
+            if (parent[i][j - 1] == -1)
+            {
+                parent[i][j] = -1;
+            }
+            else
+            {
+                parent[i][j] = parent[parent[i][j - 1]][j - 1];
+            }
         }
     }
 }
 
-ll n, m;
-auto seed = chrono::high_resolution_clock::now().time_since_epoch().count();
-mt19937 mt(seed);
-
-int myrand(int mod = n)
+int LCA(int a, int b)
 {
-    return (mt() % mod) + 1;
+    if (level[a] < level[b])
+        swap(a, b);
+
+    int d = level[a] - level[b];
+
+    while (d)
+    {
+        int i = log2(d);
+        a = parent[a][i];
+        d -= 1 << i;
+    }
+
+    if (a == b)
+        return a;
+
+    for (int i = 18; i >= 0; i--)
+    {
+        if (parent[a][i] != -1 && parent[a][i] != parent[b][i])
+        {
+            a = parent[a][i], b = parent[b][i];
+        }
+    }
+
+    return parent[a][0];
+}
+
+inline int64_t gilbertOrder(int x, int y, int pow, int rotate) {
+	if (pow == 0) {
+		return 0;
+	}
+	int hpow = 1 << (pow-1);
+	int seg = (x < hpow) ? (
+		(y < hpow) ? 0 : 3
+	) : (
+		(y < hpow) ? 1 : 2
+	);
+	seg = (seg + rotate) & 3;
+	const int rotateDelta[4] = {3, 0, 0, 1};
+	int nx = x & (x ^ hpow), ny = y & (y ^ hpow);
+	int nrot = (rotate + rotateDelta[seg]) & 3;
+	int64_t subSquareSize = int64_t(1) << (2*pow - 2);
+	int64_t ans = seg * subSquareSize;
+	int64_t add = gilbertOrder(nx, ny, pow-1, nrot);
+	ans += (seg == 1 || seg == 2) ? add : (subSquareSize - add - 1);
+	return ans;
+}
+
+struct query
+{
+    int l, r, lca, index, ord;
+
+    inline void calcOrder() {
+		ord = gilbertOrder(l, r, 21, 0);
+	}
+} Q[maxN];
+
+bool cmp(query a, query b)
+{
+    return a.ord < b.ord;
+}
+
+void add(int index)
+{
+    int node = FT[index];
+    nodeFre[node]++;
+
+    if (nodeFre[node] == 1)
+    {
+        res++;
+    }
+    else if (nodeFre[node] == 2)
+    {
+        res--;
+    }
+}
+
+void remove(int index)
+{
+    int node = FT[index];
+    nodeFre[node]--;
+
+    if (nodeFre[node] == 1)
+    {
+        res++;
+    }
+    else if (nodeFre[node] == 0)
+    {
+        res--;
+    }
 }
 
 void solve()
 {
-    setf(vis);
+    int a, b;
+    scanf("%d%d", &n, &m);
 
-    cin >> n >> m;
-
-    F(i, 0, m)
+    REP(i, 1, n - 1)
     {
-        ll x, y;
-        cin >> x >> y;
-
-        v[x].pb(y);
-        v[y].pb(x);
+        scanf("%d %d", &a, &b);
+        arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    dfs(1);
+    init(n);
 
-    F(i, 1, n + 1)
+    REP(i, 1, m)
     {
-        if (!vis[i])
+        scanf("%d %d", &a, &b);
+
+        if (intime[a] > intime[b])
+            swap(a, b);
+
+        int lca = LCA(a, b);
+
+        if (lca == a)
         {
-            cout << "-1";
-            return;
+            Q[i].l = intime[a];
+            Q[i].lca = -1;
+        }
+        else
+        {
+            Q[i].l = outime[a];
+            Q[i].lca = lca;
+        }
+
+        Q[i].r = intime[b];
+        Q[i].index = i;
+        Q[i].calcOrder();
+    }
+
+    sort(Q + 1, Q + 1 + m, cmp);
+
+    for (int i = 1, L = 1, R = 0; i <= m; i++)
+    {
+        while (L < Q[i].l)
+            remove(L++);
+        while (L > Q[i].l)
+            add(--L);
+        while (R < Q[i].r)
+            add(++R);
+        while (R > Q[i].r)
+            remove(R--);
+
+        ans[Q[i].index] = res;
+
+        int lca = Q[i].lca;
+
+        if (lca > 0)
+        {
+            // perform operation on lca
         }
     }
 
-    ll ans = 0, val = 1, dis = 0;
-
-    F(i, 1, 1001)
-    {
-        setf(vis);
-        int node = myrand();
-        mnode = 0, mdist = 0;
-        dfs(node);
-        dfs(mnode);
-        dis = max(dis, mdist);
-    }
-
-    mdist = dis;
-
-    // while (val < mdist)
-    // {
-    //     val = val * 2;
-    //     ans++;
-    // }
-
-    cout << ceil(log2(mdist));
+    REP(i, 1, m)
+    printf("%d\n", ans[i]);
 }
 
-//*******************************************************************
-
-int main()
+void solve()
 {
+    
+}
 
-    fast()
-        input(); //comment this during codejam/kickstart
+int main(int argc, char const *argv[])
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    // SieveOfEratosthenes(10000006);
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    // f[0] = 1;
+    // filptr >> input;
+    // outpter << output;
 
-    // F(i, 1, 2e5 + 1)
-    // {
-    //     f[i] = (f[i - 1] * i) % M;
-    // }
+    int t = 1;
 
-    // F(i, 1, v1.size())
-    // {
-    //     v1[i] += v1[i - 1];
-    // }
-
-    int t = 1, i = 1;
-    // cin >> t;
+    //cin >> t;
 
     while (t--)
     {
-        // cout << "Case #" << i << ": ";      //only during google contest
-        // i++;                                //only during google contest
-
         solve();
-        cout << endl;
     }
-}
 
-//*******************************************************************
+    //filptr.close();
+    //outpter.close();
+
+    return 0;
+}

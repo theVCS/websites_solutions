@@ -5,57 +5,229 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
+#define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
 #define maxN 300001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN], res;
-vector<int> segTree[4 * maxN];
-
-void build(int si, int ss, int se)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    if (ss == se)
+    ll res = 1;
+
+    while (power)
     {
-        segTree[si].push_back(arr[ss]);
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
-    else
-    {
-        int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-
-        int i = 0, j = 0;
-
-        while (i < segTree[2 * si].size() && j < segTree[2 * si + 1].size())
-        {
-            if (segTree[2 * si][i] <= segTree[2 * si + 1][j])
-                segTree[si].push_back(segTree[2 * si][i]), i++;
-            else
-                segTree[si].push_back(segTree[2 * si + 1][j]), j++;
-        }
-
-        while (i < segTree[2 * si].size())
-            segTree[si].push_back(segTree[2 * si][i]), i++;
-        while (j < segTree[2 * si + 1].size())
-            segTree[si].push_back(segTree[2 * si + 1][j]), j++;
-    }
+    return res;
 }
 
-void solve(int si, int ss, int se, int qs, int qe, int minFre)
+int n, q;
+ll arr[maxN], fre[maxN], ans[maxN];
+const int blk = 4482;
+
+struct query
 {
-    if (ss > qe || se < qs)
+    int l, r, index, lblk, k;
+} Q[maxN];
+
+bool cmp(query a, query b)
+{
+    return (a.lblk < b.lblk) || (a.lblk == b.lblk && a.r < b.r);
+}
+
+void add(int index)
+{
+    ll ele = arr[index];
+    fre[ele]++;
+}
+
+void remove(int index)
+{
+    ll ele = arr[index];
+    fre[ele]--;
+}
+
+int getAns(int l, int r, int k)
+{
+    int ans = INF;
+
+    REP(i,1,100)
     {
-        return;
+        int index = (rand() * i) % (r - l + 1) + l;
+        if(fre[arr[index]] > k)ans = min(ans*1LL, arr[index]);
     }
 
-    if (qs <= ss && qe >= se)
+    return (ans == INF) ? -1 : ans;
+}
+
+void solve()
+{
+
+    cin >> n >> q;
+
+    REP(i, 1, n)
+    cin >> arr[i];
+
+    REP(i, 1, q)
     {
-        return;
+        cin >> Q[i].l >> Q[i].r >> Q[i].k;
+        Q[i].index = i;
+        Q[i].lblk = Q[i].l / blk;
     }
+
+    sort(Q + 1, Q + q + 1, cmp);
+
+    for (int i = 1, L = 1, R = 0; i <= q; i++)
+    {
+        while (R < Q[i].r)
+            add(++R);
+        while (L > Q[i].l)
+            add(--L);
+        while (R > Q[i].r)
+            remove(R--);
+        while (L < Q[i].l)
+            remove(L++);
+
+        int k = ((Q[i].r - Q[i].l + 1) / Q[i].k);
+        ans[Q[i].index] = getAns(Q[i].l, Q[i].r, k);
+    }
+
+    REP(i, 1, q)
+    cout << ans[i] << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -64,24 +236,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, l, r, k;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    cin >> n >> m;
+    // filptr >> input;
+    // outpter << output;
 
-    REP(i, 1, n + 1)
-    cin >> arr[i];
+    int t = 1;
 
-    build(1, 1, n);
+    //cin >> t;
 
-    cin >> m;
-
-    while (m--)
+    while (t--)
     {
-        res = INT_MAX;
-        cin >> l >> r >> k;
-        solve(1, 1, n, l, r, (r - l + 1) / k);
-        cout << (res == INT_MAX ? -1 : res) << endl;
+        solve();
     }
+
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

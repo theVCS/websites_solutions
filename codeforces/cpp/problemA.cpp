@@ -131,7 +131,7 @@ int direction(point pivot, point a, point b)
     return t;
 }
 
-#define maxN 200001
+#define maxN 300001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -156,63 +156,61 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-ll arr[maxN];
-ll segTree[maxN * 4];
+vector<int>arr[maxN];
+int nodeX, dis = -1;
+queue<int>q;
+int dist[maxN];
 
-ll query(int si, int ss, int se, int qs, int qe)
+void dfs(int node = 1, int par = -1, int lev = 0)
 {
-    if (ss > qe || se < qs)
-        return INF;
-
-    if (qs <= ss && qe >= se)
-        return segTree[si];
-
-    int mid = (ss + se) / 2;
-    return min(query(2 * si, ss, mid, qs, qe), query(2 * si + 1, mid + 1, se, qs, qe));
-}
-
-void update(int si, int ss, int se, int qi, ll val)
-{
-    if (ss == se)
+    if(lev > dis)
     {
-        segTree[si] = val;
-        return;
+        dis = lev;
+        nodeX = node;
     }
 
-    int mid = (ss + se) / 2;
-
-    if (qi <= mid)
+    for(int child: arr[node])
     {
-        update(2 * si, ss, mid, qi, val);
-    }
-    else
-    {
-        update(2 * si + 1, mid + 1, se, qi, val);
+        if(child == par)continue;
+        dfs(child,node,lev+1);
     }
 
-    segTree[si] = min(segTree[2 * si], segTree[2 * si + 1]);
+    dist[node] = dis;
 }
 
 void solve()
 {
+    int a, b;
     cin >> n;
 
-    REP(i, 1, n)
+    REP(i,1,n-1)
     {
-        cin >> arr[i];
-        arr[i] += arr[i - 1];
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    int l, r;
-    cout << 0 << " ";
+    dfs();
+    REP(i,1,n)if(dist[i]==dis)q.push(i), dis = 0;
 
-    REP(i, 2, n)
+    while (!q.empty())
     {
-        cin >> l >> r;
-        ll res = arr[i] + query(1, 1, n, l, r);
-        update(1, 1, n, i, res - arr[i - 1]);
-        cout << res << " ";
+        int node = q.front();
+        q.pop();
+
+        for(int child: arr[node])
+        {
+            if(dist[child] < dist[node] + 1)
+            {
+                dist[child] = dist[node] + 1;
+                q.push(node);
+                dis=max(dis,dist[child]);
+            }
+        }   
     }
+    
+    REP(i,1,n)
+    if(dist[i]==0||dist[i]==dis)cout<<dis+1<<" ";
+    else cout<<dis<<" ";
 }
 
 int main(int argc, char const *argv[])

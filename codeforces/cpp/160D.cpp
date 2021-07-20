@@ -4,84 +4,276 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
+#define pii pair<int, int>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
+#define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
 #define maxN 100001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<int> arr[maxN];
-bool vis[maxN];
-map<pair<int, int>, bool> bridges;
-int intime[maxN], low[maxN], timer;
-map<int, int> counter, totalCounter;
-
-// finding bridges using Tarjan's Algo
-void dfs(int node, int par = -1)
+ll binExp(ll a, ll power, ll m = mod)
 {
-    vis[node] = true;
-    intime[node] = low[node] = ++timer;
+    ll res = 1;
 
-    for (int child : arr[node])
+    while (power)
     {
-        if (child == par)
-        {
-            continue;
-        }
-        else if (vis[child])
-        {
-            low[node] = min(low[node], intime[child]);
-        }
-        else
-        {
-            dfs(child, node);
-            low[node] = min(low[node], low[child]);
-
-            if (intime[node] < low[child])
-            {
-                bridges[{node, child}] = true;
-            }
-        }
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
     }
+    return res;
 }
 
-// applying kruskal's algo
+int n, m;
 struct edge
 {
-    int a, b, w;
+    int a;
+    int b;
+    ll w;
+    int index;
 };
-edge edr[maxN], _edr[maxN];
+edge arr[maxN];
+int par[maxN];
 
 bool cmp(edge a, edge b)
 {
-    if (a.w < b.w)
-    {
-        return true;
-    }
-    return false;
+    return (a.w < b.w);
 }
-
-vector<int> par(maxN, -1);
 
 int find(int a)
 {
     if (par[a] < 0)
-    {
         return a;
-    }
-    return par[a] = find(par[a]);
+    else
+        return par[a] = find(par[a]);
 }
 
 void merge(int a, int b)
 {
     if (par[a] > par[b])
-    {
         swap(a, b);
-    }
+
     par[a] += par[b];
     par[b] = a;
+}
+
+int ans[maxN];
+
+// 1 - any
+// 2 - none
+// 3 - at least one
+
+vector<edge> e;
+map<pii, int> mp;
+
+void solve()
+{
+    cin >> n >> m;
+
+    REP(i, 1, n)
+    {
+        par[i] = -1;
+    }
+
+    REP(i, 1, m)
+    {
+        cin >> arr[i].a >> arr[i].b >> arr[i].w;
+        arr[i].index = i;
+    }
+
+    sort(arr + 1, arr + 1 + m, cmp);
+
+    REP(i, 1, m)
+    {
+        e.clear(), mp.clear();
+        e.push_back(arr[i]);
+        int j = i + 1;
+
+        while (j <= m && arr[j].w == arr[i].w)
+        {
+            e.push_back(arr[j]);
+            j++;
+        }
+
+        for (edge edg : e)
+        {
+            int a = find(edg.a);
+            int b = find(edg.b);
+
+            if (a > b)
+                swap(a, b);
+
+            if (a != b)
+                mp[{a, b}]++;
+        }
+
+        for (edge edg : e)
+        {
+            int a = find(edg.a);
+            int b = find(edg.b);
+
+            if (a > b)
+                swap(a, b);
+
+            if (mp[{a, b}] == 1)
+            {
+                ans[edg.index] = 1;
+            }
+            else if (mp[{a, b}] == 0)
+            {
+                ans[edg.index] = 2;
+            }
+            else
+            {
+                ans[edg.index] = 3;
+            }
+        }
+
+        for (edge edg : e)
+        {
+            int a = find(edg.a);
+            int b = find(edg.b);
+
+            if (a != b)
+                merge(a, b);
+        }
+
+        i = j - 1;
+    }
+
+    REP(i, 1, m)
+    cout << ans[i] << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -90,52 +282,23 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    int n, m, a, b, w;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    cin >> n >> m;
+    // filptr >> input;
+    // outpter << output;
 
-    REP(i, 0, m)
+    int t = 1;
+
+    //cin >> t;
+
+    while (t--)
     {
-        cin >> a >> b >> w;
-        arr[a].push_back(b);
-        arr[b].push_back(a);
-        edr[i].a = a, _edr[i].a = a;
-        edr[i].b = b, _edr[i].b = b;
-        edr[i].w = w, _edr[i].w = w;
+        solve();
     }
 
-    dfs(1);
-
-    sort(edr, edr + m, cmp);
-
-    REP(i, 0, m)
-    {
-        a = find(edr[i].a);
-        b = find(edr[i].b);
-        totalCounter[edr[i].w]++;
-
-        if (a != b)
-        {
-            merge(a, b);
-            counter[edr[i].w]++;
-        }
-    }
-
-    REP(i, 0, m)
-    {
-        if (bridges[{_edr[i].a, _edr[i].b}] || bridges[{_edr[i].b, _edr[i].a}] || counter[_edr[i].w] == totalCounter[_edr[i].w])
-        {
-            cout << "any" << endl;
-        }
-        else if (counter[_edr[i].w] && counter[_edr[i].w] < totalCounter[_edr[i].w])
-        {
-            cout << "at least one" << endl;
-        }
-        else
-        {
-            cout << "none" << endl;
-        }
-    }
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

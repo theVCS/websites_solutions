@@ -5,51 +5,232 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 10001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 99999999
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, m;
+int q[maxN];
+
+struct edge
+{
+    int a;
+    int b;
+    ll w;
+};
+edge arr[maxN];
+int par[maxN];
+int cc;
+
+bool comp(edge a, edge b)
+{
+    if(q[a.a] == q[b.a])return a.w < b.w;
+    // if(q[a.a] == q[b.a])return q[a.b] > q[b.b];
+    return (q[a.a] > q[b.a]);
+}
+
+int find(int a)
+{
+    if (par[a] < 0)
+        return a;
+    else
+        return par[a] = find(par[a]);
+}
+
+void merge(int a, int b)
+{
+    if (par[a] > par[b])
+        swap(a, b);
+
+    par[a] += par[b];
+    par[b] = a;
+    cc--;
+}
+
 void solve()
 {
-    int n, m;
-    int a, b, c;
-    scanf("%d", &n);
-    vector<int> q(n);
-    vector<int> sp(n, 99999999);
+    cin >> n;
 
-    for (int i = 0; i < n; ++i)
-        scanf("%d", &q[i]);
-    scanf("%d", &m);
-    for (int i = 0; i < m; ++i)
+    REP(i, 1, n)
     {
-        scanf("%d%d%d", &a, &b, &c);
-        a--;
-        b--;
-        if (q[a] > q[b])
-            if (sp[b] > c)
-                sp[b] = c;
+        cin >> q[i];
+        par[i] = -1;
     }
 
-    int tt = 0;
-    int sum = 0;
-    for (int i = 0; i < n; ++i)
+    cin >> m;
+
+    REP(i, 1, m)
     {
-        if (sp[i] == 99999999)
-            tt++;
-        else
-            sum += sp[i];
+        cin >> arr[i].a >> arr[i].b >> arr[i].w;
     }
-    if (tt == 1)
-        printf("%d\n", sum);
+
+    sort(arr + 1, arr + m + 1, comp);
+
+    ll sum = 0;
+    cc = n;
+
+    REP(i, 1, m)
+    {
+        int a = find(arr[i].a);
+        int b = find(arr[i].b);
+
+        if (a != b)
+        {
+            sum += arr[i].w;
+            merge(a, b);
+        }
+    }
+
+    if (cc == 1)
+        cout << sum;
     else
-        printf("-1\n");
+        cout << -1;
 }
 
 int main(int argc, char const *argv[])

@@ -5,67 +5,222 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 400001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 400001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<int> arr[maxN];
-int col[maxN];
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
 
-// applying dfs
-int intime[maxN], outime[maxN], FT[2 * maxN], timer;
-void dfs(int node = 1, int par = -1)
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+int col[maxN];
+int n, q;
+int FT[2 * maxN], intime[maxN], outime[maxN], timer;
+vector<int> arr[maxN];
+
+void euler(int node, int par = -1)
 {
     intime[node] = ++timer;
     FT[timer] = node;
 
     for (int child : arr[node])
     {
-        if (child == par)
-            continue;
-        dfs(child, node);
+        if (child != par)
+        {
+            euler(child, node);
+        }
     }
 
     outime[node] = ++timer;
     FT[timer] = node;
 }
 
-// building segment tree
-set<int> segTree[maxN * 4];
-int lazy[maxN * 4];
+ll segTree[8 * maxN], lazy[8 * maxN];
 
 void build(int si, int ss, int se)
 {
     if (ss == se)
     {
-        int node = FT[ss];
-        segTree[si].insert(col[node]);
+        segTree[si] = (1LL << col[FT[ss]]);
     }
     else
     {
         int mid = (ss + se) / 2;
         build(2 * si, ss, mid);
         build(2 * si + 1, mid + 1, se);
-
-        set_union(all(segTree[2 * si]), all(segTree[2 * si + 1]), inserter(segTree[si], segTree[si].begin()));
+        segTree[si] = (segTree[2 * si] | segTree[2 * si + 1]);
     }
 }
 
-set<int> colCnt;
-
-void query(int si, int ss, int se, int qs, int qe)
+ll query(int si, int ss, int se, int qs, int qe)
 {
     if (lazy[si])
     {
-        segTree[si].clear();
-        segTree[si].insert(lazy[si]);
+        segTree[si] = lazy[si];
+
+        if (ss != se)
+            lazy[2 * si] = lazy[si], lazy[2 * si + 1] = lazy[si];
+
+        lazy[si] = 0;
+    }
+
+    if (ss > qe || se < qs)
+        return 0;
+
+    if (qs <= ss && qe >= se)
+        return segTree[si];
+
+    int mid = (ss + se) / 2;
+    return (query(2 * si, ss, mid, qs, qe) | query(2 * si + 1, mid + 1, se, qs, qe));
+}
+
+void update(int si, int ss, int se, int qs, int qe, ll val)
+{
+    if (lazy[si])
+    {
+        segTree[si] = lazy[si];
 
         if (ss != se)
             lazy[2 * si] = lazy[si], lazy[2 * si + 1] = lazy[si];
@@ -78,102 +233,70 @@ void query(int si, int ss, int se, int qs, int qe)
 
     if (qs <= ss && qe >= se)
     {
-        colCnt.insert(all(segTree[si]));
-        return;
-    }
-
-    int mid = (ss + se) / 2;
-    query(2 * si, ss, mid, qs, qe);
-    query(2 * si + 1, mid + 1, se, qs, qe);
-}
-
-void update(int si, int ss, int se, int qs, int qe, int c)
-{
-    if (lazy[si])
-    {
-        segTree[si].clear();
-        segTree[si].insert(lazy[si]);
+        segTree[si] = val;
 
         if (ss != se)
-            lazy[2 * si] = lazy[si], lazy[2 * si + 1] = lazy[si];
-
-        lazy[si] = 0;
-    }
-
-    if (qs > se || qe < ss)
-        return;
-
-    if (qs <= ss && qe >= se)
-    {
-        segTree[si].clear();
-        segTree[si].insert(c);
-
-        if (ss != se)
-            lazy[2 * si] = c, lazy[2 * si + 1] = c;
+            lazy[2 * si] = val, lazy[2 * si + 1] = val;
 
         return;
     }
 
     int mid = (ss + se) / 2;
-    update(2 * si, ss, mid, qs, qe, c);
-    update(2 * si + 1, mid + 1, se, qs, qe, c);
+    update(2 * si, ss, mid, qs, qe, val);
+    update(2 * si + 1, mid + 1, se, qs, qe, val);
 
-    segTree[si].clear();
-    set_union(all(segTree[2 * si]), all(segTree[2 * si + 1]), inserter(segTree[si], segTree[si].begin()));
+    segTree[si] = (segTree[2 * si] | segTree[2 * si + 1]);
 }
 
 void solve()
 {
-    int n, m, a, b, v, c, code;
+    ll a, b;
+    cin >> n >> q;
 
-    cin >> n >> m;
+    REP(i, 1, n)
+    cin >> col[i];
 
-    REP(i, 1, n + 1)
-    // cin >> col[i];
-    scanf("%d", col + i);
-
-    REP(i, 0, n - 1)
+    REP(i, 1, n - 1)
     {
-        // cin >> a >> b;
-        scanf("%d %d", &a, &b);
+        cin >> a >> b;
         arr[a].push_back(b), arr[b].push_back(a);
     }
 
-    dfs();
+    euler(1);
     build(1, 1, timer);
 
-    REP(i, 0, m)
+    int code;
+
+    REP(i, 1, q)
     {
-        // cin >> code;
-        scanf("%d", &code);
+        cin >> code;
 
         if (code == 1)
         {
-            // change color of all the vertex to c in subtree of v
-            // cin >> v >> c;
-            scanf("%d %d", &v, &c);
-            update(1, 1, timer, intime[v], outime[v], c);
+            cin >> a >> b;
+            update(1, 1, timer, intime[a], outime[a], (1LL << b));
         }
         else
         {
-            // find number of distinct colors in subtree of v
-            // cin >> v;
-            scanf("%d", &v);
+            cin >> a;
+            ll ans = query(1, 1, timer, intime[a], outime[a]);
 
             int cnt = 0;
-            query(1, 1, timer, intime[v], outime[v]);
-            // cout << colCnt.size() << endl;
-            printf("%d\n", colCnt.size());
-            colCnt.clear();
+
+            REP(j, 1, 60)
+            if (ans & (1LL << j))
+                cnt++;
+
+            cout << cnt << endl;
         }
     }
 }
 
 int main(int argc, char const *argv[])
 {
-    //     ios_base::sync_with_stdio(false);
-    //     cin.tie(NULL);
-    //     cout.tie(NULL);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
     // ifstream filptr("input.txt");
     // ofstream outpter("output.txt");

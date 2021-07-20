@@ -16,6 +16,7 @@ using namespace std;
 vector<pii> arr[maxN];
 int dist[maxN];
 int parent[maxN];
+bool vis[maxN];
 
 void dijk(int node = 1)
 {
@@ -26,11 +27,14 @@ void dijk(int node = 1)
     {
         int d = q.top().first;
         int curr = q.top().second;
+        vis[curr] = true;
         q.pop();
+
+        if(dist[curr] < d)continue;
 
         for (pii e : arr[curr])
         {
-            if (d + e.second < dist[e.first])
+            if (d + e.second < dist[e.first] && vis[e.first]==false)
             {
                 dist[e.first] = d + e.second;
                 q.push({dist[e.first], e.first});

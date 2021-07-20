@@ -5,38 +5,178 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 200001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 200001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n;
-
-struct edges
+ll binExp(ll a, ll power, ll m = mod)
 {
-    int u, v, w, index;
-} edge[maxN];
+    ll res = 1;
 
-bool cmp(edges a, edges b)
-{
-    return a.w < b.w;
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
 }
 
-// now making mst
-vector<pii> tree[maxN];
+int n, m;
+struct edge
+{
+    int a;
+    int b;
+    ll w;
+    int index;
+};
+edge edg[maxN];
 int par[maxN];
+
+bool comp(edge a, edge b)
+{
+    return (a.w < b.w);
+}
 
 int find(int a)
 {
     if (par[a] < 0)
         return a;
-    return par[a] = find(par[a]);
+    else
+        return par[a] = find(par[a]);
 }
 
 void merge(int a, int b)
@@ -47,37 +187,38 @@ void merge(int a, int b)
     par[a] += par[b];
     par[b] = a;
 }
-// formed tree upto this point now going to apply hld now
 
-// I. applying dfs on tree
-int subSize[maxN], parent[maxN][20], level[maxN];
-pair<int, int> specialChild[maxN];
+int level[maxN], parent[maxN][20], subSize[maxN];
+vector<pair<int, ll>> tree[maxN];
+pair<int, ll> specialChild[maxN];
 
+// dfs call on given tree for pre-computation
 void dfs(int node = 1, int par = -1, int l = 0)
 {
-    level[node] = l;
     parent[node][0] = par;
+    level[node] = l;
     subSize[node] = 1;
 
-    int sc = -1, wt = 0, mxSize = 0;
+    int nodeX = -1, size = 0;
+    ll weight = 0;
 
-    for (pii child : tree[node])
+    for (pair<int, ll> child : tree[node])
     {
         if (child.first == par)
             continue;
+
         dfs(child.first, node, l + 1);
+
         subSize[node] += subSize[child.first];
 
-        if (subSize[child.first] > mxSize)
-        {
-            mxSize = subSize[child.first], sc = child.first, wt = child.second;
-        }
+        if (size < subSize[child.first])
+            size = subSize[child.first], nodeX = child.first, weight = child.second;
     }
 
-    specialChild[node] = {sc, wt};
+    // special child calculation
+    specialChild[node] = {nodeX, weight};
 }
 
-// dyanmically initializing the parent arrar
 void init()
 {
     dfs();
@@ -94,7 +235,79 @@ void init()
     }
 }
 
-// finding lca
+int timer, label[maxN], chainHead[maxN];
+ll arr[maxN];
+
+// heavy light decomposition part
+void HLD(int node = 1, int par = -1, ll val = 0)
+{
+    label[node] = timer;
+    arr[timer++] = val;
+
+    int sc = specialChild[node].first;
+
+    if (sc != -1)
+    {
+        chainHead[sc] = chainHead[node];
+        HLD(sc, node, specialChild[node].second);
+    }
+
+    for (pii child : tree[node])
+    {
+        if (child.first == sc || child.first == par)
+            continue;
+        HLD(child.first, node, child.second);
+    }
+}
+
+// segment tree
+ll segTree[maxN * 4];
+
+void build(int si, int ss, int se)
+{
+    if (ss == se)
+    {
+        segTree[si] = arr[ss];
+    }
+    else
+    {
+        int mid = (ss + se) / 2;
+        build(2 * si, ss, mid);
+        build(2 * si + 1, mid + 1, se);
+        segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
+    }
+}
+
+ll query(int si, int ss, int se, int qs, int qe)
+{
+    if (ss > qe || se < qs)
+        return 0;
+    if (qs <= ss && qe >= se)
+        return segTree[si];
+
+    int mid = (ss + se) / 2;
+    return max(query(2 * si, ss, mid, qs, qe), query(2 * si + 1, mid + 1, se, qs, qe));
+}
+
+void update(int si, int ss, int se, int qi)
+{
+    if (ss == se)
+    {
+        segTree[si] = arr[ss];
+        return;
+    }
+
+    int mid = (ss + se) / 2;
+
+    if (qi <= mid)
+        update(2 * si, ss, mid, qi);
+    else
+        update(2 * si + 1, mid + 1, se, qi);
+
+    segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
+}
+
+// LCA finder
 int LCA(int a, int b)
 {
     if (level[a] < level[b])
@@ -115,16 +328,14 @@ int LCA(int a, int b)
     for (int i = 19; i >= 0; i--)
     {
         if (parent[a][i] != -1 && parent[a][i] != parent[b][i])
-        {
-            a = parent[a][i];
-            b = parent[b][i];
-        }
+            a = parent[a][i], b = parent[b][i];
     }
+
     return parent[a][0];
 }
 
-// element shifter
-int kAnces(int a, int d)
+// k-th ancestor finder
+int kAncestor(int a, int d)
 {
     while (d)
     {
@@ -136,72 +347,18 @@ int kAnces(int a, int d)
     return a;
 }
 
-// applying HLD on tree
-int chainHead[maxN], label[maxN], arr[maxN], timer;
-
-void HLD(int node = 1, int par = -1, int val = 0)
+// will give answer for the given query between node and ancestor
+ll queryHLD(int node, int ances)
 {
-    label[node] = timer;
-    arr[timer++] = val;
-
-    int sc = specialChild[node].first;
-
-    if (sc != -1)
-    {
-        chainHead[sc] = chainHead[node];
-        HLD(sc, node, specialChild[node].second);
-    }
-
-    for (pii child : tree[node])
-    {
-        if (child.first == par || child.first == sc)
-            continue;
-        HLD(child.first, node, child.second);
-    }
-}
-
-// now building segment tree
-int segTree[4 * maxN];
-
-void build(int si, int ss, int se)
-{
-    if (ss == se)
-    {
-        segTree[si] = arr[ss];
-    }
-    else
-    {
-        int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-        segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
-    }
-}
-
-int query(int si, int ss, int se, int qs, int qe)
-{
-    if (ss > qe || se < qs)
-        return 0;
-
-    if (qs <= ss && qe >= se)
-        return segTree[si];
-
-    int mid = (ss + se) / 2;
-    return max(query(2 * si, ss, mid, qs, qe), query(2 * si + 1, mid + 1, se, qs, qe));
-}
-
-// writing query for hld tree
-int queryHLD(int node, int ances)
-{
-    int res = 0;
+    ll res = 0, top = 0;
 
     while (level[node] > level[ances])
     {
-        int top = chainHead[node];
+        top = chainHead[node];
 
         if (level[top] <= level[ances])
         {
-            top = kAnces(node, level[node] - level[ances] - 1);
+            top = kAncestor(node, level[node] - level[ances] - 1);
         }
 
         res = max(res, query(1, 1, n, label[top], label[node]));
@@ -215,55 +372,52 @@ ll ans[maxN];
 
 void solve()
 {
-    int m, a, b, c;
-
-    ll res = 0;
+    int a, b;
 
     cin >> n >> m;
 
-    REP(i, 1, n + 1)
+    REP(i, 1, n)
     {
         par[i] = -1;
         chainHead[i] = i;
     }
 
-    REP(i, 0, m)
+    REP(i, 1, m)
     {
-        cin >> edge[i].u >> edge[i].v >> edge[i].w;
-        edge[i].index = i;
+        cin >> edg[i].a >> edg[i].b >> edg[i].w;
+        edg[i].index = i;
     }
 
-    sort(edge, edge + m, cmp);
+    sort(edg + 1, edg + m + 1, comp);
 
-    REP(i, 0, m)
+    ll res = 0;
+
+    REP(i, 1, m)
     {
-        int a = find(edge[i].u);
-        int b = find(edge[i].v);
+        a = find(edg[i].a);
+        b = find(edg[i].b);
 
-        if (a == b)
-            continue;
-
-        merge(a, b);
-
-        tree[a].push_back({b, edge[i].w});
-        tree[b].push_back({a, edge[i].w});
-
-        res = res + edge[i].w * 1LL;
+        if (a != b)
+        {
+            tree[edg[i].a].push_back({edg[i].b, edg[i].w});
+            tree[edg[i].b].push_back({edg[i].a, edg[i].w});
+            merge(a, b);
+            res+=edg[i].w;
+        }
     }
 
     init();
     HLD();
     build(1, 1, n);
 
-    REP(i, 0, m)
+    REP(i, 1, m)
     {
-        int lca = LCA(edge[i].u, edge[i].v);
-        ll tempAns = max(queryHLD(edge[i].u, lca), queryHLD(edge[i].v, lca));
-        ans[edge[i].index] = res - tempAns + edge[i].w * 1LL;
+        int lca = LCA(edg[i].a, edg[i].b);
+        ans[edg[i].index] = res - max(queryHLD(edg[i].a, lca), queryHLD(edg[i].b, lca)) + edg[i].w;
     }
 
-    REP(i, 0, m)
-        cout << ans[i] << endl;
+    REP(i, 1, m)
+    cout << ans[i] << endl;
 }
 
 int main(int argc, char const *argv[])

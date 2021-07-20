@@ -4,60 +4,234 @@
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
-#define pil pair<int, ll>
-#define pli pair<ll, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
+#define pii pair<ll, ll>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 1000000000000000001
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 100001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-vector<pil> arr[maxN];
-
-struct info
+ll binExp(ll a, ll power, ll m = mod)
 {
-    ll dist;
-    ll maxLen;
+    ll res = 1;
 
-    info()
+    while (power)
     {
-        dist = INF;
-        maxLen = -INF;
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, m;
+vector<pii> arr[maxN];
+ll dis[maxN][2];
+ll mx[maxN];
+
+struct node
+{
+    int nod;
+    int coup_used;
+    ll tot_cost;
+
+    node(int n = 0, int c = 0, int ct = 0)
+    {
+        nod = n, coup_used = c, tot_cost = ct;
     }
 };
-vector<info> paths[maxN];
+
+struct cmp
+{
+    bool operator()(const node &a, const node &b) const
+    {
+        return a.tot_cost < b.tot_cost;
+    }
+};
 
 void bfs()
 {
-    info e;
-    queue<int> q;
-    q.push(1);
-    e.dist = 0, e.maxLen = 0;
-    paths[1].push_back(e);
+    priority_queue<node, vector<node>, cmp> pq;
+    pq.push(node(1));
+    dis[1][0] = dis[1][1] = 0;
 
-    while (!q.empty())
+    // {cost, {max, node}}
+
+    while (!pq.empty())
     {
-        int node = q.front();
-        q.pop();
+        node nod = pq.top();
+        pq.pop();
 
-        for (info dat : paths[node])
+        if (nod.coup_used)
         {
-            ll disNode = dat.dist;
-            ll mxLenNode = dat.maxLen;
+            if (dis[nod.nod][0] < nod.tot_cost)
+                continue;
+        }
+        else
+        {
+            if (dis[nod.nod][1] < nod.tot_cost)
+                continue;
+        }
 
-            for (pil child : arr[node])
+        for (pii child : arr[nod.nod])
+        {
+            if (nod.coup_used)
             {
-                if (child.first == 1)
-                    continue;
-                e.dist = disNode + child.second;
-                e.maxLen = max(mxLenNode, child.second);
-                paths[child.first].push_back(e);
-                q.push(child.first);
+                ll cost = nod.tot_cost + child.second;
+
+                if (dis[child.first][0] > cost)
+                {
+                    dis[child.first][0] = cost;
+                    pq.push(node(child.first, 1, cost));
+                }
+            }
+            else
+            {
+                ll c1 = nod.tot_cost + child.second;
+                ll c2 = nod.tot_cost + (child.second / 2);
+
+                if (dis[child.first][1] > c1)
+                {
+                    dis[child.first][1] = c1;
+                    pq.push(node(child.first, 0, c1));
+                }
+
+                if (dis[child.first][0] > c2)
+                {
+                    dis[child.first][0] = c2;
+                    pq.push(node(child.first, 1, c2));
+                }
             }
         }
     }
@@ -65,21 +239,22 @@ void bfs()
 
 void solve()
 {
-    int n, m, a, b;
+    int a, b;
     ll c;
 
     cin >> n >> m;
 
-    REP(i, 0, m)
+    REP(i, 1, n)
+    dis[i][0] = dis[i][1] = 1e18;
+
+    REP(i, 1, m)
     {
         cin >> a >> b >> c;
         arr[a].push_back({b, c});
     }
 
     bfs();
-    // cout << dist[n] - maxLen[n] + (maxLen[n] / 2);
-    for (info e : paths[6])
-        cout << e.dist << " " << e.maxLen << endl;
+    cout << dis[n][0];
 }
 
 int main(int argc, char const *argv[])

@@ -5,33 +5,173 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 10001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 10001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if (power & 1)
+            res = (res * a) % m;
+        a = (a * a) % m;
+        power >>= 1;
+    }
+    return res;
+}
+
 int n;
-
-// initialization part
+pii edge[maxN];
 int level[maxN], parent[maxN][20], subSize[maxN];
-vector<pii> tree[maxN]; // will store the tree
-vector<int> edge[maxN]; // will store the ith edge
-pii specialChild[maxN]; // this array will store the special child of a node with the child and weight of edge from node to child(first is a child and second is the weight of edge)
+vector<pair<int, ll>> tree[maxN];
+pair<int, ll> specialChild[maxN];
 
-// dfs call to find out level, parent, subTree size and special child for each node
+// dfs call on given tree for pre-computation
 void dfs(int node = 1, int par = -1, int l = 0)
 {
     parent[node][0] = par;
     level[node] = l;
     subSize[node] = 1;
 
-    int nodeX = -1, size = 0, weight = 0;
+    int nodeX = -1, size = 0;
+    ll weight = 0;
 
-    for (pii child : tree[node])
+    for (pair<int, ll> child : tree[node])
     {
         if (child.first == par)
             continue;
@@ -44,16 +184,31 @@ void dfs(int node = 1, int par = -1, int l = 0)
             size = subSize[child.first], nodeX = child.first, weight = child.second;
     }
 
+    // special child calculation
     specialChild[node] = {nodeX, weight};
 }
 
-// heavy light decomposition
-int timer, label[maxN], arr[maxN], chainHead[maxN];
-// chainHead will store the head of each chain
-// arr shall store the list of weight for edge between node and parent of node
-// label shall store the index for a particular node
+void init()
+{
+    dfs();
 
-void HLD(int node = 1, int par = -1, int val = 0)
+    for (int j = 1; j < 20; j++)
+    {
+        for (int i = 1; i <= n; i++)
+        {
+            if (parent[i][j - 1] == -1)
+                parent[i][j] = -1;
+            else
+                parent[i][j] = parent[parent[i][j - 1]][j - 1];
+        }
+    }
+}
+
+int timer, label[maxN], chainHead[maxN];
+ll arr[maxN];
+
+// heavy light decomposition part
+void HLD(int node = 1, int par = -1, ll val = 0)
 {
     label[node] = timer;
     arr[timer++] = val;
@@ -74,8 +229,8 @@ void HLD(int node = 1, int par = -1, int val = 0)
     }
 }
 
-// segment tree -- normal segment tree implementation
-int segTree[maxN * 4];
+// segment tree
+ll segTree[maxN * 4];
 
 void build(int si, int ss, int se)
 {
@@ -92,7 +247,7 @@ void build(int si, int ss, int se)
     }
 }
 
-int query(int si, int ss, int se, int qs, int qe)
+ll query(int si, int ss, int se, int qs, int qe)
 {
     if (ss > qe || se < qs)
         return 0;
@@ -162,9 +317,9 @@ int kAncestor(int a, int d)
 }
 
 // will give answer for the given query between node and ancestor
-int queryHl(int node, int ances)
+ll queryHLD(int node, int ances)
 {
-    int res = 0, top = 0;
+    ll res = 0, top = 0;
 
     while (level[node] > level[ances])
     {
@@ -182,77 +337,79 @@ int queryHl(int node, int ances)
     return res;
 }
 
+void solve()
+{
+    int a, b, c;
+    cin >> n;
+
+    timer = 0;
+
+    REP(i, 1, n)
+    {
+        tree[i].clear();
+        chainHead[i] = i;
+    }
+
+    REP(i, 1, n - 1)
+    {
+        cin >> a >> b >> c;
+        edge[i] = {a, b};
+        tree[a].push_back({b, c}), tree[b].push_back({a, c});
+    }
+
+    init();
+    HLD();
+    build(1, 1, n);
+
+    string s;
+
+    while (true)
+    {
+        cin >> s;
+
+        if (s[0] == 'D')
+            return;
+        else if (s[0] == 'Q')
+        {
+            int a, b;
+            cin >> a >> b;
+            int lca = LCA(a, b);
+            cout << max(queryHLD(a, lca), queryHLD(b, lca))<<endl;
+        }
+        else
+        {
+            int e, w;
+            cin >> e >> w;
+            int lab = max(label[edge[e].first], label[edge[e].second]);
+            arr[lab] = w;
+            update(1, 1, n, lab);
+        }
+    }
+}
+
 int main(int argc, char const *argv[])
 {
-    int t, a, b, c, lca;
-    char s[100];
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    scanf("%d", &t);
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
+
+    // filptr >> input;
+    // outpter << output;
+
+    int t = 1;
+
+    cin >> t;
 
     while (t--)
     {
-        scanf("%d", &n);
-
-        timer = 0;
-        REP(i, 0, n + 1)
-        {
-            chainHead[i] = i;
-            edge[i].clear();
-            tree[i].clear();
-        }
-
-        REP(i, 1, n)
-        {
-            scanf("%d %d %d", &a, &b, &c);
-            tree[a].push_back({b, c}), tree[b].push_back({a, c});
-            edge[i].push_back(a), edge[i].push_back(b);
-        }
-
-        dfs();
-
-        // dp on parent array -- binary lifting preprocessing
-        for (int j = 1; j < 20; j++)
-        {
-            for (int i = 1; i <= n; i++)
-            {
-                if (parent[i][j - 1] == -1)
-                    parent[i][j] = -1;
-                else
-                    parent[i][j] = parent[parent[i][j - 1]][j - 1];
-            }
-        }
-
-        HLD();
-        build(1, 1, n); // build segment tree
-
-        while (true)
-        {
-            scanf("%s", s);
-
-            if (s[0] == 'D')
-                break;
-
-            scanf("%d %d", &a, &b);
-
-            if (s[0] == 'Q')
-            {
-                lca = LCA(a, b);
-                printf("%d\n", max(queryHl(a, lca), queryHl(b, lca))); // broken query in two parts
-            }
-            else
-            {
-                int index;
-
-                if (level[edge[a][0]] > level[edge[a][1]])
-                    index = label[edge[a][0]];
-                else
-                    index = label[edge[a][1]];
-
-                arr[index] = b;
-                update(1, 1, n, index); // uodated in accordance with the node connected in ith edge
-            }
-        }
+        solve();
     }
+
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }
