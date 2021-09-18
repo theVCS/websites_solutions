@@ -1,286 +1,250 @@
-//*******************************************************************
-//              author of this code is : horcrux903
-//*******************************************************************
-//        THERE IS ALWAYS A WAY TO GO IF YOU LOOK FOR IT
-//*******************************************************************
-
-//*******************************************************************
-
 #include <bits/stdc++.h>
-// #include <ext/pb_ds/assoc_container.hpp>
-// #include <ext/pb_ds/tree_policy.hpp>
-
-#define ll long long int
-#define ull unsigned long long int
-#define ld long double
-#define F(i, a, n) for (long long int i = a; i < n; i++)
-#define FO(i, a, n) for (long long int i = n - 1; i >= a; i--)
-#define fast()               \
-    ios::sync_with_stdio(0); \
-    cin.tie(0);              \
-    cout.tie(0);
-#define endl "\n"
-#define set0(a) memset(a, 0, sizeof(a))
-#define set1(a) memset(a, -1, sizeof(a))
-#define setf(a) memset(a, false, sizeof(a))
-#define pb(i) push_back(i)
-#define eb(i) emplace_back(i)
-#define len(s) s.length()
-#define precision 0.00000001
-#define M 1000000007
-#define mp make_pair
-#define PI 3.141592653589793238462643383279
-#define ss second
-#define ff first
-#define vll vector<long long int>
-#define vpair vector<pair<long long int, long long int>>
-#define vvpair vector<vector<pair<long long int, long long int>>>
-const long long int INF = 1e18L + 5;
-
+//#include <boost/multiprecision/cpp_int.hpp>
+//using namespace boost::multiprecision;
 using namespace std;
+#define ll long long int
+//#define bint cpp_int
+#define pii pair<int, int>
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
+#define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
 
-// using namespace __gnu_pbds;
-// template <typename T>
-// using ordered_Set = tree<T, null_type, less<T>,
-//       rb_tree_tag, tree_order_statistics_node_update>;
-
-//*******************************************************************
-
-// mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-
-void input()
+struct point
 {
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-#endif
-}
+    ll x, y, z;
+    int index;
 
-//********************************************************************
-
-ll gcd(ll a, ll b)
-{
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
-// ll lcm(ll a, ll b)
-// {
-//     return (a * b) / gcd(a, b);
-// }
-
-//********************************************************************
-
-ll power(ll x, ll y, ll mod)
-{
-    ll ans = 1;
-
-    x = x % mod;
-
-    while (y > 0)
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
     {
-        if (y & 1)
-            ans = ((ans % mod) * (x % mod)) % mod;
-
-        y = y >> 1;
-        x = ((x % mod) * (x % mod)) % mod;
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
     }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
     return ans;
 }
 
-//********************************************************************
-
-// ll f[200006];
-
-// ll ncr(ll n, ll r)
-// {
-//     if (n < r)
-//     {
-//         return 0;
-//     }
-//     ll num = f[n];
-//     ll temp = (f[r] * (f[n - r])) % M;
-//     ll ans = num * power(temp, M - 2, M);
-//     return (ans % M);
-// }
-
-//********************************************************************
-
-// ll bs(vll &arr, ll target, ll end)
-// {
-//     ll start = 0;
-
-//     ll ans = -1;
-
-//     while (start <= end)
-//     {
-//         ll mid = start + (end - start) / 2;
-
-//         if (arr[mid] < target)
-//             start = mid + 1;
-
-//         else
-//         {
-//             ans = mid;
-//             end = mid - 1;
-//         }
-//     }
-
-//     return ans;
-// }
-
-//*******************************************************************
-
-// bool prime[1000006];
-// vll v, v1;
-
-// void SieveOfEratosthenes(int n)
-// {
-//     memset(prime, true, sizeof(prime));
-
-//     prime[0] = prime[1] = false;
-
-//     for (int p = 2; p * p <= n; p ++)
-//     {
-//         if (prime[p] == true)
-//         {
-//             for (int i = p * p; i <= n; i += p)
-//             {
-//                 prime[i] = false;
-//             }
-//         }
-//     }
-
-//     for (int p = 2; p <= n; p++)
-//         if (prime[p])
-//         {
-//             v.eb(p);
-//             // v1.eb(p);
-//         }
-// }
-
-//*******************************************************************
-
-vpair adj[100005];
-ll n;
-
-struct Edge {
-    ll w = INF, to = -1;
-};
-
-ll prim() {
-    ll total_weight = 0;
-    vector<bool> selected(n, false);
-    vector<Edge> min_e(n);
-    min_e[0].w = 0;
-
-    for (int i=0; i<n; ++i) {
-        int v = -1;
-        for (int j = 0; j < n; ++j) {
-            if (!selected[j] && (v == -1 || min_e[j].w < min_e[v].w))
-                v = j;
-        }
-
-        // if (min_e[v].w == INF) {
-        //     cout << "No MST!" << endl;
-        //     exit(0);
-        // }
-
-        selected[v] = true;
-        total_weight += min_e[v].w;
-        // if (min_e[v].to != -1)
-        //     cout << v << " " << min_e[v].to << endl;
-
-        for (int to = 0; to < n; ++to) {
-            if (adj[v][to].first < min_e[to].w)
-                min_e[to] = {adj[v][to].first, v};
-        }
-    }
-
-    return total_weight;
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
 }
 
-ll a[100001];
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+ll mulmod(ll a, ll b, ll c)
+{
+    ll x = 0, y = a % c;
+    while (b > 0)
+    {
+        if (b % 2 == 1)
+        {
+            x = (x + y) % c;
+        }
+        y = (y * 2LL) % c;
+        b /= 2;
+    }
+    return x % c;
+}
+
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if (power & 1)
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
+        power >>= 1;
+    }
+    return res;
+}
+
+bool isValid(vector<int> &arr, int m, int d)
+{
+    // int INF = 1000000000;
+    int cnt = 0, prev = -1 * INF;
+
+    for (int i = 0; i < arr.size(); i++)
+    {
+        if (arr[i] - prev >= d)
+            cnt++, prev = arr[i];
+        if (cnt >= m)
+            return true;
+    }
+
+    return false;
+}
+
+int findMax(vector<int> arr, int m)
+{
+    int ans = 0;
+
+    int start = 0, end = abs(arr.back() - arr.front());
+
+    while (start <= end)
+    {
+        int mid = (start + end) / 2;
+
+        if (isValid(arr, m, mid))
+            ans = max(ans, mid), start = mid + 1;
+        else
+            end = mid - 1;
+    }
+
+    return ans;
+}
 
 void solve()
 {
-    cin >> n;
+    int n, m;
+    cin>>n>>m;
+    vector<int>arr;
 
-    F(i, 0, n + 1)
+    REP(i,0,n-1)
     {
-        adj[i].clear();
+        int d;
+        cin>>d;
+        arr.push_back(d);
     }
 
-    string s;
-    cin >> s;
-
-    vll temp;
-
-    F(i, 0, n)
-    {
-        if (s[i] == '1')
-        {
-            temp.pb(i);
-        }
-    }
-
-    F(i, 0, n)
-    {
-        cin >> a[i];
-    }
-
-    F(i, 1, n)
-    {
-        if (s[i] != '1' || s[i - 1] != '1')
-        {
-            adj[i].pb(mp(i - 1, abs(a[i] - a[i - 1])));
-            adj[i - 1].pb(mp(i, abs(a[i] - a[i - 1])));
-        }
-    }
-
-    F(i, 1, temp.size())
-    {
-        adj[temp[i]].pb(mp(temp[i - 1], 0));
-        adj[temp[i - 1]].pb(mp(temp[i], 0));
-    }
-
-    cout << prim();
+    cout<<findMax(arr,m);
 }
 
-//*******************************************************************
-
-int main()
+int main(int argc, char const *argv[])
 {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    // fast()
-    // input();                                  //comment this during codejam/kickstart
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    // SieveOfEratosthenes(1000002);
+    // filptr >> input;
+    // outpter << output;
 
-    // f[0] = 1;
+    int t = 1;
 
-    // F(i, 1, 2e5 + 1)
-    // {
-    //     f[i] = (f[i - 1] * i) % M;
-    // }
+    //cin >> t;
 
-    // F(i, 1, v1.size())
-    // {
-    //     v1[i] += v1[i - 1];
-    // }
-
-    int t = 1, i = 1;
-    cin >> t;
-
-    while (t--)
+    REP(tc, 1, t)
     {
-        // cout << "Case #" << i << ": ";      //only during google contest
-        // i++;                                //only during google contest
-
+        // cout<<"Case "<<tc<<":"<<endl;
         solve();
-        cout << endl;
     }
-}
 
-//*******************************************************************
+    //filptr.close();
+    //outpter.close();
+
+    return 0;
+}

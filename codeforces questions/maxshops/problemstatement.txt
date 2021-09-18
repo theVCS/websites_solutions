@@ -1,0 +1,27 @@
+You have visited a market which is in the shape of a rectangle. At some points (x,y) there are shops with some level of royalty. You want to visit a maximum number of shops. But there are some rules to visit the shops:
+
+1. You can visit shops with an increasing level of royalty.
+2. If you visited a shop with coordinates as $X$ and $Y$ then you can visit only those shops having $x \ge X$ and $y \ge Y$.
+
+You have to find the maximum number of shops you can visit.
+
+
+
+
+
+The first line has one integer $N$, the number of shops.
+Each of the next $N$ lines has two integers each, $xi$ and $yi$, meaning the ith salesman is in the store with coordinates ($xi$, $yi$).
+
+The salesmen are listed in ascending order of royalty, that is, from the minimum to the maximum. Two shops can share the same coordinates, in this case, you can negotiate (or not) with each of them in any order. All salesmen are guaranteed to be within the market.
+
+$(1 \le N \le 10^5)$
+$(1 \le xi, yi \le 10^3)$
+
+
+
+
+Print a single integer, the maximum number of items you can buy.
+
+
+
+

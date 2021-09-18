@@ -37,6 +37,8 @@ int val(string s)
 
 bool check(string s, string t)
 {
+    // s == "abcdefdisputes/register"
+    // t == "dispute"
     for (int i = 0, j = t.size() - 1; j < s.size(); i++, j++)
     {
         bool flag = true;
@@ -100,10 +102,14 @@ void addHistory(string &s)
         str.push_back(s[index++]);
     }
 
+    // offers
+
     while (str.front() == '/')
     {
         str.erase(str.begin());
     }
+
+    // offers///////
 
     int sz = 0;
     string p;
@@ -113,6 +119,8 @@ void addHistory(string &s)
             break;
         p.push_back(c);
     }
+
+    // offers/ysjcbjervno/ervneiro
 
     str = p;
     changer(str);
@@ -136,7 +144,6 @@ void addHistory(string &s)
     now->tm_year = val(str);
     str.clear();
 
-    //month
     while (true)
     {
         if (s[index] == '-')
@@ -158,6 +165,7 @@ void addHistory(string &s)
     str.clear();
 
     //day
+    //month
     while (true)
     {
         if (s[index] == ' ')
@@ -194,6 +202,7 @@ void addHistory(string &s)
     str.clear();
 
     // min
+    // -
     while (true)
     {
         if (s[index] == ':')
@@ -220,6 +229,8 @@ void addHistory(string &s)
         str.push_back(s[index++]);
     }
 
+    // 2020-02-02 23:15:13
+    // 2000-01-01 00:00:00
     now->tm_sec = val(str);
     str.clear();
     h.enterTime = 31556952LL * (now->tm_year - 2000) + 2630000LL * (now->tm_mon) + 86400LL * (now->tm_mday) + 3600LL * (now->tm_hour) + 60LL * (now->tm_min) + (now->tm_sec);
@@ -258,7 +269,7 @@ void addHistory(string &s)
     now->tm_mon = val(str);
     str.clear();
 
-    //day
+    // day
     while (true)
     {
         if (s[index] == ' ')
@@ -484,6 +495,8 @@ bool cmp1(intent a, intent b)
     return a.duration > b.duration;
 }
 
+// duration > frequency > recency
+
 bool cmp2(user a, user b)
 {
     return a.userName < b.userName;
@@ -493,6 +506,7 @@ void addIntent()
 {
     for(auto e: his)
     {
+        // u001
         int index = mp[e.user];
         int x = mapper[e.page];
 

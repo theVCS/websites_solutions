@@ -1,0 +1,25 @@
+An edge in an undirected graph is a $bridge$ if after removing it the graph will be disconnected.
+Given an undirected connected graph, you are allowed to add one edge between any pair of nodes so that the
+the total number of bridges in the graph is minimized.
+
+
+
+
+The first line of each input contains two integers: $N$ and $M$,
+where $N$ is the number of nodes, and $M$ is the number of edges.
+Each of the following $M$ lines contains two space-separated integers: $X Y$ $(1 ≤ X, Y ≤ N)(X ≠ Y)$, which
+means that there is an edge between node $X$ and node $Y$.
+It is guaranteed that each pair of nodes is connected by at most one edge
+
+
+
+
+
+
+Print a single line with the minimum possible number of bridges after adding one edge.
+
+
+
+
+- $1 \leq N \leq 10^5$
+- $N-1 \leq M \leq 10^5$

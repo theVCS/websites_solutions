@@ -1,64 +1,37 @@
 #include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
-#define INF 0x3f3f3f3f
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define all(x) (x).begin(), (x).end()
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-// while (T < q[i].t)
-//     do_update(++T);
-// while (T > q[i].t)
-//     undo(T--);
-// while (R < q[i].r)
-//     add(++R);
-// while (L > q[i].l)
-//     add(--L);
-// while (R > q[i].r)
-//     remove(R--);
-// while (L < q[i].l)
-//     remove(L++);
+#define maxN 100101
 
+int n;
 vector<int> arr[maxN];
-int parent[maxN][17], level[maxN], subSize[maxN];
-int specialChild[maxN], n;
+int intime[maxN], outime[maxN], timer, ft[2 * maxN];
+int parent[maxN][17], level[maxN];
 
-void dfs(int node, int par = -1, int l = 0)
+void dfs(int node = 1, int par = -1, int l = 0)
 {
+    intime[node] = ++timer;
     level[node] = l;
     parent[node][0] = par;
-    subSize[node] = 1;
-
-    int mxSize = 0, nodeX = -1;
 
     for (int child : arr[node])
     {
         if (child == par)
             continue;
-
         dfs(child, node, l + 1);
-
-        subSize[node] += subSize[child];
-
-        if (subSize[child] > mxSize)
-            mxSize = subSize[child], nodeX = child;
     }
 
-    specialChild[node] = nodeX;
+    outime[node] = ++timer;
 }
 
-void init()
+void preprocess()
 {
-    dfs(1);
+    dfs();
 
     for (int j = 1; j < 17; j++)
     {
@@ -101,154 +74,91 @@ int LCA(int a, int b)
     return parent[a][0];
 }
 
-int kAnces(int a, int d)
+void update(int index, ll val)
 {
-    while (d)
+    while (index <= 2 * n)
     {
-        int i = log2(d);
-        a = parent[a][i];
-        d -= 1 << i;
-    }
-
-    return a;
-}
-
-// applying hld
-int label[maxN], chainHead[maxN], timer;
-
-void HLD(int node = 1, int par = -1)
-{
-    label[node] = ++timer;
-
-    if (specialChild[node] != -1)
-    {
-        chainHead[specialChild[node]] = chainHead[node];
-        HLD(specialChild[node], node);
-    }
-
-    for (int child : arr[node])
-    {
-        if (child == par || child == specialChild[node])
-            continue;
-        HLD(child, node);
+        ft[index] += val;
+        index += (index & -1 * index);
     }
 }
 
-// making segment tree
-int segTree[4 * maxN];
-
-int query(int si, int ss, int se, int qs, int qe)
+ll query(int index)
 {
-    if (ss > qe || se < qs)
-        return 0;
+    ll sum = 0;
 
-    if (qs <= ss && qe >= se)
-        return segTree[si];
-
-    int mid = (ss + se) / 2;
-    return (query(2 * si, ss, mid, qs, qe) + query(2 * si + 1, mid + 1, se, qs, qe));
-}
-
-void update(int si, int ss, int se, int qi)
-{
-    if (ss == se)
+    while (index)
     {
-        segTree[si]++;
-        return;
+        sum += ft[index];
+        index -= (index & -1 * index);
     }
 
-    int mid = (ss + se) / 2;
-
-    if (qi <= mid)
-        update(2 * si, ss, mid, qi);
-    else
-        update(2 * si + 1, mid + 1, se, qi);
-
-    segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+    return sum;
 }
 
-int queryHLD(int node, int lca)
+int main()
 {
-    int res = 0;
+    freopen("disconnect.in", "r", stdin);
+    freopen("disconnect.out", "w", stdout);
 
-    while (level[node] > level[lca])
+    ll a, b, code, m;
+
+    cin >> n >> m;
+
+    REP(i, 1, n - 1)
     {
-        int top = chainHead[node];
-
-        if (level[top] <= level[lca])
-        {
-            top = kAnces(node, level[node] - level[lca] - 1);
-        }
-
-        res += query(1, 1, n, label[top], label[node]);
-        node = parent[top][0];
-    }
-
-    return res;
-}
-
-int main(int argc, char const *argv[])
-{
-    // ios_base::sync_with_stdio(false);
-    // cin.tie(NULL);
-    // cout.tie(NULL);
-
-    ifstream fi("disconnect.in");
-    ofstream fo("disconnect.out");
-
-    // fi >> input;
-    // fo << output;
-
-    int code, m, a, b;
-
-    fi >> n >> m;
-
-    REP(i, 1, n)
-    {
-        fi >> a >> b;
+        cin >> a >> b;
         arr[a].push_back(b), arr[b].push_back(a);
-        chainHead[i] = i;
     }
-    chainHead[n] = n;
 
-    init();
-    HLD(1);
+    preprocess();
 
-    int v = 0;
+    ll v = 0;
 
     while (m--)
     {
-        fi >> code >> a >> b;
+        cin >> code >> a >> b;
 
-        a = a ^ v;
-        b = b ^ v;
+        a = (a ^ v);
+        b = (b ^ v);
+        
+        int A = a, B = b;
 
         if (code == 1)
         {
             if (level[a] < level[b])
                 swap(a, b);
-            update(1, 1, n, label[a]);
+            update(intime[a], 1), update(outime[a] + 1, -1);
         }
         else
         {
-            int lca = LCA(a, b);
-            int res = queryHLD(a, lca) + queryHLD(b, lca);
 
-            if (res == 0)
+            if (intime[a] > intime[b])
+                swap(a, b);
+            int lca = LCA(a, b);
+            int res = 0;
+
+            if (lca == a)
             {
-                fo << "YES" << endl;
-                v = a;
+                res = query(intime[b]) - query(intime[a]);
             }
             else
             {
-                fo << "NO" << endl;
-                v = b;
+                res = query(intime[b]) - query(outime[a] - 1);
+            }
+
+            if (res == 0)
+            {
+                cout << "YES" << endl;
+                v = A;
+            }
+            else
+            {
+                cout << "NO" << endl;
+                v = B;
             }
         }
     }
-
-    fi.close();
-    fo.close();
 
     return 0;
 }

@@ -5,38 +5,196 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 50001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 50001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int arr[maxN];
-int segTree[4 * maxN];
-int ans;
+ll mulmod(ll a, ll b, ll c)
+{
+    ll x = 0, y = a % c;
+    while (b > 0)
+    {
+        if (b % 2 == 1)
+        {
+            x = (x + y) % c;
+        }
+        y = (y * 2LL) % c;
+        b /= 2;
+    }
+    return x % c;
+}
 
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
+    {
+        if (power & 1)
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, m;
+ll arr[maxN];
+ll segTree[4 * maxN];
+
+// build function
 void build(int si, int ss, int se)
 {
     if (ss == se)
     {
-        segTree[si] = arr[ss], 0;
+        segTree[si] = arr[ss];
     }
     else
     {
         int mid = (ss + se) / 2;
         build(2 * si, ss, mid);
         build(2 * si + 1, mid + 1, se);
-        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+        segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
     }
 }
 
-int query(int si, int ss, int se, int qs, int qe)
+// range query
+ll query(int si, int ss, int se, int qs, int qe)
 {
     if (ss > qe || se < qs)
-        return 0;
+        return -__LONG_LONG_MAX__;
 
     if (qs <= ss && qe >= se)
     {
@@ -44,58 +202,77 @@ int query(int si, int ss, int se, int qs, int qe)
     }
 
     int mid = (ss + se) / 2;
-    return query(2 * si, ss, mid, qs, qe) + query(2 * si + 1, mid + 1, se, qs, qe);
+    return max(query(2 * si, ss, mid, qs, qe), query(2 * si + 1, mid + 1, se, qs, qe));
 }
 
-void update(int si, int ss, int se, int qi)
+// point update
+void update(int si, int ss, int se, int qi, ll val)
 {
     if (ss == se)
     {
-        segTree[si] = arr[ss];
+        segTree[si] = val;
         return;
     }
 
     int mid = (ss + se) / 2;
-    update(2 * si, ss, mid, qi);
-    update(2 * si + 1, mid + 1, se, qi);
-    segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+
+    if (qi <= mid)
+        update(2 * si, ss, mid, qi, val);
+    else
+        update(2 * si + 1, mid + 1, se, qi, val);
+
+    segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);
+}
+
+void solve()
+{
+    cin >> n;
+    REP(i, 1, n)
+    cin >> arr[i];
+    build(1, 1, n);
+    cin >> m;
+
+    int code, x, y;
+
+    while (m--)
+    {
+        cin >> code >> x >> y;
+        
+        if (code == 0)
+        {
+            update(1, 1, n, x, y);
+        }
+        else
+        {
+            cout << query(1, 1, n, x, y) << endl;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
 {
-    // ios_base::sync_with_stdio(false);
-    // cin.tie(NULL);
-    // cout.tie(NULL);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-    int n, m, code, a, b;
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
 
-    // cin >> n;
-    scanf("%d", &n);
+    // filptr >> input;
+    // outpter << output;
 
-    REP(i, 1, n + 1)
+    int t = 1;
+
+    //cin >> t;
+
+    REP(tc, 1, t)
     {
-        scanf("%d", arr + i);
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
     }
 
-    build(1, 1, n);
-
-    scanf("%d", &m);
-
-    while (m--)
-    {
-        cin >> code >> a >> b;
-
-        if (code)
-        {
-            ans = INT_MIN;
-            printf("%d\n", query(1, 1, n, a, b));
-        }
-        else
-        {
-            arr[a] = b;
-            update(1, 1, n, a);
-        }
-    }
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

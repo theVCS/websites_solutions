@@ -1,0 +1,8 @@
+,model,best_score,best_params
+0,random_forest,0.7725856697819314,"{'bootstrap': True, 'criterion': 'gini', 'max_depth': None, 'max_features': 25, 'min_samples_leaf': 4, 'min_samples_split': 9, 'n_estimators': 97}"
+1,svm,0.7258566978193146,{'C': 0.1}
+2,logistic_regression,0.7819314641744549,"{'solver': 'liblinear', 'penalty': 'l1', 'max_iter': 100, 'C': 1.623776739188721}"
+3,decision_tree,0.7492211838006231,"{'splitter': 'random', 'min_samples_leaf': 2, 'max_features': 6, 'max_depth': 3, 'criterion': 'entropy'}"
+4,GaussianNB,0.7632398753894081,{'var_smoothing': 1e-07}
+5,MultinomialNB,0.6557632398753893,{'alpha': 0.1}
+6,BernoulliNB,0.7538940809968847,{'alpha': 1.0}

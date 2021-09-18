@@ -5,150 +5,239 @@ using namespace std;
 #define ll long long int
 //#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 1001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
-#define INF 0x3f3f3f3f
 #define all(x) (x).begin(), (x).end()
+#define pi 3.141592653589793238
+
+struct point
+{
+    ll x, y, z;
+    int index;
+
+    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
+    {
+        x = tmp_x;
+        y = tmp_y;
+        z = tmp_z;
+    }
+
+    point operator+(point b)
+    {
+        return point(this->x + b.x, this->y + b.y, this->z + b.z);
+    }
+
+    point operator-(point b)
+    {
+        return point(this->x - b.x, this->y - b.y, this->z - b.z);
+    }
+
+    point operator*(long long val)
+    {
+        return point(this->x * val, this->y * val, this->z * val);
+    }
+
+    point operator/(long long val)
+    {
+        return point(this->x / val, this->y / val, this->z / val);
+    }
+
+    point &operator=(point b)
+    {
+        this->x = b.x;
+        this->y = b.y;
+        this->z = b.z;
+        return *this;
+    }
+
+    point &operator+=(point b)
+    {
+        *this = *this + b;
+        return *this;
+    }
+
+    point &operator-=(point b)
+    {
+        *this = *this - b;
+        return *this;
+    }
+
+    point &operator*=(long long val)
+    {
+        (*this) = (*this) * val;
+        return *this;
+    }
+
+    point &operator/=(long long val)
+    {
+        (*this) = (*this) / val;
+        return *this;
+    }
+
+    bool operator==(point b)
+    {
+        if (this->x == b.x && this->y == b.y && this->z == b.z)
+            return true;
+        else
+            return false;
+    }
+};
+vector<point> points;
+
+ll dot(point a, point b)
+{
+    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
+    return ans;
+}
+
+point cross(point a, point b)
+{
+    point e;
+    e.x = a.y * b.z - b.y * a.z;
+    e.y = a.z * b.x - b.z * a.x;
+    e.z = a.x * b.y - b.x * a.y;
+    return e;
+}
+
+double magnitude(point a)
+{
+    return sqrt(dot(a, a));
+}
+
+double ang(point a, point b)
+{
+    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
+}
+
+double rad_to_deg(double val)
+{
+    return val * 180 / pi;
+}
+
+double deg_to_rad(double val)
+{
+    return val * pi / 180;
+}
+
+int direction(point pivot, point a, point b)
+{
+    long long t = cross((a - pivot), (b - pivot)).z;
+
+    // t > 0, a x b is anti clockwise
+    // t < 0, a x b is clockwise
+    // t == 0, a and b are collinear
+
+    return t;
+}
+
+#define maxN 1001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 //int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 //int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n, m;
-char arr[maxN][maxN];
-int ini_seg[maxN][4 * maxN];
-int segTree[maxN * 4][maxN * 4];
-int maxC;
-
-void build_ini(int si, int ss, int se, int row)
+ll mulmod(ll a, ll b, ll c)
 {
-    if (ss == se)
+    ll x = 0, y = a % c;
+    while (b > 0)
     {
-        ini_seg[row][si] = int(arr[row][ss] == '*');
-        maxC = max(maxC, si);
+        if (b % 2 == 1)
+        {
+            x = (x + y) % c;
+        }
+        y = (y * 2LL) % c;
+        b /= 2;
     }
-    else
+    return x % c;
+}
+
+ll binExp(ll a, ll power, ll m = mod)
+{
+    ll res = 1;
+
+    while (power)
     {
-        int mid = (ss + se) / 2;
-        build_ini(2 * si, ss, mid, row);
-        build_ini(2 * si + 1, mid + 1, se, row);
-        ini_seg[row][si] = ini_seg[row][2 * si] + ini_seg[row][2 * si + 1];
+        if (power & 1)
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
+        power >>= 1;
+    }
+    return res;
+}
+
+int n, q;
+ll ft[maxN][maxN];
+
+void update2(int index, ll val, int x)
+{
+    while (index <= n)
+    {
+        ft[x][index] += val;
+        index += (index & -1 * index);
     }
 }
 
-void build(int si, int ss, int se)
+void update(int index, ll val, int y)
 {
-    if (ss == se)
+    while (index <= n)
     {
-        REP(i, 1, maxC + 1)
-        segTree[si][i] = ini_seg[ss][i];
-    }
-    else
-    {
-        int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-
-        REP(i, 1, maxC + 1)
-        segTree[si][i] = segTree[2 * si][i] + segTree[2 * si + 1][i];
+        // ft[index] += val;
+        update2(y, val, index);
+        index += (index & -1 * index);
     }
 }
 
-int query_ini(int si, int ss, int se, int qs, int qe, int row)
+ll query2(int index, int x)
 {
-    if (ss > qe || se < qs)
-        return 0;
+    ll sum = 0;
 
-    if (qs <= ss && qe >= se)
-        return segTree[row][si];
+    while (index)
+    {
+        sum += ft[x][index];
+        index -= (index & -1 * index);
+    }
 
-    int mid = (ss + se) / 2;
-    return query_ini(2 * si, ss, mid, qs, qe, row) + query_ini(2 * si + 1, mid + 1, se, qs, qe, row);
+    return sum;
 }
 
-int query(int si, int ss, int se, int x1, int x2, int y1, int y2)
+ll query(int index, int y)
 {
-    if (ss > x2 || se < x1)
-        return 0;
+    ll sum = 0;
 
-    if (x1 <= ss && x2 >= se)
+    while (index)
     {
-        return query_ini(1, 1, m, y1, y2, si);
+        // sum += ft[index];
+        sum += query2(y, index);
+        index -= (index & -1 * index);
     }
 
-    int mid = (ss + se) / 2;
-
-    return query(2 * si, ss, mid, x1, x2, y1, y2) + query(2 * si + 1, mid + 1, se, x1, x2, y1, y2);
+    return sum;
 }
 
-void update_ini(int si, int ss, int se, int qi, int row)
-{
-    if (ss == se)
-    {
-        segTree[row][si] ^= 1;
-        return;
-    }
-
-    int mid = (ss + se) / 2;
-
-    if (qi <= mid)
-    {
-        update_ini(2 * si, ss, mid, qi, row);
-    }
-    else
-    {
-        update_ini(2 * si + 1, mid + 1, se, qi, row);
-    }
-
-    segTree[row][si] = segTree[row][2 * si] + segTree[row][2 * si + 1];
-}
-
-void update(int si, int ss, int se, int x, int y)
-{
-    if (ss == se)
-    {
-        update_ini(1, 1, m, y, si);
-        return;
-    }
-
-    int mid = (ss + se) / 2;
-
-    if (x <= mid)
-    {
-        update(2 * si, ss, mid, x, y);
-    }
-    else
-    {
-        update(2 * si + 1, mid + 1, se, x, y);
-    }
-
-    REP(i, 1, maxC + 1)
-    segTree[si][i] = segTree[2 * si][i] + segTree[2 * si + 1][i];
-}
+int arr[maxN][maxN];
 
 void solve()
 {
-    int q, code, x1, x2, y1, y2;
-
     cin >> n >> q;
-    m = n;
 
-    REP(i, 1, n + 1)
+    REP(i, 1, n)
     {
-        REP(j, 1, m + 1)
+        REP(j, 1, n)
         {
-            cin >> arr[i][j];
+            char c;
+            cin >> c;
+
+            if (c == '*')
+                arr[i][j] = 1, update(i, 1, j);
         }
     }
 
-    REP(i, 1, n + 1)
-    {
-        build_ini(1, 1, m, i);
-    }
-
-    build(1, 1, n);
+    int code;
 
     while (q--)
     {
@@ -156,13 +245,25 @@ void solve()
 
         if (code == 1)
         {
-            cin >> x1 >> y1;
-            update(1,1,n,x1,y1);
+            int x, y;
+            cin >> x >> y;
+
+            if (arr[x][y])
+            {
+                arr[x][y] = 0;
+                update(x, -1, y);
+            }
+            else
+            {
+                arr[x][y] = 1;
+                update(x, 1, y);
+            }
         }
         else
         {
+            int x1, y1, x2, y2;
             cin >> x1 >> y1 >> x2 >> y2;
-            cout << query(1, 1, n, x1, x2, y1, y2) << endl;
+            cout << query(x2, y2) - query(x1 - 1, y2) - query(x2, y1 - 1) + query(x1-1, y1-1) << endl;
         }
     }
 }
@@ -183,8 +284,9 @@ int main(int argc, char const *argv[])
 
     //cin >> t;
 
-    while (t--)
+    REP(tc, 1, t)
     {
+        // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 

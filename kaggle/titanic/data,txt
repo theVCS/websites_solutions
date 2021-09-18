@@ -1,0 +1,7 @@
+svc -> 0.7236842105263158
+randomforest -> 0.8223684210526315
+logistic regression -> 0.7697368421052632
+decision tree -> 0.7631578947368421
+GaussianNB -> 0.756578947368421
+multi -> 0.6644736842105263
+BernoulliNB -> 0.75

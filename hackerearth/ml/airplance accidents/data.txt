@@ -1,0 +1,21 @@
+['Minor_Damage_And_Injuries', 'Significant_Damage_And_Fatalities',
+'Significant_Damage_And_Serious_Injuries', 'Highly_Fatal_And_Damaging']
+
+SVC -> 0.3195
+RandomForestClassifier -> 0.929
+Logis -> 0.4595
+Decision -> 0.932
+GaussianNB -> 47.7
+MultinomialNB -> 41.8
+
+
+
+
+
+
+
+
+
+
+
+{'splitter': 'best', 'min_samples_leaf': 8, 'm...

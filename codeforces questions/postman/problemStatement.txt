@@ -1,0 +1,70 @@
+Problem Statement:
+There is a postman who has to deliver messages  to various houses in a colony.
+The houses are represented by nodes of the tree.
+Postman enters the colony from house 1, i.e House 1 is the root of the colony
+On each day the postman has a list of houses to which he has to deliver the messages.
+He is able to deliver all the messages if there is a path from house 1 to any other house such that every house in the list either lies on that path or has a distance of 1 from any other house lying on the path.
+If such a path does not exist, then the postman is not able to deliver all the messages.
+
+
+INPUT:
+The first line contains number n and m. n denotes the total no of nodes in tree. Nodes will be numbered from 1 to n. m denotes the total no of days.
+
+Next n-1 line will describe the edges of the tree. Description of each edge contains two nodes n1 and n2, the nodes that the edge connects.
+
+It is guaranteed that the given edges form a tree.
+
+
+
+Next m lines will describe the m days.
+For each day you will be provided two things
+1. The no of houses to deliver - k
+2. The houses to deliver- n1,n2,n3...nk
+It is guaranteed that all houses in a single day are distinct.
+
+OUTPUT:
+For each day, print the answer — "YES", if the postman is able to deliver all the messages ,"NO" otherwise.
+
+Example:
+10 6
+1 2
+1 3
+1 4
+2 5
+2 6
+3 7
+7 8
+7 9
+9 10
+4 3 8 9 10
+3 2 4 6
+3 2 1 5
+3 4 8 2
+2 6 10
+3 5 4 7
+
+Output:
+YES
+YES
+YES
+YES
+NO
+NO
+
+Explanation:
+There are a total of 10 houses. House 1 is always the root. Postman has to deliver for 6 days.
+Next 9 lines denote the edges of tree.
+Edge between house 1 and house 2
+Edge between house 1 and house 3 and so on...
+ 
+Day 1-
+No of houses to deliver- 4
+Houses to deliver-3 8 9 10
+Output is yes since there exists a path house  1 to the house 10. Then houses  [3,9,10] belong to the path from 1 to 10 and the house 8 has distance 1 to the vertex 7 which also belongs to this path.
+Day 2- 
+Houses are  [2,4,6]. The answer is "YES" as you can choose the path to the house 2. Then the house 4 has distance 1 to the house 1 which belongs to this path and the house 6 has distance 1 to the house  2 which belongs to this path
+Day 3-
+The houses are  [2,1,5]. The answer is "YES" as you can choose the path to the house 5 and all houses of the query belong to this path.
+Day 4-
+The fourth day houses to deliver are  [4,8,2]. The answer is "YES" as you can choose the path to the house 9 so houses  2 and 4 both have distance 1 to the house  1 which belongs to this path and the house  8 has distance 1 to the house 7 which belongs to this path.
+The fifth and the sixth day both have answer "NO" because you cannot choose a suitable path 
