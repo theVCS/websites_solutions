@@ -170,31 +170,47 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int binarySearch(int arr[], int start, int end, int element)
+class Solution
 {
-    while (start <= end)
+public:
+    bool bs(vector<vector<int>> &matrix, int col, int target)
     {
-        int mid = (start + end) / 2;
+        int start = 0, end = matrix.size()-1;
 
-        if (arr[mid] == element)
-            return mid;
-        else if (arr[mid] < element)
-            start = mid + 1;
+        if(matrix[end][col]<target || matrix[start][col] > target)return false;
+
+        while (start <= end)
+        {
+            int mid = (start+end)/2;
+
+            if(matrix[mid][col]==target)return true;
+            else if(matrix[mid][col]<target)start=mid+1;
+            else end=mid-1;
+        }
+        
+        return false;
+    }
+
+    bool dac(vector<vector<int>> &matrix, int start, int end, int target)
+    {
+        if(start>end)return false;
+        if(start==end)
+        {
+            return bs(matrix, start, target);
+        }
         else
-            end = mid - 1;
+        {
+            int mid = (start + end) / 2;
+            return dac(matrix, start, mid, target) || dac(matrix, mid+1,end,target);
+        }
     }
-}
 
-int findPos(int arr[], int element)
-{
-    int l = 0, h = 1;
-
-    while (arr[h] < element)
+    bool searchMatrix(vector<vector<int>> &matrix, int target)
     {
-        l = h;
-        h *= 2;
+        int start = 0, end = matrix[0].size();  
+        return dac(matrix, 0, matrix[0].size()-1, target);
     }
-}
+};
 
 void solve()
 {

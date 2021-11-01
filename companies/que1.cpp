@@ -138,8 +138,8 @@ int direction(point pivot, point a, point b)
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
 //int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 //int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -163,119 +163,97 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
 
-int n, m;
-bool checker[501][501];
-
-bool isGuard(char c)
+struct TreeNode
 {
-    return (c == '>' || c == '<' || c == '^' || c == 'v');
+    int data;
+    TreeNode *right;
+    TreeNode *left;
+};
+
+int digitSum(int x)
+{
+    return x - 9 * ((x - 1) / 9);
 }
 
-pii guard(char c)
+int sum = 0;
+
+int fun(TreeNode *root, int &k)
 {
-    if(c == '>')
-    {
-        return {0,1};
-    }
-    else if(c=='<')
-    {
-        return {0,-1};
-    }
-    else if(c=='^')
-    {
-        return {-1,0};
-    }
+    if (root == NULL)
+        return 1;
     else
     {
-        return {1,0};
-    }
-}
-
-void helper(int x, int y, pii d, vector<string>&b)
-{
-    while (true)
-    {
-        x = x + d.first;
-        y = y + d.second;
-
-        if(x < 0 || y < 0 || x >= n || y >= m || b[x][y]=='X' || isGuard(b[x][y]))return;
-
-        checker[x][y]=true;
-    }
-}
-
-bool vis[501][501];
-
-bool isValid(int x, int y, vector<string>&B)
-{
-    if(x < 0 || y < 0 || x >= n || y >= m || B[x][y]=='X' || checker[x][y] || vis[x][y])
-        return false;
-    return true;
-}
-
-void dfs(int x, int y, vector<string>&B)
-{
-    vis[x][y]=true;
-
-    REP(i,0,3)
-    {
-        int X = x + dx[i];
-        int Y = y + dy[i];
-
-        if(isValid(X,Y,B))
+        int left = fun(root->left, k);
+        int right = fun(root->right, k);
+            
+        if (left && right && digitSum(root->data) == k)
         {
-            dfs(X,Y,B);
+            sum++;
+            return 1;
         }
+
+        return 0;
     }
 }
 
-bool solution(vector<string> &B) {
-    // write your code in C++14 (g++ 6.2.0)
-    n = B.size();
-    m = B[0].size();
-
-    int sx = -1, sy = -1;
-
-    REP(i,0,n-1)
-    {
-        REP(j,0,m-1)
-        {
-            if(isGuard(B[i][j]))
-            {
-                pii dir = guard(B[i][j]);
-                checker[i][j] = true;
-                helper(i,j,dir,B);
-            }
-
-            if(B[i][j]=='A')sx=i,sy=j;
-        }
-    }
-
-    if(checker[sx][sy] || checker[n-1][m-1])return false;
-    dfs(sx,sy,B);
-    return vis[n-1][m-1];
-}
-
-int main()
+int CountSubtreeDigitSum(TreeNode *root, int k)
 {
-    int n, m;
-    cin >> n >> m;
-    vector<string> vec;
+    int res = fun(root,k);
+    return sum;
+}
 
-    REP(i, 0, n - 1)
+void solve()
+{
+    TreeNode *root = new TreeNode();
+    root->data = 12;
+    
+    root->left = new TreeNode();
+    root->left->data = 22;
+    
+    root->right = new TreeNode();
+    root->right->data = 16;
+
+    
+    root->right->left = new TreeNode();
+    root->right->left->data = 31;
+
+    root->right->right = new TreeNode();
+    root->right->right->data = 23;
+
+    cout<<CountSubtreeDigitSum(root,4);
+}
+
+int main(int argc, char const *argv[])
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    // ifstream filptr("input.txt");
+    // ofstream outpter("output.txt");
+
+    // filptr >> input;
+    // outpter << output;
+
+    int t = 1;
+
+    //cin >> t;
+
+    REP(tc, 1, t)
     {
-        string s;
-        cin >> s;
-        vec.push_back(s);
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
     }
 
-    cout << solution(vec);
+    //filptr.close();
+    //outpter.close();
+
     return 0;
 }

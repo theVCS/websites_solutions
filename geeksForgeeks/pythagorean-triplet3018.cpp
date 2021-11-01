@@ -170,31 +170,49 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int binarySearch(int arr[], int start, int end, int element)
+class Solution
 {
-    while (start <= end)
+public:
+    bool isPerSq(int x)
     {
-        int mid = (start + end) / 2;
-
-        if (arr[mid] == element)
-            return mid;
-        else if (arr[mid] < element)
-            start = mid + 1;
-        else
-            end = mid - 1;
+        int sq = sqrt(x);
+        return sq*sq == x;
     }
-}
 
-int findPos(int arr[], int element)
-{
-    int l = 0, h = 1;
-
-    while (arr[h] < element)
+    bool checkTriplet(int arr[], int n)
     {
-        l = h;
-        h *= 2;
+        map<int, int> mp;
+
+        for (int i = 0; i < n; i++)
+            mp[arr[i]]=true;
+
+        vector<int> vec;
+
+        for (auto e : mp)
+            vec.push_back(e.first);
+
+        if (vec.size() == 1)
+            return false;
+
+        int j = vec.size() - 1;
+        int i = vec.size() - 2;
+
+        while (j >= 0)
+        {
+            while (i >= 0)
+            {
+                int diff = vec[j]*vec[j] - vec[i]*vec[i];
+
+                if(isPerSq(diff) && mp[sqrt(diff)])
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
-}
+};
 
 void solve()
 {
