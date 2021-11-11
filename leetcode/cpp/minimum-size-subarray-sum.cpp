@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -136,10 +136,10 @@ int direction(point pivot, point a, point b)
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -163,17 +163,61 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
 
+class Solution
+{
+public:
+    int lowerBound(vector<int> &arr, int target, int start, int end)
+    {
+        while (start <= end)
+        {
+            int mid = (start + end) / 2;
+
+            if (arr[mid] >= target && (mid == start || arr[mid - 1] < target))
+                return mid;
+            else if (arr[mid] >= target)
+                end = mid - 1;
+            else
+                start = mid + 1;
+        }
+
+        return -1;
+    }
+
+    int minSubArrayLen(int target, vector<int> &nums)
+    {
+        for (int i = 1; i < nums.size(); i++)
+            nums[i] += nums[i - 1];
+
+        int ans = 1e9;
+
+        if (nums.back() < target)
+            return 0;
+
+        int res = lowerBound(nums, target, 0, nums.size() - 1);
+        if (res != -1)
+            ans = min(ans, res+1);
+
+        for (int i = 0; i < nums.size(); i++)
+        {
+            int res = lowerBound(nums, target + nums[i], i + 1, nums.size() - 1);
+            if (res != -1)
+                ans = min(ans, res - i);
+        }
+
+        ans = (ans == 1e9) ? 0 : ans;
+        return ans;
+    }
+};
 
 void solve()
 {
-    cout<<(-5)%2;
 }
 
 int main(int argc, char const *argv[])
@@ -190,16 +234,16 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

@@ -170,10 +170,49 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
+class Solution {
+    int ft[20001] = {0};
+public:
+    void update(int index, ll val)
+    {
+        while (index < maxN)
+        {
+            ft[index] += val;
+            index += (index & -1 * index);
+        }
+    }
+
+    ll query(int index)
+    {
+        ll sum = 0;
+
+        while (index)
+        {
+            sum = max(sum, ft[index]);
+            index -= (index & -1 * index);
+        }
+
+        return sum;
+    }
+
+    int lengthOfLIS(vector<int>& nums) {
+        int ans = 0;
+
+        for(int ele: nums)
+        {
+            ele+=10000;
+            int val = query(ele);
+            update(ele,val+1);
+            ans=max(val,ans);
+        }
+
+        return ans;
+    }
+};
 
 void solve()
 {
-    cout<<(-5)%2;
+    
 }
 
 int main(int argc, char const *argv[])

@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -131,15 +131,15 @@ int direction(point pivot, point a, point b)
     return t;
 }
 
-#define maxN 1000001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -163,17 +163,133 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
 
+int n, k;
+vector<int> arr[maxN];
+int par[maxN];
+int et[maxN];
+int timer;
+
+void dfs(int node, int par = -1)
+{
+    et[++timer] = node;
+
+    for (int child : arr[node])
+    {
+        if (node == par)
+            continue;
+        dfs(child);
+    }
+
+    timer++;
+}
+
+vector<int> segTree[4 * maxN];
+
+int findRoot()
+{
+    int node = 1;
+    while (par[node])
+        node = par[node];
+    return node;
+}
+
+void build(int si, int ss, int se)
+{
+    if (ss == se)
+    {
+        segTree[si].push_back(et[ss]);
+    }
+    else
+    {
+        int mid = (ss + se) / 2;
+
+        build(2 * si, ss, mid);
+        build(2 * si + 1, mid + 1, se);
+
+        int i = 0, j = 0;
+
+        while (i < segTree[2 * si].size() && j < segTree[2 * si + 1].size())
+        {
+            if (segTree[2 * si][i] < segTree[2 * si + 1][j])
+                segTree[si].push_back(segTree[2 * si][i]), i++;
+            else
+                segTree[si].push_back(segTree[2 * si + 1][j]), j++;
+        }
+
+        while (i < segTree[2 * si].size())
+            segTree[si].push_back(segTree[2 * si][i]), i++;
+        while (j < segTree[2 * si + 1].size())
+            segTree[si].push_back(segTree[2 * si + 1][j]), j++;
+    }
+}
+
+int lowerBound(int si, int ele)
+{
+    int start = 0, end = segTree[si].size()-1;
+
+    while (start<=end)
+    {
+        int mid = (start+end)/2;
+
+        if(segTree[si][mid]<=ele && (mid==end||segTree[si][mid+1]>ele))
+            return segTree[si].size()-mid;
+        else if(segTree[si][mid]<=)start=mid+1;
+        else end=mid-1;
+    }
+    
+    return -1;
+}
+
+int upperBound(int si, int ele)
+{
+    int start = 0, end = segTree[si].size()-1;
+
+    while (start<=end)
+    {
+        int mid = (start+end)/2;
+
+        if(segTree[si][mid]>=ele && (mid==start||segTree[si][mid-1]<ele))
+            return mid;
+        else if(segTree[si][mid]>=ele)end=mid-1;
+        else start=mid+1;
+    }
+    
+    return -1;
+}
+
+int cout(int si, int node)
+{
+    int uL = lowerBound(si,node+k);
+    int lL = upperBound(si,node-k);
+
+    
+}
+
 
 void solve()
 {
-    cout<<(-5)%2;
+    cin >> n >> k;
+
+    REP(i, 1, n - 1)
+    {
+        int a, b;
+        cin >> a >> b;
+        arr[a].push_back(b), arr[b].push_back(a);
+        par[b] = a;
+    }
+
+    int root = findRoot();
+    dfs(root);
+    build(1,1,n);
+
+
 }
 
 int main(int argc, char const *argv[])
@@ -190,16 +306,16 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

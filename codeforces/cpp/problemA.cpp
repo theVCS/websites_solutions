@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -131,15 +131,30 @@ int direction(point pivot, point a, point b)
     return t;
 }
 
-#define maxN 300001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+
+ll mulmod(ll a, ll b, ll c)
+{
+    ll x = 0, y = a % c;
+    while (b > 0)
+    {
+        if (b % 2 == 1)
+        {
+            x = (x + y) % c;
+        }
+        y = (y * 2LL) % c;
+        b /= 2;
+    }
+    return x % c;
+}
 
 ll binExp(ll a, ll power, ll m = mod)
 {
@@ -148,69 +163,97 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = (res * a) % m;
-        a = (a * a) % m;
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
 
-int n;
-vector<int>arr[maxN];
-int nodeX, dis = -1;
-queue<int>q;
-int dist[maxN];
+int n, m;
+ll arr[10001];
+ll ft[11][10001];
 
-void dfs(int node = 1, int par = -1, int lev = 0)
+ll query(int index, int MOD)
 {
-    if(lev > dis)
-    {
-        dis = lev;
-        nodeX = node;
-    }
+    ll sum = 0;
 
-    for(int child: arr[node])
+    while (index)
     {
-        if(child == par)continue;
-        dfs(child,node,lev+1);
+        sum += ft[MOD][index];
+        index -= (index & -index);
     }
+    
+    return sum;
+}
 
-    dist[node] = dis;
+void init(int index, ll ele)
+{
+    while (index<=n)
+    {
+        ft[ele%m][index]+=ele;
+        index += (index & -index);
+    }
+}
+
+void update(int index, int ele)
+{
+    int INDEX = index;
+
+    while (index<=n)
+    {
+        ft[arr[INDEX]%m][index]+=ele;
+        index += (index & -index);
+    }
 }
 
 void solve()
 {
-    int a, b;
-    cin >> n;
+    cin >> n >> m;
 
-    REP(i,1,n-1)
+    REP(i, 1, n)
     {
-        cin >> a >> b;
-        arr[a].push_back(b), arr[b].push_back(a);
+        cin>>arr[i];
+        init(i,arr[i]);
     }
 
-    dfs();
-    REP(i,1,n)if(dist[i]==dis)q.push(i), dis = 0;
+    int q;
+    cin >> q;
 
-    while (!q.empty())
+    while (q--)
     {
-        int node = q.front();
-        q.pop();
+        char c;
+        cin >> c;
 
-        for(int child: arr[node])
+        if (c == '+')
         {
-            if(dist[child] < dist[node] + 1)
+            ll p, r;
+            cin>>p>>r;
+            update(p,-arr[p]);
+            arr[p]+=r;
+            update(p,arr[p]);
+            cout<<arr[p]<<endl;
+        }
+        else if (c == '-')
+        {
+            ll p,r;
+            cin>>p>>r;
+
+            if(arr[p]-r>=0)
             {
-                dist[child] = dist[node] + 1;
-                q.push(node);
-                dis=max(dis,dist[child]);
+                update(p,-arr[p]);
+                arr[p]-=r;
+                update(p,arr[p]);
             }
-        }   
+            cout<<arr[p]<<endl;
+        }
+        else
+        {
+            ll l,r,MOD;
+            cin>>l>>r>>MOD;
+            cout<<query(r,MOD)-query(l-1,MOD)<<endl;
+        }
     }
-    
-    REP(i,1,n)
-    if(dist[i]==0||dist[i]==dis)cout<<dis+1<<" ";
-    else cout<<dis<<" ";
 }
 
 int main(int argc, char const *argv[])
@@ -227,15 +270,16 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    while (t--)
+    REP(tc, 1, t)
     {
+        // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

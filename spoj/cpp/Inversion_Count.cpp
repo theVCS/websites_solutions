@@ -131,7 +131,7 @@ int direction(point pivot, point a, point b)
     return t;
 }
 
-#define maxN 1000001
+#define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -170,10 +170,47 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
+int ft[10000001];
+
+void update(int index)
+{
+    while (index)
+    {
+        ft[index]+=1;
+        index -= (index & -index);
+    }
+}
+
+int query(int index)
+{
+    int sum = 0;
+
+    while (index < 10000001)
+    {
+        sum+=ft[index];
+        index += (index & -index);
+    }
+    
+    return sum;
+}
 
 void solve()
 {
-    cout<<(-5)%2;
+    memset(ft,0,sizeof(ft));
+
+    int n;
+    cin>>n;
+    ll ans = 0;
+
+    REP(i,1,n)
+    {
+        int ele;
+        cin>>ele;
+        ans+=query(ele+1);
+        update(ele);
+    }
+
+    cout<<ans<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -190,7 +227,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     REP(tc,1,t)
     {

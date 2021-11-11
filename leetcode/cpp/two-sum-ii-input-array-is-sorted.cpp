@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -136,10 +136,10 @@ int direction(point pivot, point a, point b)
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -163,17 +163,64 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
 
+class Solution
+{
+public:
+    int bs(vector<int> &arr, int target, int start, int end)
+    {
+        while (start <= end)
+        {
+            int mid = (start + end) / 2;
+
+            if (arr[mid] == target)
+                return mid;
+            else if (arr[mid] < target)
+                start = mid + 1;
+            else
+                end = mid - 1;
+        }
+
+        return -1;
+    }
+
+    vector<int> twoSum(vector<int> &numbers, int target)
+    {
+        vector<int>res;
+
+        for (int i = 0; i < numbers.size(); i++)
+        {
+            int ans = bs(numbers, target-numbers[i], 0, i-1);
+
+            if(ans!=-1)
+            {
+                res.push_back(i+1);
+                res.push_back(ans+1);
+                break;
+            }
+
+            ans = bs(numbers, target-numbers[i], i+1, numbers.size()-1);
+
+            if(ans!=-1)
+            {
+                res.push_back(i+1);
+                res.push_back(ans+1);
+                break;
+            }
+        }
+
+        return res;
+    }
+};
 
 void solve()
 {
-    cout<<(-5)%2;
 }
 
 int main(int argc, char const *argv[])
@@ -190,16 +237,16 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

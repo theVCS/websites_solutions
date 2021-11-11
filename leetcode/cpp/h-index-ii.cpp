@@ -170,10 +170,49 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
+class Solution {
+public:
+    int fun(vector<int>&arr, int h)
+    {
+        int start = 0, end = arr.size()-1;
+
+        while (start <= end)
+        {
+            int mid = (start + end)/2;
+
+            if(arr[mid]>=h && (mid==start || arr[mid-1]<h))
+                return arr.size() - mid;
+            else if(arr[mid]>=h)
+                end = mid-1;
+            else 
+                start=mid+1;
+        }
+        
+        return 0;
+    }
+
+    int hIndex(vector<int>& citations)
+    {
+        int ans = 0;
+        int start = 0, end = citations.back();
+
+        while (start <= end)
+        {
+            int mid = (start + end) / 2;
+            int val = fun(citations, mid);
+
+            if(val>=mid)ans =max(ans,mid);
+            if(val>mid)start=mid+1;
+            else end=mid-1;
+        }
+
+        return ans;
+    }
+};
 
 void solve()
 {
-    cout<<(-5)%2;
+    
 }
 
 int main(int argc, char const *argv[])
