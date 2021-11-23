@@ -7,7 +7,7 @@ using namespace std;
 #define pii pair<int, int>
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define endl "\n"
+// #define endl "\n"
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
@@ -81,7 +81,7 @@ struct point
             return true;
         else
             return false;
-    }
+    } 
 };
 vector<point> points;
 
@@ -170,7 +170,7 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n, q;
+int n, u;
 
 template <class T>
 class FenwickTree
@@ -229,7 +229,7 @@ public:
 
         for (int i = LOGN; i >= 0; i--)
         {
-            if (pos + (1 << i) < n && q + BIT[pos + (1 << i)] < val)
+            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
             {
                 q += BIT[pos + (1 << i)];
                 pos += (1 << i);
@@ -242,40 +242,27 @@ public:
 
 void solve()
 {
-    FenwickTree<int> ft(1000000);
-    cin >> n >> q;
+    cin >> n >> u;
 
-    REP(i, 1, n)
+    FenwickTree<ll> ft(n);
+
+    REP(i, 1, u)
     {
-        int ele;
-        cin >> ele;
-        ft.update(ele, 1);
+        ll l, r, val;
+        cin >> l >> r >> val;
+        l++,r++;
+        // ft.update(l, r, val);
     }
+
+    int q;
+    cin >> q;
 
     REP(i, 1, q)
     {
-        int ele;
-        cin >> ele;
-
-        if (ele > 0)
-        {
-            ft.update(ele, 1);
-        }
-        else
-        {
-            ele *= -1;
-            int index = ft.lowerBound(ele);
-            ft.update(index, -1);
-        }
-    }
-
-    if (ft.query(n) == 0)
-    {
-        cout << 0;
-    }
-    else
-    {
-        cout << ft.lowerBound(1);
+        int index;
+        cin >> index;
+        index++;
+        // cout << ft.query(index) << endl;
     }
 }
 
@@ -293,7 +280,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

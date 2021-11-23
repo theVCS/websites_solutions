@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,95 +50,63 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct contest
-{
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
-    {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, INF);
-    }
-
-    T query(int index)
-    {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
-    }
-
-    void update(int index, T val)
-    {
-        while (index <= n)
-        {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
-        }
-    }
-};
-
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
+int fre[26];
 
 void solve()
 {
-    cin>>n;
+    memset(fre,0,sizeof(fre));
+    
+    string s, order;
+    cin>>s;
 
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
+    RREP(i,s.size()-1,0)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
+        if(fre[s[i]-'a']==0)
+        {
+            order.push_back(s[i]);
+        }
+
+        fre[s[i]-'a']++;
     }
 
-    REP(i,1,n)
+    reverse(all(order));
+    
+    int sz = 0;
+    int index = 1;
+
+    for(char &c:order)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
+        if(fre[c-'a']%index)
+        {
+            cout<<-1<<endl;
+            return;
+        }
+        else
+        {
+            sz += fre[c-'a']/index;
+            index++;
+        }
     }
 
-    REP(i,1,n)
+    string res = s.substr(0,sz);
+    string t = res;
+
+    bool flag[26]={false};
+
+    for(char c: order)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
+        flag[c-'a']=true;
+
+        for(char x: res)
+        {
+            if(flag[x-'a'])continue;
+            t.push_back(x);
+        }
     }
-
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
-    }
-
-    cout<<ans;
+    if(t==s)
+    cout<<res<<" "<<order<<endl;
+    else
+    cout<<-1<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -152,7 +120,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     REP(tc,1,t)
     {

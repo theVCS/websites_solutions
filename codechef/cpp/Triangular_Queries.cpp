@@ -170,113 +170,8 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n, q;
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
-    {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, 0);
-    }
-
-    T query(int index)
-    {
-        T q = 0;
-
-        while (index > 0)
-        {
-            q += BIT[index];
-            index -= (index & -index);
-        }
-
-        return q;
-    }
-
-    void update(int index, T val)
-    {
-        while (index <= n)
-        {
-            BIT[index] += val;
-            index += (index & -index);
-        }
-    }
-
-    T query(int l, int r)
-    {
-        return query(r) - query(l - 1);
-    }
-
-    void update(int l, int r, int val)
-    {
-        update(l, val);
-        update(r + 1, -val);
-    }
-
-    int lowerBound(T val)
-    {
-        // will find the lower bound index of val in BIT if monotonically increasing
-        // https://codeforces.com/blog/entry/61364
-
-        T q = 0;
-        int pos = 0;
-
-        for (int i = LOGN; i >= 0; i--)
-        {
-            if (pos + (1 << i) < n && q + BIT[pos + (1 << i)] < val)
-            {
-                q += BIT[pos + (1 << i)];
-                pos += (1 << i);
-            }
-        }
-
-        return pos + 1;
-    }
-};
-
 void solve()
 {
-    FenwickTree<int> ft(1000000);
-    cin >> n >> q;
-
-    REP(i, 1, n)
-    {
-        int ele;
-        cin >> ele;
-        ft.update(ele, 1);
-    }
-
-    REP(i, 1, q)
-    {
-        int ele;
-        cin >> ele;
-
-        if (ele > 0)
-        {
-            ft.update(ele, 1);
-        }
-        else
-        {
-            ele *= -1;
-            int index = ft.lowerBound(ele);
-            ft.update(index, -1);
-        }
-    }
-
-    if (ft.query(n) == 0)
-    {
-        cout << 0;
-    }
-    else
-    {
-        cout << ft.lowerBound(1);
-    }
 }
 
 int main(int argc, char const *argv[])
@@ -285,11 +180,8 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream filptr("input.txt");
-    // ofstream outpter("output.txt");
-
-    // filptr >> input;
-    // outpter << output;
+    // freopen("inputD.txt","r",stdin);
+    // freopen("a.txt","w",stdout);
 
     int t = 1;
 
@@ -300,9 +192,6 @@ int main(int argc, char const *argv[])
         // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
-
-    // filptr.close();
-    // outpter.close();
 
     return 0;
 }

@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -136,10 +136,10 @@ int direction(point pivot, point a, point b)
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll binExp(ll a, ll power, ll m = mod)
 {
@@ -174,9 +174,9 @@ void init2()
         }
     }
 
-    inverse[0]=inverse[1]=1;
+    inverse[0] = inverse[1] = 1;
     REP(i, 2, 2000000)
-    inverse[i] = ((inverse[mod%i])*(mod - mod/i)) % mod;
+    inverse[i] = ((inverse[mod % i]) * (mod - mod / i)) % mod;
 }
 
 int n, m;
@@ -219,7 +219,7 @@ void init(int n)
     euler();
     lg = log2(n);
 
-    for (int j = 1; j < lg+1; j++)
+    for (int j = 1; j < lg + 1; j++)
     {
         for (int i = 1; i <= n; i++)
         {
@@ -263,36 +263,37 @@ int LCA(int a, int b)
     return parent[a][0];
 }
 
-inline int64_t gilbertOrder(int x, int y, int pow, int rotate) {
-	if (pow == 0) {
-		return 0;
-	}
-	int hpow = 1 << (pow-1);
-	int seg = (x < hpow) ? (
-		(y < hpow) ? 0 : 3
-	) : (
-		(y < hpow) ? 1 : 2
-	);
-	seg = (seg + rotate) & 3;
-	const int rotateDelta[4] = {3, 0, 0, 1};
-	int nx = x & (x ^ hpow), ny = y & (y ^ hpow);
-	int nrot = (rotate + rotateDelta[seg]) & 3;
-	int64_t subSquareSize = int64_t(1) << (2*pow - 2);
-	int64_t ans = seg * subSquareSize;
-	int64_t add = gilbertOrder(nx, ny, pow-1, nrot);
-	ans += (seg == 1 || seg == 2) ? add : (subSquareSize - add - 1);
-	return ans;
+inline int64_t gilbertOrder(int x, int y, int pow, int rotate)
+{
+    if (pow == 0)
+    {
+        return 0;
+    }
+    int hpow = 1 << (pow - 1);
+    int seg = (x < hpow) ? (
+                               (y < hpow) ? 0 : 3)
+                         : (
+                               (y < hpow) ? 1 : 2);
+    seg = (seg + rotate) & 3;
+    const int rotateDelta[4] = {3, 0, 0, 1};
+    int nx = x & (x ^ hpow), ny = y & (y ^ hpow);
+    int nrot = (rotate + rotateDelta[seg]) & 3;
+    int64_t subSquareSize = int64_t(1) << (2 * pow - 2);
+    int64_t ans = seg * subSquareSize;
+    int64_t add = gilbertOrder(nx, ny, pow - 1, nrot);
+    ans += (seg == 1 || seg == 2) ? add : (subSquareSize - add - 1);
+    return ans;
 }
-
 
 struct query
 {
     int l, r, lca, index;
     ll ord;
 
-    inline void calcOrder() {
-		ord = gilbertOrder(l, r, 21, 0);
-	}
+    inline void calcOrder()
+    {
+        ord = gilbertOrder(l, r, 21, 0);
+    }
 } Q[maxN];
 
 bool cmp(query a, query b)
@@ -482,8 +483,8 @@ int main(int argc, char const *argv[])
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

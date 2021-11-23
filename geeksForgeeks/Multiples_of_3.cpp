@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -16,10 +16,10 @@ using namespace std;
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -43,19 +43,50 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
 }
+
+struct counter
+{
+    int zero, one, two;
+
+    counter add(counter &a, counter &b)
+    {
+        counter res;
+        res.zero = a.zero + b.zero;
+        res.one = a.one + b.one;
+        res.two = a.two + b.two;
+        return res;
+    }
+
+    counter increment(counter a, int val)
+    {
+        if (val == 1)
+        {
+            swap(a.zero, a.one);
+            swap(a.zero, a.two);
+        }
+        else
+        {
+            swap(a.zero, a.two);
+            swap(a.zero, a.one);
+        }
+
+        return a;
+    }
+};
 
 template <class T>
 class SegmentTreeLazyPropogation
 {
     int n;
     vector<T> segTree;
-    vector<T> lazy;
+    vector<int> lazy;
+    counter obj;
 
 public:
     SegmentTreeLazyPropogation(int N)
@@ -65,34 +96,39 @@ public:
         lazy.assign(4 * n, 0);
     }
 
-    void _build_(int si, int ss, int se, T arr[])
+    void _build_(int si, int ss, int se)
     {
         if (ss == se)
         {
-            segTree[si] = arr[ss];
+            segTree[si].zero = 1;
+            segTree[si].one = 0;
+            segTree[si].two = 0;
         }
         else
         {
             int mid = (ss + se) / 2;
-            _build_(2 * si, ss, mid, arr);
-            _build_(2 * si + 1, mid + 1, se, arr);
-            segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+            _build_(2 * si, ss, mid);
+            _build_(2 * si + 1, mid + 1, se);
+            segTree[si] = obj.add(segTree[2 * si], segTree[2 * si + 1]);
         }
     }
 
-    void build(T arr[])
+    void build()
     {
-        _build_(1, 1, n, arr);
+        _build_(1, 1, n);
     }
 
-    T _query_(int si, int ss, int se, int qs, int qe)
+    int _query_(int si, int ss, int se, int qs, int qe)
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = obj.increment(segTree[si], lazy[si]);
 
             if (ss != se)
+            {
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2 * si] %= 3, lazy[2 * si + 1] %= 3;
+            }
 
             lazy[si] = 0;
         }
@@ -101,26 +137,30 @@ public:
             return 0;
 
         if (qs <= ss && qe >= se)
-            return segTree[si];
+            return segTree[si].zero;
 
         int mid = (ss + se) / 2;
         return _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);
     }
 
-    T query(int l, int r=-1)
+    int query(int l, int r = -1)
     {
-        if(r==-1)r=l;
+        if (r == -1)
+            r = l;
         return _query_(1, 1, n, l, r);
     }
 
-    void _update_(int si, int ss, int se, int qs, int qe, T val)
+    void _update_(int si, int ss, int se, int qs, int qe, int val)
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = obj.increment(segTree[si], lazy[si]);
 
             if (ss != se)
+            {
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2 * si] %= 3, lazy[2 * si + 1] %= 3;
+            }
 
             lazy[si] = 0;
         }
@@ -130,10 +170,13 @@ public:
 
         if (qs <= ss && qe >= se)
         {
-            segTree[si] += (se - ss + 1) * val;
+            segTree[si] = obj.increment(segTree[si],val);
 
             if (ss != se)
+            {
                 lazy[2 * si] += val, lazy[2 * si + 1] += val;
+                lazy[2 * si] %= 3, lazy[2 * si + 1] %= 3;
+            }
 
             return;
         }
@@ -142,20 +185,38 @@ public:
 
         _update_(2 * si, ss, mid, qs, qe, val);
         _update_(2 * si + 1, mid + 1, se, qs, qe, val);
-
-        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+        segTree[si] = obj.add(segTree[2 * si], segTree[2 * si + 1]);
     }
 
-    void update(int l, int r, T val)
+    void update(int l, int r, int val)
     {
         _update_(1, 1, n, l, r, val);
     }
 };
 
+int n, q;
 
 void solve()
 {
-    
+    cin >> n >> q;
+    SegmentTreeLazyPropogation<counter> segTree(n);
+    segTree.build();
+
+    while (q--)
+    {
+        int type, a, b;
+        cin>>type>>a>>b;
+        a++,b++;
+
+        if(type==0)
+        {
+            segTree.update(a,b,1);
+        }
+        else
+        {
+            cout<<segTree.query(a,b)<<endl;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -164,14 +225,14 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    //freopen("inputD.txt","r",stdin);
-    //freopen("a.txt","w",stdout);
+    // freopen("inputD.txt","r",stdin);
+    // freopen("a.txt","w",stdout);
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();

@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 50001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -51,102 +51,103 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-
-struct veg
-{
-    int w, x, y, z;
-} arr[maxN];
+ll arr[maxN];
+map<ll, int> mp;
 
 template <class T>
-class FenwickTree2D
+class FenwickTree
 {
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
+    int n, LOGN;
+    vector<T> BIT;
 
 public:
-    FenwickTree2D(int N, int M)
+    FenwickTree(int N)
     {
-        REP(i,0,200000000-1)BIT[i]=INF;
+        LOGN = log2(N);
         n = N;
-        m = M;
-        pos = 0;
+        BIT.assign(n + 1, 0);
     }
 
-    T _query_(ll x, ll y)
+    T query(int index)
     {
-        T q = INF;
+        T q = 0;
 
-        while (y > 0)
+        while (index <= n)
         {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
+            q += BIT[index];
+            index += (index & -index);
         }
 
         return q;
     }
 
-    T query(int x, int y)
+    void update(int index, T val)
     {
-        T q = INF;
-
-        while (x > 0)
+        while (index > 0)
         {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
-
-        return q;
-    }
-
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
+            BIT[index] += val;
+            index -= (index & -index);
         }
     }
 
-    void update(int x, int y, T val)
+    T query(int l, int r)
     {
-        while (x <= n)
+        return query(r) - query(l - 1);
+    }
+
+    void update(int l, int r, int val)
+    {
+        update(l, val);
+        update(r + 1, -val);
+    }
+
+    int lowerBound(T val)
+    {
+        // will find the lower bound index of val in BIT if monotonically increasing
+        // https://codeforces.com/blog/entry/61364
+
+        T q = 0;
+        int pos = 0;
+
+        for (int i = LOGN; i >= 0; i--)
         {
-            __update__(x, y, val);
-            x += (x & -x);
+            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
+            {
+                q += BIT[pos + (1 << i)];
+                pos += (1 << i);
+            }
         }
+
+        return pos + 1;
     }
 };
-
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
-}
 
 void solve()
 {
     cin >> n;
-    FenwickTree2D<ll> ft(n, n);
-
-    REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
-
-    sort(arr + 1, arr + 1 + n, cmp);
-
-    int ans = 0;
+    FenwickTree<ll> ft(n);
 
     REP(i, 1, n)
     {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
+        cin >> arr[i];
+        mp[arr[i]];
     }
 
-    cout << ans;
+    int timer = 0;
+
+    for (auto &e : mp)
+        e.second = ++timer;
+
+    ll ans = 0;
+
+    REP(i, 1, n)
+    {
+        arr[i] = mp[arr[i]];
+        ans += ft.query(arr[i] + 1);
+        ft.update(arr[i], 1);
+    }
+
+    cout<<ans;
 }
 
 int main(int argc, char const *argv[])
@@ -155,8 +156,8 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // freopen("inputD.txt","r",stdin);
-    // freopen("a.txt","w",stdout);
+    freopen("inverse.in","r",stdin);
+    freopen("inverse.out","w",stdout);
 
     int t = 1;
 

@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -51,102 +51,83 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
+vector<int> vec;
 
-struct veg
+bool isSet(int n, int index)
 {
-    int w, x, y, z;
-} arr[maxN];
+    return n & (1 << index);
+}
 
-template <class T>
-class FenwickTree2D
+void fun(int n)
 {
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
+    // cout<<"now-> "<<n<<endl;
+    if (n == 0)
+        return;
 
-public:
-    FenwickTree2D(int N, int M)
+    if (n % 2 == 0)
     {
-        REP(i,0,200000000-1)BIT[i]=INF;
-        n = N;
-        m = M;
-        pos = 0;
+        vec.push_back(1);
+        fun(n - 1);
     }
-
-    T _query_(ll x, ll y)
+    else
     {
-        T q = INF;
+        int index = 20;
+        while (isSet(n,index) == 0)
+            index--;
 
-        while (y > 0)
+        int start = index, end = 0;
+        int rem = 0;
+        int curr = 0;
+
+        // cout<<start<<endl;
+
+        while (start > end)
         {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
+            if (isSet(n, start) == isSet(n, end))
+            {
+                curr += isSet(n, start) * (1 << start) + isSet(n, end) * (1 << end);
+            }
+            else
+            {
+                rem += isSet(n, start) * (1 << start) + isSet(n, end) * (1 << end);
+            }
+
+            start--, end++;
         }
 
-        return q;
+        if(start==end)
+            curr += isSet(n,start)*(1<<start);
+
+        if (curr)
+            vec.push_back(curr);
+        fun(rem);
     }
-
-    T query(int x, int y)
-    {
-        T q = INF;
-
-        while (x > 0)
-        {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
-
-        return q;
-    }
-
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
-        }
-    }
-
-    void update(int x, int y, T val)
-    {
-        while (x <= n)
-        {
-            __update__(x, y, val);
-            x += (x & -x);
-        }
-    }
-};
-
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
 }
 
 void solve()
 {
+    vec.clear();
     cin >> n;
-    FenwickTree2D<ll> ft(n, n);
 
-    REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
+    fun(n);
 
-    sort(arr + 1, arr + 1 + n, cmp);
+    sort(all(vec));
 
-    int ans = 0;
+    // int index = 0;
 
-    REP(i, 1, n)
+    // while (vec[index]==1)
+    // {
+    //     index++;
+    // }
+    
+    // if(index%)
+
+    cout << vec.size() << endl;
+    for (int ele : vec)
     {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
+        cout << ele << " ";
     }
-
-    cout << ans;
+    cout << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -160,7 +141,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

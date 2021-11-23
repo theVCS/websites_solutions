@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,103 +50,90 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct veg
+class DSU
 {
-    int w, x, y, z;
-} arr[maxN];
-
-template <class T>
-class FenwickTree2D
-{
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
+    int n;
+    vector<int> par;
 
 public:
-    FenwickTree2D(int N, int M)
+    DSU(int N)
     {
-        REP(i,0,200000000-1)BIT[i]=INF;
         n = N;
-        m = M;
-        pos = 0;
+        par.assign(n + 1, -1);
     }
 
-    T _query_(ll x, ll y)
+    int find(int a)
     {
-        T q = INF;
-
-        while (y > 0)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
-        }
-
-        return q;
+        if (par[a] < 0)
+            return a;
+        else
+            return par[a] = find(par[a]);
     }
 
-    T query(int x, int y)
+    void merger(int a, int b)
     {
-        T q = INF;
+        a = find(a);
+        b = find(b);
 
-        while (x > 0)
-        {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
+        if(a==b)return;
 
-        return q;
-    }
+        if (par[a] > par[b])
+            swap(a, b);
 
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
-        }
-    }
-
-    void update(int x, int y, T val)
-    {
-        while (x <= n)
-        {
-            __update__(x, y, val);
-            x += (x & -x);
-        }
+        par[a] += par[b];
+        par[b] = a;
     }
 };
 
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
-}
+int n;
+int m1, m2;
 
 void solve()
 {
-    cin >> n;
-    FenwickTree2D<ll> ft(n, n);
+    cin >> n >> m1 >> m2;
+    DSU dsu1(n), dsu2(n);
 
-    REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
-
-    sort(arr + 1, arr + 1 + n, cmp);
-
-    int ans = 0;
-
-    REP(i, 1, n)
+    REP(i, 1, m1)
     {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
+        int a, b;
+        cin>>a>>b;
+        dsu1.merger(a,b);
     }
 
-    cout << ans;
+    REP(i, 1, m2)
+    {
+        int a, b;
+        cin>>a>>b;
+        dsu2.merger(a,b);
+    }
+
+    vector<pii>res;
+
+    REP(a,1,n)
+    {
+        REP(b,a+1,n)
+        {
+            int pa = dsu1.find(a);
+            int pb = dsu1.find(b);
+
+            if(pa==pb)continue;
+        
+            pa = dsu2.find(a);
+            pb = dsu2.find(b);
+
+            if(pa==pb)continue;
+
+            dsu1.merger(a,b);
+            dsu2.merger(a,b);
+
+            res.push_back({a,b});
+        }
+    }
+
+    cout<<res.size()<<endl;
+
+    for(pii e: res)
+    cout<<e.first<<" "<<e.second<<endl;
 }
 
 int main(int argc, char const *argv[])

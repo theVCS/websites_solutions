@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -51,94 +51,34 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-
-struct contest
-{
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
-    {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, INF);
-    }
-
-    T query(int index)
-    {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
-    }
-
-    void update(int index, T val)
-    {
-        while (index <= n)
-        {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
-        }
-    }
-};
-
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
+string a, b;
 
 void solve()
 {
     cin>>n;
-
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
-    }
-
-    sort(arr+1,arr+1+n,cmp);
-
+    cin>>a>>b;
+ 
     int ans = 0;
+    int index = n - 2;
+    int curr;
 
-    REP(i,1,n)
+    if(a[n-1]==b[n-1])
+        curr = 0;
+    else if(a[n-1]<b[n-1])
+        curr = 1, ans = 1;
+    else
+        curr = -1;
+
+
+    while (index >= 0)
     {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
+        if(a[index]<b[index])curr=1;
+        else if(a[index]>b[index])curr=-1;
+        if(curr==1)ans++;
+        index--;
     }
-
-    cout<<ans;
+    
+    cout<<ans<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -152,7 +92,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     REP(tc,1,t)
     {

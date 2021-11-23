@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -16,10 +16,10 @@ using namespace std;
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -43,8 +43,8 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = mulmod(res, a, m);
+        a = mulmod(a, a, m);
         power >>= 1;
     }
     return res;
@@ -54,7 +54,7 @@ template <class T>
 class SegmentTreeLazyPropogation
 {
     int n;
-    vector<T> segTree;
+    vector<pair<T, T>> segTree;
     vector<T> lazy;
 
 public:
@@ -69,14 +69,16 @@ public:
     {
         if (ss == se)
         {
-            segTree[si] = arr[ss];
+            segTree[si].first = arr[ss] * arr[ss];
+            segTree[si].second = arr[ss];
         }
         else
         {
             int mid = (ss + se) / 2;
             _build_(2 * si, ss, mid, arr);
             _build_(2 * si + 1, mid + 1, se, arr);
-            segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+            segTree[si].first = segTree[2 * si].first + segTree[2 * si + 1].first;
+            segTree[si].second = segTree[2 * si].second + segTree[2 * si + 1].second;
         }
     }
 
@@ -89,7 +91,8 @@ public:
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si].first += (se - ss + 1) * lazy[si] * lazy[si] + 2 * lazy[si] * segTree[si].second;
+            segTree[si].second += (se - ss + 1) * lazy[si];
 
             if (ss != se)
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
@@ -101,15 +104,16 @@ public:
             return 0;
 
         if (qs <= ss && qe >= se)
-            return segTree[si];
+            return segTree[si].first;
 
         int mid = (ss + se) / 2;
         return _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);
     }
 
-    T query(int l, int r=-1)
+    T query(int l, int r = -1)
     {
-        if(r==-1)r=l;
+        if (r == -1)
+            r = l;
         return _query_(1, 1, n, l, r);
     }
 
@@ -117,7 +121,8 @@ public:
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si].first += (se - ss + 1) * lazy[si] * lazy[si] + 2 * lazy[si] * segTree[si].second;
+            segTree[si].second += (se - ss + 1) * lazy[si];
 
             if (ss != se)
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
@@ -130,7 +135,8 @@ public:
 
         if (qs <= ss && qe >= se)
         {
-            segTree[si] += (se - ss + 1) * val;
+            segTree[si].first += (se - ss + 1) * val * val + 2 * val * segTree[si].second;
+            segTree[si].second += (se - ss + 1) * val;
 
             if (ss != se)
                 lazy[2 * si] += val, lazy[2 * si + 1] += val;
@@ -143,7 +149,8 @@ public:
         _update_(2 * si, ss, mid, qs, qe, val);
         _update_(2 * si + 1, mid + 1, se, qs, qe, val);
 
-        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+        segTree[si].first = segTree[2 * si].first + segTree[2 * si + 1].first;
+        segTree[si].second = segTree[2 * si].second + segTree[2 * si + 1].second;
     }
 
     void update(int l, int r, T val)
@@ -152,10 +159,35 @@ public:
     }
 };
 
+int n, q;
+ll arr[100001];
 
 void solve()
 {
-    
+    cin >> n;
+    REP(i,1,n)cin>>arr[i];
+    SegmentTreeLazyPropogation<ll> segTree(n);
+    segTree.build(arr);
+
+    cin >> q;
+
+    while (q--)
+    {
+        int type, l, r;
+        cin >> type >> l >> r;
+        l++, r++;
+
+        if (type == 0)
+        {
+            cout << segTree.query(l, r) << endl;
+        }
+        else
+        {
+            ll val;
+            cin >> val;
+            segTree.update(l, r, val);
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -164,14 +196,14 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    //freopen("inputD.txt","r",stdin);
-    //freopen("a.txt","w",stdout);
+    // freopen("inputD.txt","r",stdin);
+    // freopen("a.txt","w",stdout);
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();

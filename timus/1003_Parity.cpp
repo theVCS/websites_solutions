@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,103 +50,67 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
+map<int, bool> exists;
+map<int, bool> res;
+map<int, int> pre;
 
-struct veg
+bool add(int a, int b, bool c)
 {
-    int w, x, y, z;
-} arr[maxN];
-
-template <class T>
-class FenwickTree2D
-{
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
-
-public:
-    FenwickTree2D(int N, int M)
+    if (!exists[b])
     {
-        REP(i,0,200000000-1)BIT[i]=INF;
-        n = N;
-        m = M;
-        pos = 0;
+        exists[b] = true;
+        pre[b] = a;
+        res[b] = c;
+        return true;
     }
 
-    T _query_(ll x, ll y)
-    {
-        T q = INF;
+    int i = pre[b];
 
-        while (y > 0)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
-        }
-
-        return q;
-    }
-
-    T query(int x, int y)
-    {
-        T q = INF;
-
-        while (x > 0)
-        {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
-
-        return q;
-    }
-
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
-        }
-    }
-
-    void update(int x, int y, T val)
-    {
-        while (x <= n)
-        {
-            __update__(x, y, val);
-            x += (x & -x);
-        }
-    }
-};
-
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
+    if (i == a)
+        return (c == res[b]);
+    else if (i < a)
+        return add(i, a - 1, c != res[b]);
+    else
+        return add(a, i - 1, c != res[b]);
 }
 
 void solve()
 {
-    cin >> n;
-    FenwickTree2D<ll> ft(n, n);
-
-    REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
-
-    sort(arr + 1, arr + 1 + n, cmp);
-
-    int ans = 0;
-
-    REP(i, 1, n)
+    while (true)
     {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
-    }
+        int n;
+        cin >> n;
 
-    cout << ans;
+        if (n == -1)
+            return;
+
+        exists.clear();
+        pre.clear();
+        res.clear();
+
+        int q;
+        bool flag = true;
+        cin >> q;
+
+        REP(i, 1, q)
+        {
+            int a, b;
+            string s;
+            cin >> a >> b >> s;
+
+            if (add(a, b, s[0] == 'o') == false)
+            {
+                cout << i - 1 << endl;
+                flag = false;
+                break;
+            }              
+        }
+
+        if(flag)
+        {
+            cout<<q<<endl;
+        }
+    }
 }
 
 int main(int argc, char const *argv[])

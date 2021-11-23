@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-// using namespace boost::multiprecision;
+//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -136,10 +136,10 @@ int direction(point pivot, point a, point b)
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -163,14 +163,14 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res, a, m);
-        a = mulmod(a, a, m);
+            res = mulmod(res,a,m);
+        a = mulmod(a,a,m);
         power >>= 1;
     }
     return res;
 }
 
-int n, q;
+int n, k;
 
 template <class T>
 class FenwickTree
@@ -229,7 +229,7 @@ public:
 
         for (int i = LOGN; i >= 0; i--)
         {
-            if (pos + (1 << i) < n && q + BIT[pos + (1 << i)] < val)
+            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
             {
                 q += BIT[pos + (1 << i)];
                 pos += (1 << i);
@@ -242,41 +242,30 @@ public:
 
 void solve()
 {
-    FenwickTree<int> ft(1000000);
-    cin >> n >> q;
+    cin>>n>>k;
 
-    REP(i, 1, n)
+    FenwickTree<ll>ft(n);
+
+    REP(i,1,k)
     {
-        int ele;
-        cin >> ele;
-        ft.update(ele, 1);
+        int a, b;
+        cin>>a>>b;
+        ft.update(a,b,1);
     }
 
-    REP(i, 1, q)
-    {
-        int ele;
-        cin >> ele;
+    vector<ll>arr;
 
-        if (ele > 0)
-        {
-            ft.update(ele, 1);
-        }
-        else
-        {
-            ele *= -1;
-            int index = ft.lowerBound(ele);
-            ft.update(index, -1);
-        }
+    for (int i = 1; i <= n; i++)
+    {
+        arr.push_back(ft.query(i));
     }
+    
+    sort(all(arr));
 
-    if (ft.query(n) == 0)
-    {
-        cout << 0;
-    }
-    else
-    {
-        cout << ft.lowerBound(1);
-    }
+    // for(ll ele: arr)cout<<ele<<" ";
+    // cout<<endl;
+
+    cout<<arr[n/2];
 }
 
 int main(int argc, char const *argv[])
@@ -293,16 +282,16 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    //cin >> t;
 
-    REP(tc, 1, t)
+    REP(tc,1,t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
-    // filptr.close();
-    // outpter.close();
+    //filptr.close();
+    //outpter.close();
 
     return 0;
 }

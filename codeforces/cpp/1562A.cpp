@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,95 +50,16 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct contest
-{
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
-    {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, INF);
-    }
-
-    T query(int index)
-    {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
-    }
-
-    void update(int index, T val)
-    {
-        while (index <= n)
-        {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
-        }
-    }
-};
-
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
+int l, r;
 
 void solve()
 {
-    cin>>n;
+    cin>>l>>r;
 
-    FenwickTree<int>ft(n);
+    int m = r/2 + 1;
+    m = max(m,l);
 
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
-    }
-
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
-    }
-
-    cout<<ans;
+    cout<<r%m<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -152,7 +73,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     REP(tc,1,t)
     {

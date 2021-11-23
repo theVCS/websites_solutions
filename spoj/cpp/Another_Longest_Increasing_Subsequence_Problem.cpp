@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -51,102 +51,63 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
-
-struct veg
-{
-    int w, x, y, z;
-} arr[maxN];
+int arr[maxN][2];
 
 template <class T>
 class FenwickTree2D
 {
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
+    int n, m;
+    vector<vector<T>> BIT;
 
 public:
     FenwickTree2D(int N, int M)
     {
-        REP(i,0,200000000-1)BIT[i]=INF;
         n = N;
         m = M;
-        pos = 0;
+        BIT.resize(n + 1);
+
+        for (vector<T> &vec : BIT)
+            vec.assign(m + 1, 0);
     }
 
-    T _query_(ll x, ll y)
+    T _query_(int x, int y)
     {
-        T q = INF;
+        T sum = 0;
 
-        while (y > 0)
+        for (int i = x; i > 0; i -= (i & -i))
         {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
+            for (int j = y; j > 0; j -= (j & -j))
+            {
+                sum += BIT[i][j]
+            }
         }
 
-        return q;
+        return sum;
     }
 
-    T query(int x, int y)
+    T query(int x2, int y2, int x1, int y1)
     {
-        T q = INF;
-
-        while (x > 0)
-        {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
-
-        return q;
-    }
-
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
-        }
+        return _query_(x2, y2) - _query_(x1 - 1, y2) - _query_(x2, y1 - 1) + _query_(x1 - 1, y1 - 1);
     }
 
     void update(int x, int y, T val)
     {
-        while (x <= n)
+        for (int i = x; i <= n; i += (i & -i))
         {
-            __update__(x, y, val);
-            x += (x & -x);
+            for (int j = y; j <= m; j += (j & -j))
+            {
+                BIT[i][j] += val;
+            }
         }
     }
 };
 
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
-}
-
 void solve()
 {
     cin >> n;
-    FenwickTree2D<ll> ft(n, n);
 
     REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
-
-    sort(arr + 1, arr + 1 + n, cmp);
-
-    int ans = 0;
-
-    REP(i, 1, n)
-    {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
-    }
-
-    cout << ans;
+    cin >> arr[i][0] >> arr[i][1];
 }
 
 int main(int argc, char const *argv[])

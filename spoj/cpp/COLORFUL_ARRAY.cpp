@@ -65,62 +65,42 @@ public:
         lazy.assign(4 * n, 0);
     }
 
-    void _build_(int si, int ss, int se, T arr[])
-    {
-        if (ss == se)
-        {
-            segTree[si] = arr[ss];
-        }
-        else
-        {
-            int mid = (ss + se) / 2;
-            _build_(2 * si, ss, mid, arr);
-            _build_(2 * si + 1, mid + 1, se, arr);
-            segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
-        }
-    }
-
-    void build(T arr[])
-    {
-        _build_(1, 1, n, arr);
-    }
-
-    T _query_(int si, int ss, int se, int qs, int qe)
+    T _query_(int si, int ss, int se, int qi)
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = lazy[si];
 
             if (ss != se)
-                lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2 * si] = lazy[si], lazy[2 * si + 1] = lazy[si];
 
             lazy[si] = 0;
         }
-
-        if (qs > se || qe < ss)
-            return 0;
-
-        if (qs <= ss && qe >= se)
+        
+        if(ss==se)
             return segTree[si];
 
         int mid = (ss + se) / 2;
-        return _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);
+
+        if(qi<=mid)
+            return _query_(2*si,ss,mid,qi);
+        else
+            return _query_(2*si+1,mid+1,se,qi);    
     }
 
-    T query(int l, int r=-1)
+    T query(int qi)
     {
-        if(r==-1)r=l;
-        return _query_(1, 1, n, l, r);
+        return _query_(1, 1, n, qi);
     }
 
     void _update_(int si, int ss, int se, int qs, int qe, T val)
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = lazy[si];
 
             if (ss != se)
-                lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2 * si] = lazy[si], lazy[2 * si + 1] = lazy[si];
 
             lazy[si] = 0;
         }
@@ -130,10 +110,10 @@ public:
 
         if (qs <= ss && qe >= se)
         {
-            segTree[si] += (se - ss + 1) * val;
+            segTree[si] = val;
 
             if (ss != se)
-                lazy[2 * si] += val, lazy[2 * si + 1] += val;
+                lazy[2 * si] = val, lazy[2 * si + 1] = val;
 
             return;
         }
@@ -142,8 +122,6 @@ public:
 
         _update_(2 * si, ss, mid, qs, qe, val);
         _update_(2 * si + 1, mid + 1, se, qs, qe, val);
-
-        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
     }
 
     void update(int l, int r, T val)
@@ -152,10 +130,24 @@ public:
     }
 };
 
+int n, q;
 
 void solve()
 {
+    cin>>n>>q;
+    SegmentTreeLazyPropogation<int>segTree(n);
+
+    while (q--)
+    {
+        int l, r, c;
+        cin>>l>>r>>c;
+        segTree.update(l,r,c);
+    }
     
+    REP(i,1,n)
+    {
+        cout<<segTree.query(i)<<endl;
+    }
 }
 
 int main(int argc, char const *argv[])

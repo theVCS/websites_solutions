@@ -50,6 +50,10 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
+int n, q, k;
+int type[maxN];
+ll ques[maxN];
+
 template <class T>
 class MO
 {
@@ -87,8 +91,7 @@ class MO
     };
 
     int n, q;
-    T res;
-    vector<T> arr;
+    T math, science;
     vector<T> fre, ans;
     vector<Query> Q;
 
@@ -96,16 +99,13 @@ public:
     MO() {}
 
     // N -> no of elements, Q -> no of queries, R -> range of elements
-    MO(int N, int Q, int R, T e[])
+    MO(int N, int Q, int R)
     {
         n = N;
         q = Q;
-        res = 0;
+        math = science = 0;
         fre.assign(R + 1, 0);
         ans.resize(Q + 1);
-        arr.push_back(0);
-        REP(i, 1, n)
-        arr.push_back(e[i]);
     }
     
     void addQuery(int l, int r, int index)
@@ -116,26 +116,16 @@ public:
     void add(int index)
     {
         ll ele = arr[index];
-        if(ele>100000)return;
 
-        fre[ele]++;
-        
-        if (fre[ele] == ele)
+        if (++fre[ele] == 1)
             res++;
-        else if(fre[ele]==ele+1)
-            res--;
     }
 
     void remove(int index)
     {
         ll ele = arr[index];
-        if(ele>100000)return;
 
-        fre[ele]--;
-
-        if (fre[ele] == ele)
-            res++;
-        else if(fre[ele]==ele-1)
+        if (--fre[ele] == 0)
             res--;
     }
 
@@ -168,24 +158,20 @@ public:
     }
 };
 
-int n, m;
-int arr[maxN];
-
 void solve()
 {
-    cin>>n>>m;
-    REP(i,1,n)cin>>arr[i];
-    MO<int>mo(n,m,1e5+10,arr);
+    cin>>n>>k;
 
-    REP(i,1,m)
+    REP(i,1,n)cin>>type[i];
+    REP(i,1,n)cin>>ques[i];
+
+    cin>>q;
+
+    REP(i,1,q)
     {
-        int l, r;
+        int l,r;
         cin>>l>>r;
-        mo.addQuery(l,r,i);
     }
-    
-    mo.processQuery();
-    mo.showAns();
 }
 
 int main(int argc, char const *argv[])

@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 200001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,103 +50,36 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct veg
-{
-    int w, x, y, z;
-} arr[maxN];
-
-template <class T>
-class FenwickTree2D
-{
-    ll n, m;
-    ll pos;
-    ll BIT[200000000];
-    // 200000000
-
-public:
-    FenwickTree2D(int N, int M)
-    {
-        REP(i,0,200000000-1)BIT[i]=INF;
-        n = N;
-        m = M;
-        pos = 0;
-    }
-
-    T _query_(ll x, ll y)
-    {
-        T q = INF;
-
-        while (y > 0)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            q = min(q, BIT[en]);
-            y -= (y & -y);
-        }
-
-        return q;
-    }
-
-    T query(int x, int y)
-    {
-        T q = INF;
-
-        while (x > 0)
-        {
-            q = min(q, _query_(x, y));
-            x -= (x & -x);
-        }
-
-        return q;
-    }
-
-    void __update__(ll x, ll y, T v)
-    {
-        while (y <= m)
-        {
-            ll en = ((x * 0x1f1f1f1f) ^ y) % 199999999 + 1;
-            BIT[en] = min(BIT[en], v);
-            y += (y & -y);
-        }
-    }
-
-    void update(int x, int y, T val)
-    {
-        while (x <= n)
-        {
-            __update__(x, y, val);
-            x += (x & -x);
-        }
-    }
-};
-
-bool cmp(veg a, veg b)
-{
-    return a.w < b.w;
-}
-
 void solve()
 {
-    cin >> n;
-    FenwickTree2D<ll> ft(n, n);
+    int n;
+    string s;
 
-    REP(i, 1, n)
-    cin >> arr[i].w >> arr[i].x >> arr[i].y >> arr[i].z;
+    cin>>n>>s;
 
-    sort(arr + 1, arr + 1 + n, cmp);
+    int index = 1;
 
-    int ans = 0;
-
-    REP(i, 1, n)
+    for (char c : s)
     {
-        int q = ft.query(arr[i].x, arr[i].y);
-        if (arr[i].z < q)
-            ans++;
-        ft.update(arr[i].x, arr[i].y, arr[i].z);
+        if (c == '0')
+            break;
+        index++;
     }
 
-    cout << ans;
+    if(index==n+1)
+    {
+        cout<<1<<" "<<n/2<<" "<<2<<" "<<n/2+1<<endl;
+        return;
+    }
+
+    if (index > n / 2)
+    {
+        cout << 1 << " " << index << " " << 1 << " " << index - 1 << endl;
+    }
+    else
+    {
+        cout << index << " " << n << " " << index + 1 << " " << n << endl;
+    }
 }
 
 int main(int argc, char const *argv[])
@@ -160,7 +93,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

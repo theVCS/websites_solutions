@@ -131,7 +131,7 @@ int direction(point pivot, point a, point b)
     return t;
 }
 
-#define maxN 1000001
+#define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -171,6 +171,7 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n, q;
+ll power[maxN];
 
 template <class T>
 class FenwickTree
@@ -229,7 +230,7 @@ public:
 
         for (int i = LOGN; i >= 0; i--)
         {
-            if (pos + (1 << i) < n && q + BIT[pos + (1 << i)] < val)
+            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
             {
                 q += BIT[pos + (1 << i)];
                 pos += (1 << i);
@@ -238,44 +239,40 @@ public:
 
         return pos + 1;
     }
+
+    int query()
+    {
+        ll sum = 0;
+
+        while (true)
+        {
+            int index = lowerBound(2*sum);
+            if(index>n)return -1;
+            sum = query(index);
+            if(2*power[index]==sum)return index;
+        }
+    }
 };
+
 
 void solve()
 {
-    FenwickTree<int> ft(1000000);
     cin >> n >> q;
+    FenwickTree<ll> ft(n);
 
     REP(i, 1, n)
     {
-        int ele;
-        cin >> ele;
-        ft.update(ele, 1);
+        cin >> power[i];
+        ft.update(i, power[i]);
     }
 
     REP(i, 1, q)
     {
-        int ele;
-        cin >> ele;
-
-        if (ele > 0)
-        {
-            ft.update(ele, 1);
-        }
-        else
-        {
-            ele *= -1;
-            int index = ft.lowerBound(ele);
-            ft.update(index, -1);
-        }
-    }
-
-    if (ft.query(n) == 0)
-    {
-        cout << 0;
-    }
-    else
-    {
-        cout << ft.lowerBound(1);
+        ll p, x;
+        cin >> p >> x;
+        ft.update(p, x - power[p]);
+        power[p] = x;
+        cout<<ft.query()<<endl;
     }
 }
 

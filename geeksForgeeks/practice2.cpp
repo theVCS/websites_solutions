@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,95 +50,62 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct contest
+ll n, m;
+vll arr;
+ll dp[100001][101];
+ll count(ll idx, ll p)
 {
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
+    if (idx == n)
     {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, INF);
+        return 1;
     }
-
-    T query(int index)
+    if (dp[idx][p] != -1)
     {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
+        return dp[idx][p];
     }
-
-    void update(int index, T val)
+    ll ans = 0;
+    if (arr[idx] == 0)
     {
-        while (index <= n)
+        rep1(j, 1, m + 1)
         {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
+ 
+            if (idx > 0)
+            {
+                if (abs(p - j) > 1)
+                {
+                    continue;
+                }
+            }
+            if (idx < n - 1)
+            {
+                if (arr[idx + 1] != 0 and abs(arr[idx + 1] - j) > 1)
+                {
+                    continue;
+                }
+            }
+ 
+            ans = (ans % M + count(idx + 1, j) % M) % M;
         }
     }
-};
-
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
+    else
+    {
+        if (abs(p - arr[idx]) > 1)
+        {
+            ans = 0;
+        }
+        else
+        {
+            ans = count(idx + 1, arr[idx]) % M;
+        }
+        
+        
+    }
+    return dp[idx][p] = ans % M;
 }
 
 void solve()
 {
-    cin>>n;
-
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
-    }
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
-    }
-
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
-    }
-
-    cout<<ans;
+    
 }
 
 int main(int argc, char const *argv[])

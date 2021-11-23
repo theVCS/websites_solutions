@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,26 +50,27 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
+int n, m;
+ll arr[maxN];
+
 template <class T>
-class SegmentTreeLazyPropogation
+class SegmentTree
 {
     int n;
     vector<T> segTree;
-    vector<T> lazy;
 
 public:
-    SegmentTreeLazyPropogation(int N)
+    SegmentTree(int N)
     {
         n = N;
         segTree.resize(4 * n);
-        lazy.assign(4 * n, 0);
     }
 
     void _build_(int si, int ss, int se, T arr[])
     {
         if (ss == se)
         {
-            segTree[si] = arr[ss];
+            segTree[si] = !arr[ss];
         }
         else
         {
@@ -87,74 +88,89 @@ public:
 
     T _query_(int si, int ss, int se, int qs, int qe)
     {
-        if (lazy[si])
-        {
-            segTree[si] += (se - ss + 1) * lazy[si];
-
-            if (ss != se)
-                lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
-
-            lazy[si] = 0;
-        }
-
         if (qs > se || qe < ss)
             return 0;
-
         if (qs <= ss && qe >= se)
             return segTree[si];
-
         int mid = (ss + se) / 2;
         return _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);
     }
 
-    T query(int l, int r=-1)
+    T _query_(int si, int ss, int se, int qi)
     {
-        if(r==-1)r=l;
+        if (ss == se)
+            return ss;
+        else
+        {
+            int mid = (ss + se) / 2;
+            if (qi <= segTree[2*si])
+                return _query_(2 * si, ss, mid, qi);
+            else
+                return _query_(2 * si + 1, mid + 1, se, qi-segTree[2*si]);
+        }
+    }
+
+    T query(int l, int r)
+    {
         return _query_(1, 1, n, l, r);
     }
 
-    void _update_(int si, int ss, int se, int qs, int qe, T val)
+    T query(int qi)
     {
-        if (lazy[si])
-        {
-            segTree[si] += (se - ss + 1) * lazy[si];
-
-            if (ss != se)
-                lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
-
-            lazy[si] = 0;
-        }
-
-        if (ss > qe || se < qs)
-            return;
-
-        if (qs <= ss && qe >= se)
-        {
-            segTree[si] += (se - ss + 1) * val;
-
-            if (ss != se)
-                lazy[2 * si] += val, lazy[2 * si + 1] += val;
-
-            return;
-        }
-
-        int mid = (ss + se) / 2;
-
-        _update_(2 * si, ss, mid, qs, qe, val);
-        _update_(2 * si + 1, mid + 1, se, qs, qe, val);
-
-        segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+        return _query_(1, 1, n, qi);
     }
 
-    void update(int l, int r, T val)
+    void _update_(int si, int ss, int se, int qi, T val)
     {
-        _update_(1, 1, n, l, r, val);
+        if (ss == se)
+        {
+            segTree[si] = !val;
+        }
+        else
+        {
+            int mid = (ss + se) / 2;
+            if (qi <= mid)
+                _update_(2 * si, ss, mid, qi, val);
+            else
+                _update_(2 * si + 1, mid + 1, se, qi, val);
+            segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
+        }
+    }
+
+    void update(int qi, T val)
+    {
+        _update_(1, 1, n, qi, val);
     }
 };
 
 
 void solve()
 {
+    cin>>n>>m;
+    REP(i,1,n)cin>>arr[i];
+    SegmentTree<ll>segTree(n);
+    segTree.build(arr);
+
+    while (m--)
+    {
+        int type;
+        cin>>type;
+
+        if(type==1)
+        {
+            int k;
+            cin>>k;
+            if(segTree.query(1,n)<k)cout<<"NO"<<endl;
+            else cout<<segTree.query(k)-1<<endl;
+        }
+        else
+        {
+            int p, x;
+            cin>>p>>x;
+            p++;
+            segTree.update(p,x);
+        }
+    }
     
 }
 

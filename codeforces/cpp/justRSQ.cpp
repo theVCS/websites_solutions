@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,13 +50,8 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct contest
-{
-    int rank1, rank2, rank3;
-}arr[maxN];
-
+int n, q;
+ll arr[maxN];
 
 template <class T>
 class FenwickTree
@@ -69,16 +64,16 @@ public:
     {
         LOGN = log2(N);
         n = N;
-        BIT.assign(n + 1, INF);
+        BIT.assign(n + 1, 0);
     }
 
     T query(int index)
     {
-        T q = INF;
+        T q = 0;
 
         while (index > 0)
         {
-            q = min(q,BIT[index]);
+            q += BIT[index];
             index -= (index & -index);
         }
 
@@ -89,56 +84,72 @@ public:
     {
         while (index <= n)
         {
-            BIT[index] = min(BIT[index],val);
+            BIT[index] += val;
             index += (index & -index);
         }
     }
+
+    T query(int l, int r)
+    {
+        return query(r) - query(l - 1);
+    }
+
+    void update(int l, int r, int val)
+    {
+        update(l, val);
+        update(r + 1, -val);
+    }
+
+    int lowerBound(T val)
+    {
+        // will find the lower bound index of val in BIT if monotonically increasing
+        // https://codeforces.com/blog/entry/61364
+
+        T q = 0;
+        int pos = 0;
+
+        for (int i = LOGN; i >= 0; i--)
+        {
+            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
+            {
+                q += BIT[pos + (1 << i)];
+                pos += (1 << i);
+            }
+        }
+
+        return pos + 1;
+    }
 };
 
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
 
 void solve()
 {
-    cin>>n;
+    cin>>n>>q;    
 
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
-    }
+    FenwickTree<ll>ft(n);
 
     REP(i,1,n)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
+        cin>>arr[i];
+        ft.update(i,arr[i]);
     }
 
-    REP(i,1,n)
+    while (q--)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
+        int t;
+        ll x,y;
+        cin>>t>>x>>y;
+
+        if(t==0)
+        {
+            cout<<ft.query(x,y)<<endl;
+        }
+        else
+        {
+            ft.update(x,y-arr[x]);
+            arr[x]=y;
+        }
     }
-
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
-    }
-
-    cout<<ans;
 }
 
 int main(int argc, char const *argv[])
@@ -147,8 +158,8 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    //freopen("inputD.txt","r",stdin);
-    //freopen("a.txt","w",stdout);
+    freopen("rsq.in","r",stdin);
+    freopen("rsq.out","w",stdout);
 
     int t = 1;
 

@@ -61,38 +61,21 @@ public:
     SegmentTreeLazyPropogation(int N)
     {
         n = N;
-        segTree.resize(4 * n);
+        segTree.resize(4 * n, 0);
         lazy.assign(4 * n, 0);
-    }
-
-    void _build_(int si, int ss, int se, T arr[])
-    {
-        if (ss == se)
-        {
-            segTree[si] = arr[ss];
-        }
-        else
-        {
-            int mid = (ss + se) / 2;
-            _build_(2 * si, ss, mid, arr);
-            _build_(2 * si + 1, mid + 1, se, arr);
-            segTree[si] = segTree[2 * si] + segTree[2 * si + 1];
-        }
-    }
-
-    void build(T arr[])
-    {
-        _build_(1, 1, n, arr);
     }
 
     T _query_(int si, int ss, int se, int qs, int qe)
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = (se - ss + 1) - segTree[si];
 
             if (ss != se)
+            {
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2*si] %= 2,  lazy[2*si+1] %= 2;
+            }
 
             lazy[si] = 0;
         }
@@ -117,10 +100,13 @@ public:
     {
         if (lazy[si])
         {
-            segTree[si] += (se - ss + 1) * lazy[si];
+            segTree[si] = (se - ss + 1) - segTree[si];
 
             if (ss != se)
+            {
                 lazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];
+                lazy[2*si] %= 2,  lazy[2*si+1]%=2;
+            }
 
             lazy[si] = 0;
         }
@@ -130,10 +116,13 @@ public:
 
         if (qs <= ss && qe >= se)
         {
-            segTree[si] += (se - ss + 1) * val;
+            segTree[si] = (se - ss + 1) - segTree[si];
 
             if (ss != se)
+            {
                 lazy[2 * si] += val, lazy[2 * si + 1] += val;
+                lazy[2*si] %= 2, lazy[2*si+1] %= 2;
+            }
 
             return;
         }
@@ -152,9 +141,28 @@ public:
     }
 };
 
+int n, q;
 
 void solve()
 {
+    cin>>n>>q;
+    SegmentTreeLazyPropogation<int>segTree(n);
+
+    while (q--)
+    {
+        int type, a, b;
+        cin>>type>>a>>b;
+        // a++,b++;
+
+        if(type==1)
+        {
+            segTree.update(a,b,1);
+        }
+        else
+        {
+            cout<<segTree.query(a,b)<<endl;
+        }
+    }
     
 }
 

@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 1001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -50,95 +50,91 @@ ll binExp(ll a, ll power, ll m = mod)
     return res;
 }
 
-int n;
-
-struct contest
+class DSU
 {
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
+    int n;
+    vector<int> par;
 
 public:
-    FenwickTree(int N)
+    DSU(int N)
     {
-        LOGN = log2(N);
         n = N;
-        BIT.assign(n + 1, INF);
+        par.assign(n + 1, -1);
     }
 
-    T query(int index)
+    int find(int a)
     {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
+        if (par[a] < 0)
+            return a;
+        else
+            return par[a] = find(par[a]);
     }
 
-    void update(int index, T val)
+    void merger(int a, int b)
     {
-        while (index <= n)
-        {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
-        }
+        a = find(a);
+        b = find(b);
+
+        if(a==b)return;
+
+        if (par[a] > par[b])
+            swap(a, b);
+
+        par[a] += par[b];
+        par[b] = a;
     }
 };
 
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
+int n;
+
 
 void solve()
 {
     cin>>n;
+    DSU dsu(n);
+    set<int>s;
+    vector<pii>removed;
+    vector<pii>added;
+    vector<int>vec;
 
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
+    REP(i,1,n-1)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
+        int a, b;
+        cin>>a>>b;
+
+        int pa = dsu.find(a);
+        int pb = dsu.find(b);
+
+        if(pa==pb)
+        {
+            removed.push_back({a,b});
+        }
+        else
+        {
+            dsu.merger(a,b);
+        }
     }
 
     REP(i,1,n)
+        s.insert(dsu.find(i));
+
+    if(s.size()==1)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
+        cout<<0<<endl;
+        return;
     }
 
-    REP(i,1,n)
+    for(int e:s)
+        vec.push_back(e);
+
+    REP(i,1,vec.size()-1)
+        added.push_back({vec[0],vec[i]});
+
+    cout<<added.size()<<endl;
+    REP(i,0,added.size()-1)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
+        cout<<removed[i].first<<" "<<removed[i].second<<" "<<added[i].first<<" "<<added[i].second<<endl;
     }
-
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
-    }
-
-    cout<<ans;
 }
 
 int main(int argc, char const *argv[])

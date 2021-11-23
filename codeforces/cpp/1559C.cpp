@@ -11,7 +11,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 500001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -51,94 +51,61 @@ ll binExp(ll a, ll power, ll m = mod)
 }
 
 int n;
+int arr[maxN];
 
-struct contest
-{
-    int rank1, rank2, rank3;
-}arr[maxN];
-
-
-template <class T>
-class FenwickTree
-{
-    int n, LOGN;
-    vector<T> BIT;
-
-public:
-    FenwickTree(int N)
-    {
-        LOGN = log2(N);
-        n = N;
-        BIT.assign(n + 1, INF);
-    }
-
-    T query(int index)
-    {
-        T q = INF;
-
-        while (index > 0)
-        {
-            q = min(q,BIT[index]);
-            index -= (index & -index);
-        }
-
-        return q;
-    }
-
-    void update(int index, T val)
-    {
-        while (index <= n)
-        {
-            BIT[index] = min(BIT[index],val);
-            index += (index & -index);
-        }
-    }
-};
-
-bool cmp(contest &a, contest &b)
-{
-    return a.rank1 < b.rank1;
-}
 
 void solve()
 {
     cin>>n;
-
-    FenwickTree<int>ft(n);
-
-    REP(i,1,n)
-    {
-        int pos;
-        cin>>pos;
-        arr[pos].rank1=i;
-    }
+    bool flag = false;
+    int index = -1;
 
     REP(i,1,n)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank2=i;
+        cin>>arr[i];
+
+        if(i>1 && arr[i]!=arr[i-1]&&arr[i-1]==0)
+            flag=true, index = i-1;
     }
 
-    REP(i,1,n)
+    if(arr[n]==0)
     {
-        int pos;
-        cin>>pos;
-        arr[pos].rank3=i;
+        REP(i,1,n+1)
+        {
+            cout<<i<<" ";
+        }
+        cout<<endl;
+
+        return;
     }
 
-    sort(arr+1,arr+1+n,cmp);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    if(arr[1]==1)
     {
-        int mn = ft.query(arr[i].rank2-1);
-        if(mn>arr[i].rank3)ans++;
-        ft.update(arr[i].rank2, arr[i].rank3);
+        cout<<n+1<<" ";
+        REP(i,1,n)cout<<i<<" ";
+        cout<<endl;
+        return;
     }
 
-    cout<<ans;
+    if(flag==false)
+    {
+        cout<<-1<<endl;
+        return;
+    }
+
+    REP(i,1,index)
+    {
+        cout<<i<<" ";
+    }
+
+    cout<<n+1<<" ";
+
+    REP(i,index+1,n)
+    {
+        cout<<i<<" ";
+    }
+
+    cout<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -152,7 +119,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
     REP(tc,1,t)
     {

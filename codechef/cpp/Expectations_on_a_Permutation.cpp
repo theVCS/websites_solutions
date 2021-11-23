@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -16,10 +16,10 @@ using namespace std;
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
 #define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
 ll mulmod(ll a, ll b, ll c)
 {
@@ -33,6 +33,7 @@ ll mulmod(ll a, ll b, ll c)
         y = (y * 2LL) % c;
         b /= 2;
     }
+
     return x % c;
 }
 
@@ -40,20 +41,36 @@ ll binExp(ll a, ll power, ll m = mod)
 {
     ll res = 1;
 
+    a %= m;
+
     while (power)
     {
         if (power & 1)
-            res = mulmod(res,a,m);
-        a = mulmod(a,a,m);
+            res = (res * a) % m;
+        a = (a * a) % m;
         power >>= 1;
     }
+
     return res;
 }
 
+ll n;
 
 void solve()
 {
+    cin >> n;
+    ll sq = mulmod(n, n + 1, mod);
+
+    ll left = mulmod(sq, sq, mod);
+    left = mulmod(left, binExp(4, mod - 2), mod);
+
+    ll right = mulmod(sq, 2 * n + 1, mod);
+    right = mulmod(right, binExp(6, mod - 2), mod);
+
+    ll diff = (left - right + mod) % mod;
     
+    ll ans = mulmod(diff, binExp(n, mod - 2), mod);
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -62,14 +79,14 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    //freopen("inputD.txt","r",stdin);
-    //freopen("a.txt","w",stdout);
+    // freopen("inputD.txt","r",stdin);
+    // freopen("a.txt","w",stdout);
 
     int t = 1;
 
-    //cin >> t;
+    cin >> t;
 
-    REP(tc,1,t)
+    REP(tc, 1, t)
     {
         // cout<<"Case "<<tc<<":"<<endl;
         solve();

@@ -163,8 +163,8 @@ ll binExp(ll a, ll power, ll m = mod)
     while (power)
     {
         if (power & 1)
-            res = mulmod(res, a, m);
-        a = mulmod(a, a, m);
+            res = mulmod(res,a,m);
+        a = mulmod(a,a,m);
         power >>= 1;
     }
     return res;
@@ -172,87 +172,99 @@ ll binExp(ll a, ll power, ll m = mod)
 
 int n;
 ll arr[maxN][maxN];
-ll ft[maxN][maxN];
 
-void update2(int index, ll val, int y)
+template <class T>
+class FenwickTree2D
 {
-    while (index <= n)
-    {
-        ft[y][index] += val;
-        index += (index & -1 * index);
-    }
-}
+    int n, m;
+    vector<vector<T>> BIT;
 
-void update(int index, ll val, int x)
-{
-    while (index <= n)
+public:
+    FenwickTree2D(int N, int M)
     {
-        update2(x, val, index);
-        index += (index & -1 * index);
-    }
-}
+        n = N;
+        m = M;
+        BIT.resize(n + 1);
 
-ll query2(int index, int y)
-{
-    ll sum = 0;
-
-    while (index)
-    {
-        sum += ft[y][index];
-        index -= (index & -1 * index);
+        for (vector<T> &vec : BIT)
+            vec.assign(m + 1, 0);
     }
 
-    return sum;
-}
-
-ll query(int index, int x)
-{
-    ll sum = 0;
-
-    while (index)
+    T __query__(int x, int y)
     {
-        sum += query2(x, index);
-        index -= (index & -1 * index);
+        T sum = 0;
+
+        while (y > 0)
+        {
+            sum += BIT[x][y];
+            y -= (y & -y);
+        }
+
+        return sum;
     }
 
-    return sum;
-}
+    T _query_(int x, int y)
+    {
+        T sum = 0;
+
+        while (x > 0)
+        {
+            sum += __query__(x, y);
+            x -= (x & -x);
+        }
+
+        return sum;
+    }
+
+    T query(int x2, int y2, int x1, int y1)
+    {
+        return _query_(x2, y2) - _query_(x1 - 1, y2) - _query_(x2, y1 - 1) + _query_(x1 - 1, y1 - 1);
+    }
+
+    void __update__(int x, int y, T val)
+    {
+        while (y <= m)
+        {
+            BIT[x][y] += val;
+            y += (y & -y);
+        }
+    }
+
+    void update(int x, int y, T val)
+    {
+        while (x <= n)
+        {
+            __update__(x, y, val);
+            x += (x & -x);
+        }
+    }
+};
 
 void solve()
 {
-    cin >> n;
-
-    REP(i, 0, maxN-1)
-    {
-        REP(j, 0, maxN-1)
-        {
-            arr[i][j] = 0;
-            ft[i][j] = 0;
-        }
-    }
-
-    string s;
+    cin>>n;
+    memset(arr,0,sizeof(arr));
+    FenwickTree2D<ll>ft(n,n);
 
     while (true)
     {
-        cin >> s;
+        string s;
+        cin>>s;
 
-        if (s[1] == 'E')
+        if(s[1]=='E')
         {
-            int x, y;
-            ll d, diff;
-            cin >> x >> y >> d;
+            ll x,y,e;
+            cin>>x>>y>>e;
             x++,y++;
-            diff = d - arr[x][y];
-            arr[x][y]=d;
-            update(y,diff,x);
+            ft.update(x,y,e-arr[x][y]);
+            arr[x][y]=e;
         }
-        else if (s[1] == 'U')
+        else if(s[1]=='U')
         {
             int x1, y1, x2, y2;
-            cin >> x1 >> y1 >> x2 >> y2;
+            cin>>x1>>y1>>x2>>y2;     
             x1++,y1++,x2++,y2++;
-            cout<<query(y2,x2)-query(y1-1,x2)-query(y2,x1-1)+query(y1-1,x1-1)<<endl;
+            cout<<ft.query(x2,y2,x1,y1)<<endl;
         }
         else
         {
@@ -277,8 +289,9 @@ int main(int argc, char const *argv[])
 
     cin >> t;
 
-    while (t--)
+    REP(tc,1,t)
     {
+        // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
 
