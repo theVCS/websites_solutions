@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 1001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -17,30 +17,51 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-class Solution
+ll n, l, r, k;
+ll arr[maxN];
+
+int fun(int n, ll k)
 {
-    public:
-
-	int dp[1001][1001];
-
-	int LCS(int i, int j, string &s1, string &s2)
-	{
-		if(i==-1||j==-1)return 0;
-		else if(dp[i][j]!=-1)return dp[i][j];
-		else if(s1[i]==s2[j])return dp[i][j] = 1+LCS(i-1,j-1,s1,s2);
-		else return dp[i][j] = max(LCS(i-1,j,s1,s2),LCS(i,j-1,s1,s2));
-	}
-  
-    int lcs(int x, int y, string &s1, string &s2)
+    if(n==0||k==0)return 0;
+    else if(arr[n]<=k)
     {
-		memset(dp,-1,sizeof(dp));
-		return LCS(x-1,y-1,s1,s2);
+        return max(1+fun(n-1,k-arr[n]), fun(n-1, k));
     }
-};
+    else
+        return fun(n-1,k);
+}
 
 void solve()
 {
-	
+    int index = 1;
+	cin>>n>>l>>r>>k;
+
+    REP(i,1,n)
+    {
+        ll v;
+        cin>>v;
+
+        if(v>=l && v <= r)
+            arr[index++]=v;
+    }
+
+    int n = index - 1;
+    sort(arr+1,arr+1+n);
+
+    ll s = 0;
+    index = 1;
+    
+    while (s<=k && index <= n)
+    {
+        s += arr[index];
+        index++;
+    }
+
+    if(s>k)index--;
+
+    cout<<index-1<<endl;
+    
+    // cout<<fun(n,k)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -54,7 +75,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

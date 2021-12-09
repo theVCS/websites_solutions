@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 //#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
+// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
 //#define bint cpp_int
@@ -9,179 +9,56 @@ using namespace std;
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
 #define endl "\n"
 #define all(x) (x).begin(), (x).end()
-#define pi 3.141592653589793238
-
-struct point
-{
-    ll x, y, z;
-    int index;
-
-    point(long long tmp_x = 0, long long tmp_y = 0, long long tmp_z = 0)
-    {
-        x = tmp_x;
-        y = tmp_y;
-        z = tmp_z;
-    }
-
-    point operator+(point b)
-    {
-        return point(this->x + b.x, this->y + b.y, this->z + b.z);
-    }
-
-    point operator-(point b)
-    {
-        return point(this->x - b.x, this->y - b.y, this->z - b.z);
-    }
-
-    point operator*(long long val)
-    {
-        return point(this->x * val, this->y * val, this->z * val);
-    }
-
-    point operator/(long long val)
-    {
-        return point(this->x / val, this->y / val, this->z / val);
-    }
-
-    point &operator=(point b)
-    {
-        this->x = b.x;
-        this->y = b.y;
-        this->z = b.z;
-        return *this;
-    }
-
-    point &operator+=(point b)
-    {
-        *this = *this + b;
-        return *this;
-    }
-
-    point &operator-=(point b)
-    {
-        *this = *this - b;
-        return *this;
-    }
-
-    point &operator*=(long long val)
-    {
-        (*this) = (*this) * val;
-        return *this;
-    }
-
-    point &operator/=(long long val)
-    {
-        (*this) = (*this) / val;
-        return *this;
-    }
-
-    bool operator==(point b)
-    {
-        if (this->x == b.x && this->y == b.y && this->z == b.z)
-            return true;
-        else
-            return false;
-    }
-};
-vector<point> points;
-
-ll dot(point a, point b)
-{
-    ll ans = a.x * b.x + a.y * b.y + a.z * b.z;
-    return ans;
-}
-
-point cross(point a, point b)
-{
-    point e;
-    e.x = a.y * b.z - b.y * a.z;
-    e.y = a.z * b.x - b.z * a.x;
-    e.z = a.x * b.y - b.x * a.y;
-    return e;
-}
-
-double magnitude(point a)
-{
-    return sqrt(dot(a, a));
-}
-
-double ang(point a, point b)
-{
-    return acos(dot(a, b) / (magnitude(a) * magnitude(b)));
-}
-
-double rad_to_deg(double val)
-{
-    return val * 180 / pi;
-}
-
-double deg_to_rad(double val)
-{
-    return val * pi / 180;
-}
-
-int direction(point pivot, point a, point b)
-{
-    long long t = cross((a - pivot), (b - pivot)).z;
-
-    // t > 0, a x b is anti clockwise
-    // t < 0, a x b is clockwise
-    // t == 0, a and b are collinear
-
-    return t;
-}
-
 #define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
-#define printd(x) cout << fixed << setprecision(10) << x
-#define printpoint(p) cout << p.x << " " << p.y << " " << p.z
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-
-ll mulmod(ll a, ll b, ll c)
-{
-    ll x = 0, y = a % c;
-    while (b > 0)
-    {
-        if (b % 2 == 1)
-        {
-            x = (x + y) % c;
-        }
-        y = (y * 2LL) % c;
-        b /= 2;
-    }
-    return x % c;
-}
-
-ll binExp(ll a, ll power, ll m = mod)
-{
-    ll res = 1;
-
-    while (power)
-    {
-        if (power & 1)
-            res = mulmod(res, a, m);
-        a = mulmod(a, a, m);
-        power >>= 1;
-    }
-    return res;
-}
 
 int n, q;
 int timer;
 map<int, int> mp;
-vector<int> arr;
+int arr[2 * maxN];
+int rev[2 * maxN];
+
+int lowerBound(int ele)
+{
+    int start = 1, end = timer;
+
+    while (start<=end)
+    {
+        int mid = (start + end) / 2;
+
+        if(rev[mid]<=ele && (mid==end||rev[mid+1]>ele))return mid;
+        else if(rev[mid]<=ele)start=mid+1;
+        else end=mid-1;
+    }
+    
+    return -1;
+}
+
+int upperBound(int ele)
+{
+    int start = 1, end = timer;
+
+    while (start<=end)
+    {
+        int mid = (start + end) / 2;
+
+        if(rev[mid]>=ele && (mid==start||rev[mid-1]<ele))return mid;
+        else if(rev[mid]>=ele)end=mid-1;
+        else start=mid+1;
+    }
+    
+    return -1;
+}
+
 struct query
 {
     int code, a, b;
-} queries[maxN];
+} Q[maxN];
 
-int ft[3 * maxN];
+ll ft[2 * maxN];
 
-void update(int index, int val)
+void update(int index, ll val)
 {
     while (index <= timer)
     {
@@ -190,9 +67,9 @@ void update(int index, int val)
     }
 }
 
-int query(int index)
+ll query(int index)
 {
-    int sum = 0;
+    ll sum = 0;
 
     while (index)
     {
@@ -206,51 +83,47 @@ int query(int index)
 void solve()
 {
     cin >> n >> q;
-    int sal;
 
     REP(i, 1, n)
     {
-        cin >> sal;
-        arr.push_back(sal);
-        mp[sal];
+        cin >> arr[i];
+        mp[arr[i]];
     }
 
     REP(i, 1, q)
     {
         char code;
         cin >> code;
-        cin >> queries[i].a >> queries[i].b;
-        mp[queries[i].b];
+        cin >> Q[i].a >> Q[i].b;
 
         if (code == '!')
-            queries[i].code = 1;
+            Q[i].code = 1, mp[Q[i].b]; // update
         else
-            queries[i].code = 2, mp[queries[i].a];
+            Q[i].code = 2; // query
     }
 
     for (auto &e : mp)
-        e.second = ++timer;
+        e.second = ++timer, rev[timer] = e.first;
 
-    int cnt = 0;
-    for (int &sal : arr)
+    REP(i, 1, n)
     {
-        sal = mp[sal];
-        update(sal,1);
+        arr[i] = mp[arr[i]];
+        update(arr[i], 1);
     }
 
     REP(i, 1, q)
     {
-        if (queries[i].code == 1)
+        if (Q[i].code == 1)
         {
-            update(arr[queries[i].a - 1], -1);
-            arr[queries[i].a - 1] = mp[queries[i].b];
-            update(arr[queries[i].a - 1], 1);
+            update(arr[Q[i].a], -1);
+            arr[Q[i].a] = mp[Q[i].b];
+            update(arr[Q[i].a], 1);
         }
         else
         {
-            queries[i].a = mp[queries[i].a];
-            queries[i].b = mp[queries[i].b];
-            cout << query(queries[i].b) - query(queries[i].a - 1) << endl;
+            int l = Q[i].a, r = Q[i].b;
+            l = upperBound(l), r = lowerBound(r);
+            cout << query(r) - query(l - 1) << endl;
         }
     }
 }
@@ -269,7 +142,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    //cin >> t;
+    // cin >> t;
 
     REP(tc, 1, t)
     {
@@ -277,8 +150,8 @@ int main(int argc, char const *argv[])
         solve();
     }
 
-    //filptr.close();
-    //outpter.close();
+    // filptr.close();
+    // outpter.close();
 
     return 0;
 }

@@ -4,11 +4,10 @@ using namespace std;
 #define pii pair<int, int>
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define endl "\n"
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -90,8 +89,8 @@ public:
 
     void del(ll s)
     {
-        if (search(s) == false)
-            return;
+        // if (search(s) == false)
+        //     return;
 
         Node *temp = root;
 
@@ -117,15 +116,18 @@ public:
 
         RREP(i, 63, 0)
         {
-            if (s & (1LL << i))
+            if (temp == NULL)
+                return ans;
+
+            if ((s & (1LL << i)) == 0)
             {
                 if (temp->arr[0] && temp->arr[0]->cnt)
                 {
-                    ans |= (1LL << i);
                     temp = temp->arr[0];
                 }
                 else
                 {
+                    ans |= (1LL << i);
                     temp = temp->arr[1];
                 }
             }
@@ -133,12 +135,12 @@ public:
             {
                 if (temp->arr[1] && temp->arr[1]->cnt)
                 {
-                    ans |= (1LL << i);
                     temp = temp->arr[1];
                 }
                 else
                 {
                     temp = temp->arr[0];
+                    ans |= (1LL << i);
                 }
             }
         }
@@ -146,30 +148,128 @@ public:
         return ans;
     }
 };
+TrieBit trie;
+
+ll arr[maxN];
+map<int, int> mp;
+vector<int> tree[maxN];
+
+class DSU
+{
+    int n;
+    vector<int> par;
+    int cc;
+
+public:
+    DSU() {}
+
+    DSU(int N)
+    {
+        n = N;
+        cc = N;
+        par.assign(n + 1, -1);
+        REP(i, 1, n)
+        tree[i].push_back(i);
+    }
+
+    void resize(int N)
+    {
+        n = N;
+        cc = N;
+        par.assign(n + 1, -1);
+        REP(i, 1, n)
+        tree[i].push_back(i);
+    }
+
+    int find(int a)
+    {
+        if (par[a] < 0)return a;
+        else return par[a] = find(par[a]);
+    }
+
+    void merger(int a, int b)
+    {
+        a = find(a);
+        b = find(b);
+
+        if (a == b)
+            return;
+
+        if (par[a] > par[b])
+            swap(a, b);
+
+        par[a] += par[b];
+        par[b] = a;
+
+        for (int node : tree[b])
+            tree[a].push_back(node);
+
+        cc--;
+    }
+
+    pair<ll, int> solve(ll node)
+    {
+        for (int child : tree[node])trie.del(arr[child]);
+        pair<ll, int> res = {1LL << 50, 0};
+        for (int child : tree[node])
+        {
+            ll v = trie.calc(arr[child]);
+
+            if (v < res.first)
+            {
+                res.first = v;
+                ll nodeBval = (v ^ arr[child]);
+                res.second = mp[nodeBval];
+            }
+        }
+
+        for (int child : tree[node])trie.insert(arr[child]);
+        return res; //{min_xor,node}
+    }
+
+    int sz()
+    {
+        return cc;
+    }
+};
 
 void solve()
 {
-    TrieBit trie;
-    int n, m;
-    cin>>n>>m;
+    int n;
+    cin >> n;
 
-    REP(i,1,n)
+    REP(i, 1, n)
     {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
-
-    ll ans = 0;
-
-    REP(i,1,m)
-    {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        ll val;
+        cin >> val;
+        mp[val];
     }
 
-    cout<<ans;
+    int timer = 0;
+    for (auto &e : mp)
+        e.second = ++timer, trie.insert(e.first), arr[timer] = e.first;
+
+    n = timer;
+    ll ans = 0;
+    DSU dsu(n);
+
+    while (dsu.sz() > 1)
+    {
+        REP(i, 1, n)
+        {
+            if (dsu.find(i) != i)continue;
+            pair<ll, int> res = dsu.solve(i);
+            int a = res.second, b = i;
+
+            if (dsu.find(a) != dsu.find(b))
+            {
+                dsu.merger(a, b);
+                ans += res.first;
+            }
+        }
+    }
+
+    cout << ans;
 }
 
 int main(int argc, char const *argv[])

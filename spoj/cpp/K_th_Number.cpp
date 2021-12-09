@@ -1,82 +1,179 @@
 #include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
-//#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
-#define REP(i, a, b) for (int i = a; i < b; i++)
-#define maxN 100001
+#define REP(i, a, b) for (int i = a; i <= b; i++)
+#define RREP(i, a, b) for (int i = a; i >= b; i--)
+#define endl "\n"
 #define all(x) (x).begin(), (x).end()
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
-
-pii arr[maxN];
-int ar[maxN];
-vector<int> segTree[4 * maxN];
-
-void build(int si, int ss, int se)
+#define pi 3.141592653589793238
+ 
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+ 
+const int arrSize = 100001;
+int arr[arrSize];
+int rev[arrSize];
+map<int, int> mp;
+ 
+template <class T>
+class PersistentSegmentTree
 {
-    if (ss == se)
+    int n;
+    vector<T> segTree;
+    vector<int> left, right;
+    vector<int> roots;
+    int index;
+ 
+public:
+    PersistentSegmentTree() {}
+ 
+    int build(int ss, int se)
     {
-        segTree[si].push_back(arr[ss].second);
+        int node = ++index;
+ 
+        if (ss == se)
+        {
+            return node;
+        }
+        else
+        {
+            int mid = (ss + se) / 2;
+            left[node] = build(ss, mid);
+            right[node] = build(mid + 1, se);
+            return node;
+        }
     }
-    else
+ 
+    PersistentSegmentTree(int N)
     {
+        n = N;
+        segTree.resize(N * 21);
+        left.resize(N * 21);
+        right.resize(N * 21);
+        index = 0;
+        roots.push_back(build(1, n));
+    }
+ 
+    void resize(int N)
+    {
+        n = N;
+        segTree.resize(N * 21);
+        left.resize(N * 21);
+        right.resize(N * 21);
+        index = 0;
+        roots.push_back(build(1, n));
+    }
+ 
+    int _update_(int prevNode, int ss, int se, int qi, T val)
+    {
+        int node = ++index;
+ 
+        if (ss == se)
+        {
+            segTree[node] = segTree[prevNode] + val;
+            return node;
+        }
+ 
         int mid = (ss + se) / 2;
-        build(2 * si, ss, mid);
-        build(2 * si + 1, mid + 1, se);
-        merge(all(segTree[2 * si]), all(segTree[2 * si + 1]), back_inserter(segTree[si]));
+ 
+        if (qi <= mid)
+        {
+            right[node] = right[prevNode];
+            left[node] = _update_(left[prevNode], ss, mid, qi, val);
+        }
+        else
+        {
+            left[node] = left[prevNode];
+            right[node] = _update_(right[prevNode], mid + 1, se, qi, val);
+        }
+ 
+        segTree[node] = segTree[left[node]] + segTree[right[node]];
+        return node;
     }
-}
-
-int query(int si, int ss, int se, int qs, int qe, int k)
-{
-    if (ss == se)
+ 
+    void update(int index, T val)
     {
-        return segTree[si][0];
+        roots.push_back(_update_(roots.back(), 1, n, index, val));
     }
-
-    int mid = (ss + se) / 2;
-    int x = upper_bound(all(segTree[2 * si]), qe) - lower_bound(all(segTree[2 * si]), qs);
-
-    if (x >= k)
-        return query(2 * si, ss, mid, qs, qe, k);
-    else
-        return query(2 * si + 1, mid + 1, se, qs, qe, k - x);
+ 
+    T _query_(int nodeA, int nodeB, int ss, int se, int k)
+    {
+        if (ss == se)
+            return ss;
+ 
+        int diff = segTree[left[nodeA]] - segTree[left[nodeB]];
+        int mid = (ss + se) / 2;
+ 
+        if (diff >= k)
+            return _query_(left[nodeA], left[nodeB], ss, mid, k);
+        else
+            return _query_(right[nodeA], right[nodeB], mid + 1, se, k - diff);
+    }
+ 
+    T query(int l, int r, int k)
+    {
+        return rev[_query_(roots[r], roots[l - 1], 1, n, k)];
+    }
+};
+ 
+void solve()
+{
+    int n, m;
+    cin >> n >> m;
+    PersistentSegmentTree<ll> segTree(n);
+ 
+    REP(i, 1, n)
+    {
+        cin >> arr[i];
+        mp[arr[i]];
+    }
+ 
+    int timer = 0;
+ 
+    for (auto &e : mp)
+        e.second = ++timer;
+ 
+    REP(i, 1, n)
+    {
+        int temp = arr[i];
+        arr[i] = mp[arr[i]];
+        rev[arr[i]] = temp;
+        segTree.update(arr[i], 1);
+    }
+ 
+    REP(i, 1, m)
+    {
+        int l, r, k;
+        cin >> l >> r >> k;
+        cout << segTree.query(l, r, k) << endl;
+    }
 }
-
+ 
 int main(int argc, char const *argv[])
 {
-    // ios_base::sync_with_stdio(false);
-    // cin.tie(NULL);
-    // cout.tie(NULL);
-
-    int n, m;
-
-    scanf("%d %d", &n, &m);
-
-    REP(i, 1, n + 1)
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+ 
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
+ 
+    int t = 1;
+ 
+    // cin >> t;
+ 
+    REP(tc, 1, t)
     {
-        scanf("%d", ar + i);
-        arr[i].first = ar[i];
-        arr[i].second = i;
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
     }
-
-    sort(arr + 1, arr + 1 + n);
-
-    build(1, 1, n);
-
-    while (m--)
-    {
-        int l, r, x;
-        scanf("%d %d %d", &l, &r, &x);
-        int ans = query(1, 1, n, l, r, x);
-        printf("%d\n", ar[ans]);
-    }
-
+ 
     return 0;
-}
+} 

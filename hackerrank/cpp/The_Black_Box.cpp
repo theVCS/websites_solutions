@@ -34,9 +34,9 @@ class TrieBit
         }
     };
 
+public:
     Node *root;
 
-public:
     TrieBit()
     {
         root = new Node();
@@ -110,66 +110,50 @@ public:
         }
     }
 
-    ll calc(ll s)
+    ll calc(int i, Node *temp, int x)
     {
-        Node *temp = root;
-        ll ans = 0;
-
-        RREP(i, 63, 0)
+        if (temp == NULL || temp->cnt == 0)
+            return 0;
+        else if (i == 0)
         {
-            if (s & (1LL << i))
-            {
-                if (temp->arr[0] && temp->arr[0]->cnt)
-                {
-                    ans |= (1LL << i);
-                    temp = temp->arr[0];
-                }
-                else
-                {
-                    temp = temp->arr[1];
-                }
-            }
-            else
-            {
-                if (temp->arr[1] && temp->arr[1]->cnt)
-                {
-                    ans |= (1LL << i);
-                    temp = temp->arr[1];
-                }
-                else
-                {
-                    temp = temp->arr[0];
-                }
-            }
+            return x;
         }
+        else
+        {
+            ll l = calc(i - 1, temp->arr[0], 0);
+            ll r = calc(i - 1, temp->arr[1], 1);
+            return max({l, r, l ^ r}) + x * (1LL << i);
+        }
+    }
 
-        return ans;
+    ll cal()
+    {
+        return max(calc(63, root->arr[0], 0), calc(63, root->arr[1], 1));
     }
 };
 
 void solve()
 {
     TrieBit trie;
-    int n, m;
-    cin>>n>>m;
 
-    REP(i,1,n)
+    trie.insert(0);
+
+    int n;
+    cin >> n;
+
+    int x;
+
+    REP(i, 1, n)
     {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
+        cin >> x;
 
-    ll ans = 0;
+        if (x > 0)
+            trie.insert(x);
+        else
+            trie.del(-x);
 
-    REP(i,1,m)
-    {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        cout << trie.cal() << endl;
     }
-
-    cout<<ans;
 }
 
 int main(int argc, char const *argv[])

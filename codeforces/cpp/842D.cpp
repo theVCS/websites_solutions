@@ -24,7 +24,7 @@ class TrieBit
     struct Node
     {
         Node *arr[sz];
-        int cnt;
+        ll cnt;
 
         Node()
         {
@@ -60,86 +60,80 @@ public:
                     temp->arr[0] = new Node();
                 temp = temp->arr[0];
             }
-
-            temp->cnt++;
         }
     }
 
-    bool search(ll s)
+    ll _dfs_(Node *root)
     {
-        Node *temp = root;
-
-        RREP(i, 63, 0)
-        {
-            if (s & (1LL << i))
-            {
-                if (temp->arr[1] == NULL || temp->arr[1]->cnt == 0)
-                    return false;
-                temp = temp->arr[1];
-            }
-            else
-            {
-                if (temp->arr[0] == NULL || temp->arr[0]->cnt == 0)
-                    return false;
-                temp = temp->arr[0];
-            }
-        }
-
-        return true;
+        if (root == NULL)
+            return 0;
+        else
+            return root->cnt = _dfs_(root->arr[0]) + _dfs_(root->arr[1]) + 1;
     }
 
-    void del(ll s)
+    void dfs()
     {
-        if (search(s) == false)
-            return;
-
-        Node *temp = root;
-
-        RREP(i, 63, 0)
-        {
-            if (s & (1LL << i))
-            {
-                temp = temp->arr[1];
-            }
-            else
-            {
-                temp = temp->arr[0];
-            }
-
-            temp->cnt--;
-        }
+        ll val = _dfs_(root);
     }
 
-    ll calc(ll s)
+    ll calc(int x)
     {
-        Node *temp = root;
+        Node *temp = root->arr[0]->arr[0];
         ll ans = 0;
 
-        RREP(i, 63, 0)
+        RREP(i, 62, 0)
         {
-            if (s & (1LL << i))
+            if (temp->cnt == (1LL << (i + 1)) - 1)
             {
-                if (temp->arr[0] && temp->arr[0]->cnt)
+                // cout << "Prince3" << endl;
+                ans |= (1LL << i);
+                break;
+            }
+
+
+            if (x & (1LL << (i - 1)))
+            {
+                if (temp->arr[1] == NULL)
                 {
-                    ans |= (1LL << i);
-                    temp = temp->arr[0];
+                    return ans;
                 }
-                else
+
+                if (temp->arr[1]->cnt != (1LL << i) - 1)
                 {
                     temp = temp->arr[1];
+                    continue;
                 }
+
+                ans |= (1LL << (i - 1));
+
+                if (temp->arr[0] == NULL)
+                {
+                    return ans;
+                }
+
+                temp = temp->arr[0];
             }
             else
             {
-                if (temp->arr[1] && temp->arr[1]->cnt)
+                if (temp->arr[0] == NULL)
                 {
-                    ans |= (1LL << i);
-                    temp = temp->arr[1];
+                    return ans;
                 }
-                else
+
+                if (temp->arr[0]->cnt != (1LL << i) - 1)
                 {
                     temp = temp->arr[0];
+                    continue;
                 }
+
+                ans |= (1LL << (i - 1));
+
+                if (temp->arr[1] == NULL)
+                {
+                    return ans;
+                }
+
+                temp = temp->arr[1];
             }
         }
 
@@ -150,26 +144,28 @@ public:
 void solve()
 {
     TrieBit trie;
+
     int n, m;
-    cin>>n>>m;
+    cin >> n >> m;
 
-    REP(i,1,n)
+    REP(i, 1, n)
     {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
-
-    ll ans = 0;
-
-    REP(i,1,m)
-    {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        int num;
+        cin >> num;
+        trie.insert(num);
     }
 
-    cout<<ans;
+    trie.dfs();
+    ll c = 0;
+    // cout << trie.calc(1) << endl;
+
+    REP(i, 1, m)
+    {
+        ll x;
+        cin >> x;
+        c = (c xor x);
+        cout << trie.calc(c) << endl;
+    }
 }
 
 int main(int argc, char const *argv[])

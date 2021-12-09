@@ -1,20 +1,7 @@
-def checker(str):
-    for ch in str:
-        if((ch>='A' and ch <= 'Z') or (ch >='a' and ch<='z') or ch == '-' or ch==',' or ch=='!' or ch=='.' or ch=='?'):
-            continue
-        else:
-            return False
-    
-    return True
+import random
+ele = random.sample(range(31), 5)
 
-def howMany(sentence):
-    x = sentence.split()
-    cnt = 0
-    for str in x:
-        if(checker(str)):
-            cnt=cnt+1
-    return cnt
+print(len(ele))
 
-
-str = input()
-print(howMany(str))
+for e in ele:
+    print(e, end=" ")

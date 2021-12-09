@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 100001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -110,35 +110,51 @@ public:
         }
     }
 
-    ll calc(ll s)
+    ll calc(ll s, ll k)
     {
         Node *temp = root;
         ll ans = 0;
 
         RREP(i, 63, 0)
         {
-            if (s & (1LL << i))
+            if (k & (1LL << i))
             {
-                if (temp->arr[0] && temp->arr[0]->cnt)
+                if (s & (1LL << i))
                 {
-                    ans |= (1LL << i);
-                    temp = temp->arr[0];
+                    if (temp->arr[1] && temp->arr[1]->cnt)
+                        ans += temp->arr[1]->cnt;
+
+                    if (temp->arr[0] && temp->arr[0]->cnt)
+                        temp = temp->arr[0];
+                    else
+                        return ans;
                 }
                 else
                 {
-                    temp = temp->arr[1];
+                    if (temp->arr[0] && temp->arr[0]->cnt)
+                        ans += temp->arr[0]->cnt;
+
+                    if (temp->arr[1] && temp->arr[1]->cnt)
+                        temp = temp->arr[1];
+                    else
+                        return ans;
                 }
             }
             else
             {
-                if (temp->arr[1] && temp->arr[1]->cnt)
+                if (s & (1LL << i))
                 {
-                    ans |= (1LL << i);
-                    temp = temp->arr[1];
+                    if (temp->arr[1] && temp->arr[1]->cnt)
+                        temp = temp->arr[1];
+                    else
+                        return ans;
                 }
                 else
                 {
-                    temp = temp->arr[0];
+                    if (temp->arr[0] && temp->arr[0]->cnt)
+                        temp = temp->arr[0];
+                    else
+                        return ans;
                 }
             }
         }
@@ -147,29 +163,29 @@ public:
     }
 };
 
+int n, k;
+
 void solve()
 {
+    cin >> n >> k;
+
     TrieBit trie;
-    int n, m;
-    cin>>n>>m;
+    trie.insert(0);
 
-    REP(i,1,n)
-    {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
-
+    ll x = 0;
     ll ans = 0;
+    ll val;
 
-    REP(i,1,m)
+    REP(i, 1, n)
     {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        cin >> val;
+        x = (x ^ val);
+        ans += trie.calc(x, k);
+        trie.insert(x);
+        // cout << ans << " ";
     }
 
-    cout<<ans;
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -183,7 +199,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

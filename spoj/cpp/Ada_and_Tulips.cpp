@@ -17,27 +17,6 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-class Solution
-{
-    public:
-
-	int dp[1001][1001];
-
-	int LCS(int i, int j, string &s1, string &s2)
-	{
-		if(i==-1||j==-1)return 0;
-		else if(dp[i][j]!=-1)return dp[i][j];
-		else if(s1[i]==s2[j])return dp[i][j] = 1+LCS(i-1,j-1,s1,s2);
-		else return dp[i][j] = max(LCS(i-1,j,s1,s2),LCS(i,j-1,s1,s2));
-	}
-  
-    int lcs(int x, int y, string &s1, string &s2)
-    {
-		memset(dp,-1,sizeof(dp));
-		return LCS(x-1,y-1,s1,s2);
-    }
-};
-
 void solve()
 {
 	

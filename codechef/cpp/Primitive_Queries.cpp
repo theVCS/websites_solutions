@@ -1,69 +1,47 @@
 #include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-// using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
-//#define bint cpp_int
 #define pii pair<int, int>
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-// #define endl "\n"
+#define endl "\n"
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
 #define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-const int blk = 2100;
-const int arrSize = 200001;
-const int querSize = 100001;
-const int freSize = 200001;
-
-struct Query
-{
-    int l, r, t, index, lca;
-} q[querSize];
-
-struct Update
-{
-    int index, new_y, prev_y;
-} u[2 * querSize];
-
-bool cmp(Query const &a, Query const &b)
-{
-    if (a.t / blk != b.t / blk)
-        return a.t < b.t;
-    if (a.l / blk != b.l / blk)
-        return a.l < b.l;
-    return a.r < b.r;
-}
-
-int arr[arrSize];  // array which contains main data
-int last[arrSize]; // last element present in the vector
-bool use[arrSize]; // used in update
-int fre[freSize];  // use to keep track of no of elements
-
-// extra variables
-map<int, int> mp;
 const int treeNode = 100001;
-int nodeLabel[arrSize];
+vector<int> tree[treeNode];
+
+// for lca finding
+int level[treeNode], parent[treeNode][19];
+
+// euler tree tour technique
+int FT[2 * treeNode], intime[treeNode], outime[treeNode], timer;
 int val[treeNode];
-int nodeFre[treeNode];
-int intime[treeNode], outime[treeNode];
 
 class Tree
 {
     int n;
-    vector<int> tree[treeNode];
-    int level[treeNode], parent[treeNode][19];
-    int timer;
 
 public:
+    Tree() {}
+
     Tree(int N)
     {
         n = N;
-        timer = 0;
+    }
+
+    void resize(int N)
+    {
+        n = N;
     }
 
     void addEdge(int a, int b)
@@ -73,12 +51,13 @@ public:
 
     void euler(int node = 1, int par = -1, int l = 0)
     {
+        // euler tree tour technique
         intime[node] = ++timer;
-        arr[timer] = val[node];
-        last[timer] = val[node];
+        FT[timer] = node;
+
+        // lca
         parent[node][0] = par;
         level[node] = l;
-        nodeLabel[timer] = node;
 
         for (int child : tree[node])
         {
@@ -87,30 +66,23 @@ public:
             euler(child, node, l + 1);
         }
 
+        // euler tree tour technique
         outime[node] = ++timer;
-        arr[timer] = val[node];
-        last[timer] = val[node];
-        nodeLabel[timer] = node;
+        FT[timer] = node;
     }
 
     void init()
     {
+        timer = 0;
         euler();
 
+        // lca portion
         for (int j = 1; j < 19; j++)
-        {
             for (int i = 1; i <= n; i++)
-            {
                 if (parent[i][j - 1] == -1)
-                {
                     parent[i][j] = -1;
-                }
                 else
-                {
                     parent[i][j] = parent[parent[i][j - 1]][j - 1];
-                }
-            }
-        }
     }
 
     int LCA(int a, int b)
@@ -131,32 +103,44 @@ public:
             return a;
 
         for (int i = 18; i >= 0; i--)
-        {
             if (parent[a][i] != -1 && parent[a][i] != parent[b][i])
-            {
                 a = parent[a][i], b = parent[b][i];
-            }
-        }
 
         return parent[a][0];
     }
-
-    void swapper(int &a, int &b)
-    {
-        if (intime[a] > intime[b])
-            swap(a, b);
-    }
-
-    int _intime_(int a)
-    {
-        return intime[a];
-    }
-
-    int _outime_(int a)
-    {
-        return outime[a];
-    }
 };
+
+const int blk = 2100;
+const int arrSize = 200001;
+const int querSize = 100001;
+const int freSize = 200001;
+
+struct Query
+{
+    int l, r, t, index, lca;
+} q[querSize];
+
+struct Update
+{
+    int index, new_y, prev_y;
+} u[querSize];
+
+bool cmp(Query const &a, Query const &b)
+{
+    if (a.t / blk != b.t / blk)
+        return a.t < b.t;
+    if (a.l / blk != b.l / blk)
+        return a.l < b.l;
+    return a.r < b.r;
+}
+
+int last[treeNode]; // last element present in the vector
+bool use[arrSize];  // used in update
+int fre[freSize];   // use to keep track of no of elements
+
+// extra variables
+map<int, int> mp;
+int nodeFre[treeNode];
 
 template <class TYPE>
 class MOWithUpdate
@@ -167,7 +151,16 @@ class MOWithUpdate
     vector<TYPE> ans;
 
 public:
+    MOWithUpdate() {}
+
     MOWithUpdate(int N, int M)
+    {
+        n = N, m = M;
+        nq = nu = res = 0;
+        ans.resize(M + 1);
+    }
+
+    void resize(int N, int M)
     {
         n = N, m = M;
         nq = nu = res = 0;
@@ -195,57 +188,55 @@ public:
 
     void add(int index)
     {
-        ll ele = arr[index];
+        int node = FT[index];
         use[index] = true;
-        int node = nodeLabel[index];
-
+        int v = val[node];
         nodeFre[node]++;
 
         if (nodeFre[node] == 1)
         {
-            if (++fre[ele] == 1)
+            if (++fre[v] == 1)
                 res++;
         }
-
-        if (nodeFre[node] == 2)
+        else if (nodeFre[node] == 2)
         {
-            if (--fre[ele] == 0)
+            if (--fre[v] == 0)
                 res--;
         }
     }
 
     void remove(int index)
     {
-        ll ele = arr[index];
-        use[index] = false;
-        int node = nodeLabel[index];
-
+        int node = FT[index];
+        use[index] = true;
+        int v = val[node];
         nodeFre[node]--;
 
         if (nodeFre[node] == 1)
         {
-            if (++fre[ele] == 1)
+            if (++fre[v] == 1)
                 res++;
         }
-
-        if (nodeFre[node] == 0)
+        else if (nodeFre[node] == 0)
         {
-            if (--fre[ele] == 0)
+            if (--fre[v] == 0)
                 res--;
         }
     }
 
-    void reflect_update(int index, int ele)
+    void reflect_update(int node, int ele)
     {
-        if (use[index] == false)
+        if (nodeFre[node] != 1)
         {
-            arr[index] = ele;
+            val[node] = ele;
             return;
         }
 
-        remove(index);
-        arr[index] = ele;
-        add(index);
+        remove(intime[node]);
+        remove(outime[node]);
+        val[node] = ele;
+        add(intime[node]);
+        add(outime[node]);
     }
 
     void do_update(int index)
@@ -256,6 +247,11 @@ public:
     void undo(int index)
     {
         reflect_update(u[index].index, u[index].prev_y);
+    }
+
+    int getAns()
+    {
+        return res;
     }
 
     void processQueries()
@@ -277,19 +273,14 @@ public:
             while (L < q[i].l)
                 remove(L++);
 
-            ans[q[i].index] = res;
+            ans[q[i].index] = getAns();
 
-            if (q[i].lca != -1)
+            if (q[i].lca > 0)
             {
-                int index = intime[q[i].lca];
-                add(index);
-                ans[q[i].index] = res;
-                remove(index);
+                add(intime[q[i].lca]);
+                ans[q[i].index] = getAns();
+                remove(intime[q[i].lca]);
             }
-
-            // REP(i,1,n)
-            //     cout<<arr[i]<<" ";
-            // cout<<endl;
         }
     }
 
@@ -307,7 +298,7 @@ public:
             e.second = ++timer;
 
         REP(i, 1, n)
-        arr[i] = mp[arr[i]];
+        val[i] = mp[val[i]];
 
         REP(i, 1, nu)
         u[i].new_y = mp[u[i].new_y],
@@ -321,13 +312,15 @@ void solve()
     cin >> n >> m;
 
     MOWithUpdate<int> mo(2 * n, m);
-    Tree tree(n);
 
     REP(i, 1, n)
     {
         cin >> val[i];
+        last[i] = val[i];
         mp[val[i]];
     }
+
+    Tree tree(n);
 
     REP(i, 1, n - 1)
     {
@@ -345,19 +338,20 @@ void solve()
 
         if (type == 1)
         {
-            if(tree._intime_(a)>tree._intime_(b))swap(a,b);
+            if (intime[a] > intime[b])
+                swap(a, b);
+
             int lca = tree.LCA(a, b);
 
-            if (lca == a)
-                mo.addQuery(tree._intime_(a), tree._intime_(b), -1);
+            if (a == lca)
+                mo.addQuery(intime[a], intime[b], -1);
             else
-                mo.addQuery(tree._outime_(a), tree._intime_(b), lca);
+                mo.addQuery(outime[a], intime[b], lca);
         }
         else
         {
             mp[b];
-            mo.addUpdate(tree._intime_(a), b);
-            mo.addUpdate(tree._outime_(a), b);
+            mo.addUpdate(a, b);
         }
     }
 
@@ -372,8 +366,8 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // freopen("inputD.txt","r",stdin);
-    // freopen("a.txt","w",stdout);
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
 
     int t = 1;
 

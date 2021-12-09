@@ -42,26 +42,17 @@ public:
         root = new Node();
     }
 
-    void insert(ll s)
+    bool insert(ll s)
     {
         Node *temp = root;
 
-        RREP(i, 63, 0)
+        REP(i, 0, s - 1)
         {
-            if (s & (1LL << i))
-            {
-                if (temp->arr[1] == NULL)
-                    temp->arr[1] = new Node();
-                temp = temp->arr[1];
-            }
-            else
-            {
-                if (temp->arr[0] == NULL)
-                    temp->arr[0] = new Node();
-                temp = temp->arr[0];
-            }
-
-            temp->cnt++;
+            if (temp->arr[0] == NULL)
+                temp->arr[0] = new Node(), temp = temp->arr[0];
+            else if (temp->arr[1] == NULL)
+                temp->arr[1] = new Node(), temp = temp->arr[1];
+            
         }
     }
 
@@ -150,26 +141,14 @@ public:
 void solve()
 {
     TrieBit trie;
-    int n, m;
-    cin>>n>>m;
+    int n;
+    cin >> n;
 
-    REP(i,1,n)
+    REP(i, 1, n)
     {
         int x;
-        cin>>x;
-        trie.insert(x);
-    }  
-
-    ll ans = 0;
-
-    REP(i,1,m)
-    {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        cin >> x;
     }
-
-    cout<<ans;
 }
 
 int main(int argc, char const *argv[])

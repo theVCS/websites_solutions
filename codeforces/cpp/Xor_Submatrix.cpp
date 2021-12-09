@@ -147,29 +147,67 @@ public:
     }
 };
 
+int arr[1001];
+int brr[1001];
+
 void solve()
 {
-    TrieBit trie;
+    TrieBit trie1, trie2, trie3, trie4;
+
     int n, m;
-    cin>>n>>m;
+    cin >> n >> m;
 
-    REP(i,1,n)
-    {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
+    REP(i, 1, n)
+    cin >> arr[i];
 
+    REP(i, 1, m)
+    cin >> brr[i];
+
+    int c = 0;
     ll ans = 0;
 
-    REP(i,1,m)
+    trie1.insert(0);
+    trie2.insert(0);
+    trie3.insert(0);
+    trie4.insert(0);
+
+    REP(i, 1, n)
     {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        c ^= arr[i];
+        ans = max(ans, trie1.calc(c));
+        trie1.insert(c);
     }
 
-    cout<<ans;
+    c = 0;
+
+    REP(i, 1, m)
+    {
+        c ^= brr[i];
+        ans = max(ans, trie2.calc(c));
+        trie2.insert(c);
+    }
+
+    c = 0;
+
+    REP(i, 1, n)
+    {
+        c ^= arr[i];
+        REP(j, 1, m)
+        ans = max(ans, trie3.calc(c ^ brr[j]));
+        trie3.insert(c);
+    }
+
+    c = 0;
+
+    REP(i, 1, m)
+    {
+        c ^= brr[i];
+        REP(j, 1, n)
+        ans = max(ans, trie4.calc(c ^ arr[j]));
+        trie4.insert(c);
+    }
+
+    cout << ans;
 }
 
 int main(int argc, char const *argv[])

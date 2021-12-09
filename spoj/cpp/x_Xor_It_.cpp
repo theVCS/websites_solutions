@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -147,29 +147,32 @@ public:
     }
 };
 
+int n;
+ll x;
+ll arr[maxN];
+
 void solve()
 {
+    cin >> n >> x;
+
+    REP(i, 1, n)
+    cin >> arr[i];
+
     TrieBit trie;
-    int n, m;
-    cin>>n>>m;
 
-    REP(i,1,n)
+    ll ans = (x ^ arr[1]);
+    ll xo = arr[1];
+    trie.insert(arr[1]);
+
+    REP(i, 2, n)
     {
-        int x;
-        cin>>x;
-        trie.insert(x);
-    }  
-
-    ll ans = 0;
-
-    REP(i,1,m)
-    {
-        int x;
-        cin>>x;
-        ans = max(ans,trie.calc(x));
+        xo = (arr[i] ^ xo);
+        ans = max(ans, (xo ^ x));
+        trie.insert(xo);
+        ans = max(ans, trie.calc(x ^ xo));
     }
 
-    cout<<ans;
+    cout << (ans ^ x) << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -183,7 +186,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

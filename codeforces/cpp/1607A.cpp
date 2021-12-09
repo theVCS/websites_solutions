@@ -17,30 +17,22 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-class Solution
-{
-    public:
-
-	int dp[1001][1001];
-
-	int LCS(int i, int j, string &s1, string &s2)
-	{
-		if(i==-1||j==-1)return 0;
-		else if(dp[i][j]!=-1)return dp[i][j];
-		else if(s1[i]==s2[j])return dp[i][j] = 1+LCS(i-1,j-1,s1,s2);
-		else return dp[i][j] = max(LCS(i-1,j,s1,s2),LCS(i,j-1,s1,s2));
-	}
-  
-    int lcs(int x, int y, string &s1, string &s2)
-    {
-		memset(dp,-1,sizeof(dp));
-		return LCS(x-1,y-1,s1,s2);
-    }
-};
-
 void solve()
 {
-	
+	string s, w;
+    cin>>s>>w;
+
+    int pos[26] = {0};
+
+    REP(i,0,25)
+        pos[s[i]-'a']=i;
+
+    int ans = 0;
+
+    REP(i,1,w.size()-1)
+        ans += abs(pos[w[i]-'a'] - pos[w[i-1]-'a']);
+
+    cout<<ans<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -54,7 +46,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{
