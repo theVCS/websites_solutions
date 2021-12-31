@@ -17,46 +17,52 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+set<ll> st;
+vector<int>vec;
 
-int fun(int i, int j)
+void init()
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
+    ll i = 1;
+
+    while (i * i <= 1000000000)
     {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        st.insert(i * i);
+        i++;
     }
+
+    i = 1;
+
+    while (i * i * i <= 1000000000)
+    {
+        st.insert(i * i * i);
+        i++;
+    }
+
+    for(ll e: st)vec.push_back(e);
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    ll n;
+    cin>>n;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    int start = 0, end = vec.size()-1;
+
+    while (start<=end)
+    {
+        int mid = (start+end)/2;
+
+        if(vec[mid]<=n && (mid==end||vec[mid+1]>n))
+        {
+            cout<<mid+1<<endl;
+            return;
+        }
+        else if(vec[mid]<=n)
+            start=mid+1;
+        else end=mid-1;
     }
+    
+    cout<<0<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -67,10 +73,10 @@ int main(int argc, char const *argv[])
 
     // freopen("input.txt","r",stdin);
     // freopen("output.txt","w",stdout);
-
+    init();
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 100001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -68,51 +68,49 @@ struct LineContainer : multiset<Line, less<>>
     }
 } cht;
 
-int arr[maxN];
-int brr[maxN];
+ll arr[maxN];
 
 void solve()
 {
-    int n;
-    cin>>n;
+    ll n, c;
+    cin >> n >> c;
 
-	ll ans = 0;
-
-    REP(i,1,n)
-    cin>>arr[i];
-    REP(i,1,n)
-    cin>>brr[i];
-
-    ans=brr[1];
-    cht.add(brr[1],0);
-
-    REP(i,2,n)
+    REP(i, 1, n)
     {
-        ans = cht.query(arr[i]);
-        cht.add(brr[i],ans);
+        cin >> arr[i];
     }
 
-    cout<<ans<<endl;
+    cht.add(-2 * arr[n], arr[n] * arr[n] + c);
+
+    RREP(i, n-1, 1)
+    {
+        ll dp = (arr[i]-arr[n])*(arr[i]-arr[n])+c;
+        dp = min(dp,cht.query(arr[i])) + c + arr[i] * arr[i];
+        cht.add(-2*arr[i], dp + arr[i] * arr[i]);
+        cout << dp << " ";
+    }
+
+    // cout << ans;
 }
 
 int main(int argc, char const *argv[])
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	// freopen("input.txt","r",stdin);
-	// freopen("output.txt","w",stdout);
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
 
-	int t = 1;
+    int t = 1;
 
-	// cin >> t;
+    // cin >> t;
 
-	REP(tc, 1, t)
-	{
-		// cout<<"Case "<<tc<<":"<<endl;
-		solve();
-	}
+    REP(tc, 1, t)
+    {
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
+    }
 
-	return 0;
+    return 0;
 }

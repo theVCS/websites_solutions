@@ -17,45 +17,36 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+const int sz = 1001;
+int dp[sz][sz];
+string a, b;
 
-int fun(int i, int j)
+int lcs()
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
+    int n = a.size();
+    int m = b.size();
+
+    REP(i, 0, m)
+    dp[0][i] = dp[1][i] = 0;
+
+    REP(i, 1, n)
+    REP(j, 1, m)
     {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        if (a[i - 1] == b[j - 1])
+            dp[i][j] = 1 + dp[i - 1][j - 1];
+        else
+            dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
     }
+
+    return dp[n][m];
 }
 
 void solve()
 {
-    while (true)
+    while (getline(cin, a))
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
-
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+        getline(cin, b);
+        cout << lcsMemoryEfficient() << endl;
     }
 }
 

@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 300011
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -17,42 +17,32 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+int xorArr[maxN];
 
 void solve()
 {
-	cin>>n;
+	int a,b;
+    cin>>a>>b;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    // selecting elements from 0 to a-1
+    int ans = a;
+    
+    // now checking the xor
+    int reqXOR = xorArr[a-1]^b;
 
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    if(reqXOR==a)
     {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
+        cout<<ans+2<<endl;
+        return;
     }
 
-    cout<<ans;
+    if(reqXOR==0)
+    {
+        cout<<ans<<endl;
+        return;
+    }
+
+    cout<<ans+1<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -64,9 +54,12 @@ int main(int argc, char const *argv[])
 	// freopen("input.txt","r",stdin);
 	// freopen("output.txt","w",stdout);
 
+    REP(i,1,maxN-1)
+        xorArr[i]=(i^xorArr[i-1]);
+
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

@@ -17,42 +17,9 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
-
 void solve()
 {
-	cin>>n;
-
-    REP(i,1,n)
-    cin>>boys[i];
-
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+	
 }
 
 int main(int argc, char const *argv[])

@@ -17,46 +17,45 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
-
-int fun(int i, int j)
-{
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
-    {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
-    }
-}
-
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    string s;
+    cin >> s;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    int prefix[20] = {0};
+
+    REP(i, 0, s.size() - 1)
+    prefix[i] = (i ? prefix[i - 1] : 0) + (s[i] - '0');
+    ll ans = prefix[s.size()-1];
+
+    RREP(i, s.size() - 1, 0)
+    {
+        if(s[i]=='0')continue;
+        ll nans = (i?prefix[i-1]:0)+(s[i]-'0'-1)+9*(s.size()-i-1);
+
+        if(nans>ans)
+        {
+            ans=nans;
+            s[i]=s[i]-1;
+
+            REP(j,i+1,s.size()-1)
+            {
+                s[j]='9';
+            }
+        }
     }
+
+    bool flag=true;
+    string res;
+
+    for(char &c: s)
+    {
+        if(c=='0' && flag)continue;
+        flag=false;
+        res.push_back(c);
+    }
+
+    cout<<res;
 }
 
 int main(int argc, char const *argv[])

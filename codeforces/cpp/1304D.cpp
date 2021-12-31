@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 200001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -17,42 +17,45 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
-
 void solve()
 {
-	cin>>n;
+	int n;
+    string s;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    cin>>n;
+    cin>>s;
 
-    cin>>m;
+    int arr[n+1] = {0};
+    int end = n;
 
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
+    RREP(i,s.size()-1,0)
+    {
+        if(s[i]=='<')
+            arr[i+2]=end--;
+    }
 
     REP(i,1,n)
     {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
+        if(arr[i])
+            cout<<arr[i]<<" ";
+        else
+            cout<<end<<" ", end--;
+        
+        arr[i] = 0;
     }
+    cout<<endl;
 
-    cout<<ans;
+    int start = 1;
+
+    REP(i,1,n)
+    {
+        if(arr[i])
+            cout<<arr[i]<<" ";
+        else
+            cout<<start<<" ", start++;
+    }
+    cout<<endl;
+
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +69,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

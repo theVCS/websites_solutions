@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 5001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -17,46 +17,37 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
-
-int fun(int i, int j)
-{
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
-    {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
-    }
-}
+int n;
+int arr[maxN];
+int brr[maxN];
+ll dp[maxN][maxN];
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    cin >> n;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    REP(i, 1, n)
+    cin >> arr[i], brr[i] = arr[i];
+
+    sort(brr + 1, brr + 1 + n);
+
+    REP(i,0,n)
+    dp[i][0]=dp[0][i]=1e18;
+
+    REP(i, 1, n)
+    REP(j, 1, n)
+    {
+        if (i == 1 && j == 1)
+            dp[i][j] = abs(arr[i] - brr[j]);
+        if (i == 1)
+            dp[i][j] = min(1LL*abs(arr[i] - brr[j]), dp[i][j-1]);
+        else if (j == 1)
+            dp[i][j] = (abs(arr[i] - brr[j]) +  dp[i-1][j]);
+        else
+            dp[i][j] = min(abs(arr[i] - brr[j]) + dp[i-1][j], dp[i][j-1]);
     }
+
+    cout<<dp[n][n];
 }
 
 int main(int argc, char const *argv[])

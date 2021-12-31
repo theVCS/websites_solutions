@@ -17,46 +17,52 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+string num;
+int N;
+ll dp[12][1<<12];
 
-int fun(int i, int j)
+ll fun(int index, int carry = 0)
 {
-    if(i<=0||j<=0)
+    if (carry >= (1 << (N)))
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    if (index == -1)
+    {
+        return 1;
+    }
+    else if(dp[index][carry] != -1)
+        return dp[index][carry];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ans = 0;
+        int lastDigit = num[index] - '0';
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(i, 0, 9)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            REP(j, 0, 9)
+            {
+                int bitIndex = (N - 1 - index);
+                int sum = (i + j + ((carry >> bitIndex) & 1));
+
+                if (sum % 10 == lastDigit)
+                {
+                    if (sum > 9)
+                        ans += fun(index - 1, carry | (1 << (bitIndex + 2)));
+                    else
+                        ans += fun(index - 1, carry);
+                }
+            }
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[index][carry] = ans;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
-
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
-    }
+    cin >> num;
+    memset(dp,-1,sizeof(dp));
+    N = num.size();
+    cout << fun(N - 1) - 2 << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -70,7 +76,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

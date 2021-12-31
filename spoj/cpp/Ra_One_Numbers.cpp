@@ -17,46 +17,47 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+string str;
+ll dp[10][2][60][60];
 
-int fun(int i, int j)
+ll digitDP(int pos = 0, int flag = 1, ll rese = 0, ll reso = 0)
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    if (pos == str.size())
+        return pos%2?reso-rese==1:rese-reso==1;
+    else if(dp[pos][flag][rese][reso]!=-1)
+        return dp[pos][flag][rese][reso];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ans = 0;
+        int ub = flag ? (str[pos] - '0') : 9;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(i, 0, ub)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            if (pos % 2)
+                ans += digitDP(pos + 1, (i == ub) & flag, rese, reso + i);
+            else
+                ans += digitDP(pos + 1, (i == ub) & flag, rese + i, reso);
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[pos][flag][rese][reso] = ans;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    ll l, r;
+    cin >> l >> r;
+    l--;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
-    }
+    memset(dp, -1, sizeof(dp));
+    str = to_string(r);
+    ll ans = digitDP();
+
+    memset(dp, -1, sizeof(dp));
+    str = to_string(l);
+    ans -= digitDP();
+
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -70,7 +71,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

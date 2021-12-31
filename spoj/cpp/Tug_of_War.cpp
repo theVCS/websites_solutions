@@ -17,42 +17,44 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+int n;
+int str[100];
+
+bool fun(int pos=1, int sum1=0, int sum2=0)
+{
+	if(pos==100)
+		return sum1==sum2 && sum1;
+	else if(str[pos]==0)
+		return fun(pos+1,sum1,sum2);
+	else
+		return fun(pos+1,sum1,sum2)||fun(pos+1,sum1+pos,sum2)||fun(pos+1,sum1,sum2+pos);
+}
 
 void solve()
 {
+	int ans=0;
+	memset(str,0,sizeof(str));
+
 	cin>>n;
 
-    REP(i,1,n)
-    cin>>boys[i];
+	REP(i,1,n)
+	{
+		int temp;
+		cin>>temp;
+		ans|=str[temp];
+		str[temp]=1;
+	}
 
-    cin>>m;
+	if(ans)
+	{
+		cout<<"YES"<<endl;
+		return;
+	}
 
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+	if(fun())
+		cout<<"YES"<<endl;
+	else
+		cout<<"NO"<<endl;	
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +68,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

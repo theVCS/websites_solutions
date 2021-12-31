@@ -1,73 +1,78 @@
 #include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
-//#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 1000001
 #define endl "\n"
-#define INF 1000000000
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s;
-ll dp[10][82][2];
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
+#define printd(x) cout << fixed << setprecision(10) << x
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll fun(int n = 0, int sum = 0, int tight = 1)
+string str;
+ll dp[10][82];
+int N;
+
+ll digitDP(int pos, int flag = 1, int val = 0)
 {
-    if (n == s.size())
-    {
-        return sum;
-    }
-    else if (dp[n][sum][tight] != -1)
-    {
-        return dp[n][sum][tight];
-    }
-    else if (tight)
-    {
-        ll res = 0;
+    if (pos == -1)
+        return val;
 
-        REP(i, 0, s[n] - '0')
-        {
-            res += fun(n + 1, sum + i, i == (s[n] - '0'));
-        }
+    ll &res = dp[pos][val];
 
-        return dp[n][sum][tight] = res;
-    }
-    else
+    if (flag == 0 && res != -1)
+        return res;
+
+    ll ans = 0;
+    int ub = flag ? (str[pos] - '0') : 9;
+
+    REP(i, 0, ub)
     {
-        ll res = 0;
-
-        REP(i, 0, 9)
-        {
-            res += fun(n + 1, sum + i, 0);
-        }
-
-        return dp[n][sum][tight] = res;
+        ans += digitDP(pos - 1, (i == ub & flag), val + i);
     }
+
+    return flag ? ans : res = ans;
 }
 
-void solve(int l, int r)
+int check(string &s)
 {
-    l--;
+    ll ans = 0;
 
-    s = to_string(r);
-    memset(dp, -1, sizeof(dp));
-    ll ans1 = fun();
+    for (char &c : s)
+    {
+        ans += (c - '0');
+    }
 
-    s = to_string(l);
-    memset(dp, -1, sizeof(dp));
-    ll ans2 = fun();
+    return ans;
+}
 
-    cout << ans1 - ans2 << endl;
+void solve()
+{
+    ll ans = 0;
+
+    string l, r;
+    cin >> l >> r;
+
+    str = l;
+    reverse(all(str));
+    N = str.size();
+    ans -= digitDP(N - 1);
+    ans += check(str);
+
+    str = r;
+    reverse(all(str));
+    N = str.size();
+    ans += digitDP(N - 1);
+
+    cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -76,28 +81,19 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream filptr("input.txt");
-    // ofstream outpter("output.txt");
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
 
-    // filptr >> input;
-    // outpter << output;
+    memset(dp, -1, sizeof(dp));
 
-    // int t = 1;
+    int t = 1;
+    // cin >> t;
 
-    //cin >> t;
-
-    while (true)
+    REP(tc, 1, t)
     {
-        int l, r;
-        cin>>l>>r;
-
-        if(l == -1 && r == -1)return 0;
-
-        solve(l,r);
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
     }
-
-    //filptr.close();
-    //outpter.close();
 
     return 0;
 }

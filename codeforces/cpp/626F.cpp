@@ -17,46 +17,39 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int N, K;
+int arr[201];
+ll dp[201][201][1001];
 
-int fun(int i, int j)
+ll fun(int i, int j, int k)
 {
-    if(i<=0||j<=0)
+    if (k < 0)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    else if (i >= N)
+        return (j == 0);
+    else if(dp[i][j][k]!=-1)
+        return dp[i][j][k];
     else
     {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[i][j][k] = (fun(i + 1, j, k - j * (arr[i] - arr[i - 1])) + fun(i + 1, j+1, k - j * (arr[i] - arr[i - 1])) + j*fun(i + 1, j,  k - j * (arr[i] - arr[i - 1])) + j*fun(i + 1, j - 1,  k - j * (arr[i] - arr[i - 1]))) % mod;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    cin >> N >> K;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
-    }
+    REP(i, 1, N)
+    cin >> arr[i];
+
+    memset(dp,-1,sizeof(dp));
+    fun(1,0,K);
+
+    ll ans = 0;
+    REP(i,0,K)
+    ans=(ans+dp[N][0][i])%mod;
+
+    cout<<ans;
 }
 
 int main(int argc, char const *argv[])

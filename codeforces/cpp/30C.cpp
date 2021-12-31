@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 1000001
+#define maxN 1001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -17,46 +17,57 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
-
-int fun(int i, int j)
+struct target
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
-    {
-        int ans = 0;
-        int c = 1;
+    ll x, y, t;
+    double p;
+} arr[maxN];
+double dp[maxN];
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
+bool check(target &b, target &a)
+{
+    ll d = (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+    ll t = (a.t - b.t) * (a.t - b.t);
+    return t >= d;
+}
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
-    }
+bool cmp(target &a, target &b)
+{
+    return a.t < b.t;
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    int N;
+    cin >> N;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    REP(i, 1, N)
+    {
+        cin >> arr[i].x >> arr[i].y >> arr[i].t >> arr[i].p;
     }
+
+    sort(arr+1,arr+1+N,cmp);
+
+    double ans=arr[N].p;
+    dp[N] = arr[N].p;
+
+    RREP(i, N-1, 1)
+    {
+        double res = 0;
+
+        REP(j, i+1, N)
+        {
+            if(check(arr[j],arr[i]))
+            {
+                res = max(dp[j],res);
+            }
+        }
+
+        dp[i]=res+arr[i].p;
+        ans=max(ans,dp[i]);
+    }
+
+    printd(ans);
 }
 
 int main(int argc, char const *argv[])

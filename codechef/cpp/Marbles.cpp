@@ -17,42 +17,38 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+int isVowel(char c)
+{
+    return c=='a'||c=='e'||c=='i'||c=='o'||c=='u';
+}
 
 void solve()
 {
-	cin>>n;
+    int n;
+	string s,t;
+    cin>>n>>s>>t;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    int ans=INF;
 
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    for (char c = 'a'; c <= 'z'; c++)
     {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
+        int res = 0;
 
-    cout<<ans;
+        REP(i,0,n-1)
+        {
+            int sc = s[i]=='?'?c:s[i];
+            int tc = t[i]=='?'?c:t[i];
+
+            if(sc==tc)continue;
+
+            if(isVowel(sc)^isVowel(tc))res++;
+            else res+=2;
+        }
+
+        ans=min(ans,res);
+    }
+    
+    cout<<ans<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +62,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

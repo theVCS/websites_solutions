@@ -17,45 +17,45 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int n;
+ll arr[101];
+ll prefix[101];
+ll dp[101][101];
 
-int fun(int i, int j)
+ll fun(int i, int j)
 {
-    if(i<=0||j<=0)
+    // cout<<i<<" "<<j<<endl;
+    if (i >= j)
         return 0;
     else if(dp[i][j]!=-1)
         return dp[i][j];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ans = 1e18;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(index, i, j-1)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            ll l = (prefix[index]-prefix[i-1]) % 100;
+            ll r = (prefix[j] - prefix[index]) % 100;
+            ans = min(ans,l*r+fun(i,index)+fun(index+1,j));
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[i][j] = ans;
     }
 }
 
 void solve()
 {
-    while (true)
+    while (cin >> n)
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
-
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
+        REP(i, 1, n)
+        {
+            cin >> arr[i];
+            prefix[i] = prefix[i - 1] + arr[i];
+        }
         
-        cout<<fun(s.size(),t.size())<<endl;
+        memset(dp,-1,sizeof(dp));
+        cout << fun(1, n) << endl;
     }
 }
 

@@ -19,38 +19,55 @@ using namespace std;
 
 string str1;
 string str2;
-ll dp[51][18][18][18];
+int K;
+ll dp[20][504][1 << 10][2];
 int N;
 
-ll digitDP(int pos, int flag1 = 1, int flag2 = 1, int c3 = 0, int c6 = 0, int c9 = 0)
+ll digitDP(int pos, int flag1 = 1, int flag2 = 1, int val = 0, int mask = 0, int last=0)
 {
-    if(c3>N/3||c6>N/3||c9>N/3)
-        return 0;
     if (pos == -1)
-        return c3 && c3 == c6 && c6 == c9;
+    {
+        int cnt = 0;
 
-    ll &res = dp[pos][c3][c6][c9];
+        if(last && (mask & 1<<5))cnt++;
+
+        REP(i, 1, 9)
+        {
+            if (mask & (1 << i))
+            {
+                if(i==5)
+                    continue;
+                
+                if (val % i == 0)
+                    cnt++;
+            }
+        }
+
+        return cnt >= K;
+    }
+
+    ll &res = dp[pos][val][mask][last];
 
     if (flag1 == 0 && flag2 == 0 && res != -1)
         return res;
 
     ll ans = 0;
-    
+
     int lb = flag1 ? (str1[pos] - '0') : 0;
     int ub = flag2 ? (str2[pos] - '0') : 9;
 
     REP(i, lb, ub)
     {
-        ans += digitDP(pos - 1, (i==lb && flag1), (i == ub & flag2), c3+(i==3),c6+(i==6),c9+(i==9));
-        ans %= mod;
+        ans += digitDP(pos - 1, (i == lb && flag1), (i == ub & flag2), (val * 10 + i) % 504, (mask | (1 << i)), i%5==0 && pos==0);
     }
 
-    return flag1==0 && flag2==0 ? res = ans: ans;
+    return flag1 == 0 && flag2 == 0 ? res = ans : ans;
 }
 
 void solve()
 {
-    cin >> str1 >> str2;
+    memset(dp, -1, sizeof(dp));
+    cin >> str1 >> str2 >> K;
 
     reverse(all(str1));
     reverse(all(str2));
@@ -74,7 +91,6 @@ int main(int argc, char const *argv[])
     // freopen("input.txt","r",stdin);
     // freopen("output.txt","w",stdout);
 
-    memset(dp, -1, sizeof(dp));
 
     int t = 1;
     cin >> t;

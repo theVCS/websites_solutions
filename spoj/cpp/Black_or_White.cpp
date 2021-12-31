@@ -17,29 +17,27 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int n;
+int arr[201];
+int dp[201][201][201];
 
-int fun(int i, int j)
+int fun(int pos, int black, int white)
 {
-    if(i<=0||j<=0)
+    if(pos==n+1)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    else if(dp[pos][black][white]!=-1)
+        return dp[pos][black][white];
     else
     {
-        int ans = 0;
-        int c = 1;
+        int v1 = INF;
+        int v2 = INF;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
+        if(arr[pos]>arr[white]||white==0)
+            v1=fun(pos+1,black,pos);
+        if(arr[pos]<arr[black]||black==0)
+            v2=fun(pos+1,pos,white);
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[pos][black][white] = min({v1,v2,1+fun(pos+1,black,white)});
     }
 }
 
@@ -47,15 +45,16 @@ void solve()
 {
     while (true)
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+        cin >> n;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+        if (n == -1)
+            return;
+
+        REP(i, 1, n)
+        cin >> arr[i];
+
+        memset(dp,-1,sizeof(dp));
+        cout<<fun(1,0,0)<<endl;
     }
 }
 

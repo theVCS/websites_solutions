@@ -17,45 +17,66 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
-
-int fun(int i, int j)
+int check(int x, int d)
 {
-    if(i<=0||j<=0)
+    while (x)
+    {
+        if (x % 10 == d)
+            return 1;
+        x /= 10;
+    }
+
+    return 0;
+}
+
+int dp[110];
+
+int fun(int index, int d)
+{
+    if (index == 110)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    else if(index < d)
+        return 0;
+    else if (dp[index] != -1)
+        return dp[index];
     else
     {
-        int ans = 0;
-        int c = 1;
+        int f = check(index,d);
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(i, 1, index - 1)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            if(f)break;
+            int j = index - i;
+
+            if (fun(i, d) && fun(j, d) && check(i, d) && check(j, d))
+            {
+                f = 1;
+            }
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[index] = f;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    int q, d;
+    cin >> q >> d;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    memset(dp, -1, sizeof(dp));
+
+    REP(i, 1, q)
+    {
+        int x;
+        cin >> x;
+
+        if (x >= (10 * d + 9) || fun(x, d) || x % d == 0)
+        {
+            cout << "YES" << endl;
+            continue;
+        }
+
+        cout << "NO" << endl;
     }
 }
 
@@ -70,7 +91,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

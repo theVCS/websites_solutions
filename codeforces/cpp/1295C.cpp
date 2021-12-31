@@ -17,52 +17,64 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string str1;
-string str2;
-ll dp[51][18][18][18];
-int N;
+string s, t;
+vector<int> index[26];
 
-ll digitDP(int pos, int flag1 = 1, int flag2 = 1, int c3 = 0, int c6 = 0, int c9 = 0)
+int bs(int alp, int ind)
 {
-    if(c3>N/3||c6>N/3||c9>N/3)
-        return 0;
-    if (pos == -1)
-        return c3 && c3 == c6 && c6 == c9;
+    // cout<<alp<<" "<<ind<<endl;
+    int start = 0, end = index[alp].size() - 1;
 
-    ll &res = dp[pos][c3][c6][c9];
-
-    if (flag1 == 0 && flag2 == 0 && res != -1)
-        return res;
-
-    ll ans = 0;
-    
-    int lb = flag1 ? (str1[pos] - '0') : 0;
-    int ub = flag2 ? (str2[pos] - '0') : 9;
-
-    REP(i, lb, ub)
+    while (start <= end)
     {
-        ans += digitDP(pos - 1, (i==lb && flag1), (i == ub & flag2), c3+(i==3),c6+(i==6),c9+(i==9));
-        ans %= mod;
+        int mid = (start + end) / 2;
+
+        if (index[alp][mid] > ind && (mid == start || index[alp][mid - 1] <= ind))
+            return index[alp][mid];
+        else if (index[alp][mid] > ind)
+            end = mid - 1;
+        else
+            start = mid + 1;
     }
 
-    return flag1==0 && flag2==0 ? res = ans: ans;
+    return -1;
 }
 
 void solve()
 {
-    cin >> str1 >> str2;
+    REP(i, 0, 25)
+    index[i].clear();
 
-    reverse(all(str1));
-    reverse(all(str2));
+    cin >> s >> t;
 
-    while (str1.size() < str2.size())
+    REP(i, 0, s.size() - 1)
     {
-        str1.push_back('0');
+        index[s[i] - 'a'].push_back(i);
     }
 
-    N = str1.size();
-    ll ans = digitDP(N - 1);
+    int ans = 1;
+    int ind = -1;
+
+    for (char &c : t)
+    {
+        if (index[c - 'a'].size() == 0)
+        {
+            cout << -1 << endl;
+            return;
+        }
+
+        ind = bs(c - 'a', ind);
+        // cout<<ind<<" "<<ans<<endl;
+
+        if (ind == -1)
+        {
+            ans++;
+            ind = bs(c - 'a', ind);
+        }
+    }
+    
     cout << ans << endl;
+    // cout<<bs(24,-1)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -74,9 +86,8 @@ int main(int argc, char const *argv[])
     // freopen("input.txt","r",stdin);
     // freopen("output.txt","w",stdout);
 
-    memset(dp, -1, sizeof(dp));
-
     int t = 1;
+
     cin >> t;
 
     REP(tc, 1, t)

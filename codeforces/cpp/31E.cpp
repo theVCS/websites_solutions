@@ -17,46 +17,54 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int N;
+string str;
+ll po[20];
+ll dp[19][19][40];
 
-int fun(int i, int j)
+ll fun(int lenA = 0, int lenB = 0, int pos = 0)
 {
-    if(i<=0||j<=0)
+    if (pos >= 2 * N)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    else if(dp[lenA][lenB][pos]!=-1)
+        return dp[lenA][lenB][pos];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ans = 0;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
+        if (lenA < N)
+            ans = fun(lenA + 1, lenB, pos + 1) + (str[pos] - '0') * po[N - lenA - 1];
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        if (lenB < N)
+            ans = max(ans, fun(lenA, lenB + 1, pos + 1) + (str[pos] - '0') * po[N - lenB - 1]);
+
+        return dp[lenA][lenB][pos] = ans;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    cin >> N >> str;
+    
+    po[0] = 1;
+    REP(i, 1, 18)
+    po[i] = po[i - 1] * 10;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    memset(dp,-1,sizeof(dp));
+    fun();
+
+    string res;
+    int  lenA = 0, lenB = 0;
+
+    while (lenA+lenB<2*N)
+    {
+        int pos=lenA+lenB;
+
+        if(lenA<N && fun(lenA,lenB,pos)==fun(lenA + 1, lenB, pos + 1) + (str[pos] - '0') * po[N - lenA - 1])lenA++, res.push_back('H');
+        else lenB++, res.push_back('M');
     }
+    
+    cout<<res;
 }
 
 int main(int argc, char const *argv[])

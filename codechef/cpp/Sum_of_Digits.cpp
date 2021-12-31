@@ -17,46 +17,58 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+string str1, str2;
+ll dp[10][2][2][82];
+int N;
 
-int fun(int i, int j)
+// flag1 -> for lower bound
+// flag2 -> for upper bound
+
+ll digitDP(int pos, int flag1 = 1, int flag2 = 1, ll res = 0)
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    if (pos < 0)
+        return res;
+    else if (dp[pos][flag1][flag2][res] != -1)
+        return dp[pos][flag1][flag2][res];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ans = 0;
+        int lb = flag1 ? (str1[pos] - '0') : 0;
+        int ub = flag2 ? (str2[pos] - '0') : 9;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(i, lb, ub)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            ans += digitDP(pos - 1, (i == lb & flag1), (i == ub & flag2), res + i);
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[pos][flag1][flag2][res] = ans;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    cin >> str1 >> str2;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    if (str1[0] == '-')
+    {
+        return;
     }
+
+    // str1 -> lower bound
+    // str2 -> upper bound
+
+    N = str2.size();
+
+    reverse(all(str1));
+    reverse(all(str2));
+
+    while (str1.size() < str2.size())
+    {
+        str1.push_back('0');
+    }
+
+    memset(dp, -1, sizeof(dp));
+    cout << digitDP(N - 1) << endl;
 }
 
 int main(int argc, char const *argv[])

@@ -17,45 +17,58 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
-
-int fun(int i, int j)
-{
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
-    {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
-    }
-}
-
 void solve()
 {
-    while (true)
+    ll n;
+    cin >> n;
+    vector a(n + 1);
+    for (ll i = 1; i <= n; i++)
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+        cin >> a[i];
+    }
+    sort(a.begin(), a.end());
+    ll ans = 0, f = 0;
+    vector vis(n + 1, 0), v2(n + 1, 0);
+    for (ll i = 1; i <= n; i++)
+    {
+        if (a[i] <= n && vis[a[i]] == 0)
+        {
+            vis[a[i]] = 1;
+            v2[i] = 1;
+        }
+    }
+    vector<int> v, v3;
+    for (ll i = 1; i <= n; i++)
+    {
+        if (vis[i] != 1)
+        {
+            v.push_back(i);
+        }
+        if (v2[i] == 0)
+        {
+            v3.push_back(a[i]);
+        }
+    }
+    ll k = 0;
+    for (ll i = 0; i < v3.size(); i++)
+    {
+        ll tmp = v3[i] / 2 + 1;
+        if (v3[i] - tmp >= v[k])
+        {
+            ans++;
+            k++;
+        }
+        f = 1;
+        break;
+    }
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+    if (f)
+    {
+        cout << "-1\n";
+    }
+    else
+    {
+        cout << ans << "\n";
     }
 }
 

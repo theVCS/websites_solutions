@@ -17,30 +17,57 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-class Solution
+ll binExp(ll a, ll p, ll m = mod)
 {
-    public:
+	ll res = 1;
 
-	int dp[1001][1001];
-
-	int LCS(int i, int j, string &s1, string &s2)
+	while (p)
 	{
-		if(i==-1||j==-1)return 0;
-		else if(dp[i][j]!=-1)return dp[i][j];
-		else if(s1[i]==s2[j])return dp[i][j] = 1+LCS(i-1,j-1,s1,s2);
-		else return dp[i][j] = max(LCS(i-1,j,s1,s2),LCS(i,j-1,s1,s2));
+		if (p & 1)
+			res = (res * a) % m;
+		a = (a * a) % m;
+		p >>= 1;
 	}
-  
-    int lcs(int x, int y, string &s1, string &s2)
-    {
-		memset(dp,-1,sizeof(dp));
-		return LCS(x-1,y-1,s1,s2);
-    }
-};
+
+	return res;
+}
+
+string str;
+ll dp[19][2][163];
+
+ll digitDP(int pos = 0, int flag = 1, ll res = 0)
+{
+	if (pos == str.size())
+		return res;
+	else
+	{
+		ll ans = 0;
+		int ub = flag ? (str[pos] - '0') : 9;
+
+		REP(i, 0, ub)
+		{
+			ans += digitDP(pos + 1, ((i == ub) & flag), res + i);
+		}
+
+		return ans;
+	}
+}
 
 void solve()
 {
-	
+	ll l, r;
+	cin >> l >> r;
+	l--;
+
+	memset(dp, -1, sizeof(dp));
+	str = to_string(r);
+	ll ans = digitDP();
+
+	memset(dp, -1, sizeof(dp));
+	str = to_string(l);
+	ans -= digitDP();
+
+	cout << ans << endl;
 }
 
 int main(int argc, char const *argv[])

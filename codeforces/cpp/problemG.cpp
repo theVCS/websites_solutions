@@ -17,40 +17,56 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string str1;
-string str2;
-ll dp[51][18][18][18];
+string str1, str2;
+// ll dp[10][2][2][82];
 int N;
+string num;
+// flag1 -> for lower bound
+// flag2 -> for upper bound
 
-ll digitDP(int pos, int flag1 = 1, int flag2 = 1, int c3 = 0, int c6 = 0, int c9 = 0)
+ll digitDP(int pos, int flag1 = 1, int flag2 = 1, ll res = 1, int nonZero=0)
 {
-    if(c3>N/3||c6>N/3||c9>N/3)
-        return 0;
-    if (pos == -1)
-        return c3 && c3 == c6 && c6 == c9;
-
-    ll &res = dp[pos][c3][c6][c9];
-
-    if (flag1 == 0 && flag2 == 0 && res != -1)
+    if (pos < 0)
         return res;
-
-    ll ans = 0;
-    
-    int lb = flag1 ? (str1[pos] - '0') : 0;
-    int ub = flag2 ? (str2[pos] - '0') : 9;
-
-    REP(i, lb, ub)
+    // else if (dp[pos][flag1][flag2][res] != -1)
+    //     return dp[pos][flag1][flag2][res];
+    else
     {
-        ans += digitDP(pos - 1, (i==lb && flag1), (i == ub & flag2), c3+(i==3),c6+(i==6),c9+(i==9));
-        ans %= mod;
-    }
+        ll ans = -1;
+        int lb = flag1 ? (str1[pos] - '0') : 0;
+        int ub = flag2 ? (str2[pos] - '0') : 9;
 
-    return flag1==0 && flag2==0 ? res = ans: ans;
+        REP(i, lb, ub)
+        {
+            ll v = digitDP(pos - 1, (i == lb & flag1), (i == ub & flag2), res*((nonZero||i)?i:1), nonZero||i);
+
+            if(ans<v)
+            {
+                ans=v;
+                if(num.size()==pos+1)
+                num.pop_back();
+                num.push_back(char('0'+i));
+            }
+        }
+
+        // return dp[pos][flag1][flag2][res] = ans;
+        return ans;
+    }
 }
 
 void solve()
 {
     cin >> str1 >> str2;
+
+    if (str1[0] == '-')
+    {
+        return;
+    }
+
+    // str1 -> lower bound
+    // str2 -> upper bound
+
+    N = str2.size();
 
     reverse(all(str1));
     reverse(all(str2));
@@ -60,9 +76,9 @@ void solve()
         str1.push_back('0');
     }
 
-    N = str1.size();
-    ll ans = digitDP(N - 1);
-    cout << ans << endl;
+    // memset(dp, -1, sizeof(dp));
+    cout << digitDP(N - 1) << endl;
+    cout << num << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -74,10 +90,9 @@ int main(int argc, char const *argv[])
     // freopen("input.txt","r",stdin);
     // freopen("output.txt","w",stdout);
 
-    memset(dp, -1, sizeof(dp));
-
     int t = 1;
-    cin >> t;
+
+    // cin >> t;
 
     REP(tc, 1, t)
     {

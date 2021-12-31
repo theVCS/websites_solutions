@@ -17,42 +17,31 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+bool isPerSq(ll n)
+{
+    ll x=sqrt(n);
+    return n==x*x;
+}
 
 void solve()
 {
-	cin>>n;
+	ll n;
+    cin>>n;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    ll sq = sqrt(n);
+    ll index = sq+1;
 
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    while (true)
     {
-        REP(j,1,m)
+        if(isPerSq(index*index-n))
         {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
+            cout<<"YES"<<endl;
+            return;
         }
-    }
 
-    cout<<ans;
+        return;
+    }
+    
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +55,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

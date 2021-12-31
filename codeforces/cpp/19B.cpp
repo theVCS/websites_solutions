@@ -17,42 +17,40 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+struct product
+{
+	int t;
+	ll cost;
+} arr[2001];
+int N;
+
+ll dp[2001][2001];
+
+ll fun(int pos = 1, int t = 0)
+{
+	if(t>N)t=N;
+	if(pos>N)
+	{
+		return t==N?0:1e18;
+	}
+	else if(dp[pos][t]!=-1)
+		return dp[pos][t];
+	else
+	{
+		return  dp[pos][t] = min(arr[pos].cost + fun(pos+1,t+arr[pos].t+1), fun(pos+1,t));
+	}
+}
 
 void solve()
 {
-	cin>>n;
+	cin >> N;
 
-    REP(i,1,n)
-    cin>>boys[i];
+	REP(i, 1, N)
+	cin >> arr[i].t >> arr[i].cost;
 
-    cin>>m;
+	memset(dp,-1,sizeof(dp));
 
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+	cout << fun();
 }
 
 int main(int argc, char const *argv[])

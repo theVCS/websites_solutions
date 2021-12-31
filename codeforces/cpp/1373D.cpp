@@ -1,88 +1,76 @@
 #include <bits/stdc++.h>
-//#include <boost/multiprecision/cpp_int.hpp>
-//using namespace boost::multiprecision;
 using namespace std;
 #define ll long long int
-//#define bint cpp_int
 #define pii pair<int, int>
-#define mod 1000000007
 #define REP(i, a, b) for (int i = a; i <= b; i++)
 #define RREP(i, a, b) for (int i = a; i >= b; i--)
-#define maxN 200011
 #define endl "\n"
-#define INF 100000000000
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
+
+#define maxN 1000001
+#define INF 1000000000
+#define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
-//int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
-//int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-//int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
-//int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
+// int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
+// int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll binExp(ll a, ll power, ll m = mod)
+struct Line
 {
-    ll res = 1;
+    mutable ll m, b, p;
+    bool operator<(const Line &o) const { return m < o.m; }
+    bool operator<(ll x) const { return p < x; }
+};
 
-    while (power)
-    {
-        if (power & 1)
-            res = (res * a) % m;
-        a = (a * a) % m;
-        power >>= 1;
+struct LineContainer : multiset<Line, less<>>
+{
+    // (for doubles, use inf = 1/.0, div(a,b) = a/b)
+    const ll inf = LLONG_MAX;
+
+    ll div(ll a, ll b)
+    { // floored division
+        return a / b - ((a ^ b) < 0 && a % b);
     }
-    return res;
-}
 
-int n;
-ll arr[maxN];
-ll oddMeven[maxN];
-ll suffixEmin[maxN];
-ll suffixOmin[maxN];
+    bool isect(iterator x, iterator y)
+    {
+        if (y == end())
+        {
+            x->p = inf;
+            return false;
+        }
+        if (x->m == y->m)
+            x->p = x->b > y->b ? inf : -inf;
+        else
+            x->p = div(y->b - x->b, x->m - y->m);
+        return x->p >= y->p;
+    }
+
+    void add(ll m, ll b)
+    {
+        m *= -1, b *= -1;
+        auto z = insert({m, b, 0}), y = z++, x = y;
+        while (isect(y, z))
+            z = erase(z);
+        if (x != begin() && isect(--x, y))
+            isect(x, y = erase(y));
+        while ((y = x) != begin() && (--x)->p >= y->p)
+            isect(x, erase(y));
+    }
+
+    ll query(ll x)
+    {
+        assert(!empty());
+        auto l = *lower_bound(x);
+        return -1 * (l.m * x + l.b);
+    }
+} cht;
 
 void solve()
 {
-    ll even = 0, odd = 0, ans = INF;
-
-    cin >> n;
-
-    REP(i, 1, n)
-    {
-        cin >> arr[i];
-
-        if (i & 1)
-        {
-            odd += arr[i];
-        }
-        else
-        {
-            even += arr[i];
-        }
-
-        oddMeven[i] = odd - even;
-    }
-
-    suffixEmin[n + 1] = INF;
-    suffixOmin[n + 1] = INF;
-
-    RREP(i, n, 1)
-    {
-        if (i & 1)
-        {
-            suffixOmin[i] = min(suffixOmin[i + 1], oddMeven[i]);
-            suffixEmin[i] = suffixEmin[i + 1];
-
-            ans = min(ans, suffixEmin[i] - oddMeven[i - 1]);
-        }
-        else
-        {
-            suffixEmin[i] = min(suffixEmin[i + 1], oddMeven[i]);
-            suffixOmin[i] = suffixOmin[i + 1];
-
-            ans = min(ans, suffixOmin[i] - oddMeven[i - 1]);
-        }
-    }
-
-    cout << max(odd, odd - ans) << endl;
+    
 }
 
 int main(int argc, char const *argv[])
@@ -91,23 +79,18 @@ int main(int argc, char const *argv[])
     cin.tie(NULL);
     cout.tie(NULL);
 
-    // ifstream filptr("input.txt");
-    // ofstream outpter("output.txt");
-
-    // filptr >> input;
-    // outpter << output;
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
 
     int t = 1;
 
-    cin >> t;
+    // cin >> t;
 
-    while (t--)
+    REP(tc, 1, t)
     {
+        // cout<<"Case "<<tc<<":"<<endl;
         solve();
     }
-
-    //filptr.close();
-    //outpter.close();
 
     return 0;
 }

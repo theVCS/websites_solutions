@@ -10,53 +10,42 @@ using namespace std;
 
 #define maxN 1000001
 #define INF 1000000000
-#define mod 1000000007
+#define mod 1000000003
 #define printd(x) cout << fixed << setprecision(10) << x
 // int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 // int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int n, k;
+ll dp[1001][1001];
 
-int fun(int i, int j)
+ll fun(int perLeft, int pos)
 {
-    if(i<=0||j<=0)
+    if (perLeft == 0)
+        return 1;
+
+    int seatsLeft = (n - pos + 1) / 2;
+    if (seatsLeft < perLeft || pos > n)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
+    else if (dp[perLeft][pos] != -1)
+        return dp[perLeft][pos];
     else
     {
-        int ans = 0;
-        int c = 1;
+        ll ways = 0;
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
+        REP(i, pos, n)
+        ways += fun(perLeft - 1, i + 2), ways%=mod;
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[perLeft][pos] = ways;
     }
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
-
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
-    }
+    memset(dp, -1, sizeof(dp));
+    cin >> n >> k;
+    cout << fun(k, 1);
 }
 
 int main(int argc, char const *argv[])

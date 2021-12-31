@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 100001
+#define maxN 50001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -24,6 +24,7 @@ struct Line
     bool operator<(ll x) const { return p < x; }
 };
 
+// for maximum value
 struct LineContainer : multiset<Line, less<>>
 {
     // (for doubles, use inf = 1/.0, div(a,b) = a/b)
@@ -50,7 +51,6 @@ struct LineContainer : multiset<Line, less<>>
 
     void add(ll m, ll b)
     {
-        m *= -1, b *= -1;
         auto z = insert({m, b, 0}), y = z++, x = y;
         while (isect(y, z))
             z = erase(z);
@@ -64,55 +64,75 @@ struct LineContainer : multiset<Line, less<>>
     {
         assert(!empty());
         auto l = *lower_bound(x);
-        return -1 * (l.m * x + l.b);
+        return l.m * x + l.b;
     }
 } cht;
 
-int arr[maxN];
-int brr[maxN];
+struct cyclist
+{
+    ll m, c;
+} arr[maxN];
+
+ll pos(int index, ll t)
+{
+    return arr[index].m * t + arr[index].c;
+}
+
+void changeSpeed(int index, ll t, ll newSpeed)
+{
+    ll prevPos = pos(index, t);
+    ll m = newSpeed;
+    ll c = -t * newSpeed + prevPos;
+    arr[index].m = m;
+    arr[index].c = c;
+    cht.add(m,c);
+}
 
 void solve()
 {
-    int n;
-    cin>>n;
+    int n, m;
+    cin >> n >> m;
 
-	ll ans = 0;
+    cht.add(0,0);
 
-    REP(i,1,n)
-    cin>>arr[i];
-    REP(i,1,n)
-    cin>>brr[i];
-
-    ans=brr[1];
-    cht.add(brr[1],0);
-
-    REP(i,2,n)
+    REP(i,1,m)
     {
-        ans = cht.query(arr[i]);
-        cht.add(brr[i],ans);
-    }
+        int type;
+        cin>>type;
 
-    cout<<ans<<endl;
+        if(type==1)
+        {   
+            ll t, index, newSpeed;
+            cin>>t>>index>>newSpeed;
+            changeSpeed(index,t,newSpeed);
+        }
+        else
+        {
+            ll t;
+            cin>>t;
+            cout<<cht.query(t)<<endl;   
+        }
+    }
 }
 
 int main(int argc, char const *argv[])
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	// freopen("input.txt","r",stdin);
-	// freopen("output.txt","w",stdout);
+    // freopen("input.txt","r",stdin);
+    // freopen("output.txt","w",stdout);
 
-	int t = 1;
+    int t = 1;
 
-	// cin >> t;
+    // cin >> t;
 
-	REP(tc, 1, t)
-	{
-		// cout<<"Case "<<tc<<":"<<endl;
-		solve();
-	}
+    REP(tc, 1, t)
+    {
+        // cout<<"Case "<<tc<<":"<<endl;
+        solve();
+    }
 
-	return 0;
+    return 0;
 }

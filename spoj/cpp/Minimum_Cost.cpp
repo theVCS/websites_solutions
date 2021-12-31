@@ -14,48 +14,56 @@ using namespace std;
 #define printd(x) cout << fixed << setprecision(10) << x
 // int dx[] = {-2, -1, 1, 2, 2, 1, -1, -2};
 // int dy[] = {1, 2, 2, 1, -1, -2, -2, -1};
-// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
+// int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1}
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+// size of object b
+const int sz = 1001;
+int dp[sz][2];
 
-int fun(int i, int j)
+// caution --- for numbers use vector starting at index 0 and for characters use string
+template <class T>
+class LongestCommonSubsequence
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
+public:
+    // returns length of longest common subsequence (memory efficient)
+    int lcs(T &a, T &b)
     {
-        int ans = 0;
-        int c = 1;
+        int n = a.size();
+        int m = b.size();
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
+        REP(i, 0, m)
+        dp[i][0] = dp[i][1] = 0;
+
+        REP(i, 1, n)
+        REP(j, 1, m)
         {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
+            int p = (i & 1);
+
+            if (a[i - 1] == b[j - 1])
+                dp[j][p] = 1 + dp[j - 1][p ^ 1];
+            else
+                dp[j][p] = max(dp[j - 1][p], dp[j][p ^ 1]);
         }
 
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        return dp[m][n & 1];
     }
-}
+};
 
 void solve()
 {
     while (true)
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
-
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
+        string a, b;
         
-        cout<<fun(s.size(),t.size())<<endl;
+        cin >> a;
+        if (a == "#")return;
+        cin >> b;
+
+        LongestCommonSubsequence<string> obj;
+        int res = obj.lcs(a, b);
+
+        cout << (a.size() - res) * 15 + (b.size() - res) * 30 << endl;
     }
 }
 

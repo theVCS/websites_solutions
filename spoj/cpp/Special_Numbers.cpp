@@ -17,42 +17,47 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+ll dp[61][2][61][61];
+
+ll digitDP(int pos, int flag = 1, int oneCnt=0, int zeroCnt=0)
+{
+    if (pos == 0)
+        return oneCnt==zeroCnt && oneCnt;
+    else if (dp[pos][flag][oneCnt][zeroCnt] != -1)
+        return dp[pos][flag][oneCnt][zeroCnt];
+    else
+    {
+        ll ans = 0;
+        
+        if(flag)
+            ans += digitDP(pos-1,1,oneCnt,zeroCnt);
+        else
+            ans += digitDP(pos-1,0,oneCnt,zeroCnt+1);
+        
+        ans += digitDP(pos-1,0,oneCnt+1,zeroCnt);
+        return dp[pos][flag][oneCnt][zeroCnt] = ans;
+    }
+}
+
+int check(ll val)
+{
+    int c1=0,c2=0;
+
+    RREP(i,63,0)
+    {
+        if(val & (1LL<<i))c1++;
+        else if(c1)c2++;
+    }
+
+    return c1==c2;
+}
 
 void solve()
 {
-	cin>>n;
-
-    REP(i,1,n)
-    cin>>boys[i];
-
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+	ll n;
+    cin>>n;
+    int N = log2l(n);
+    cout<<digitDP(N)+check(n)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -66,9 +71,10 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
-
-	REP(tc, 1, t)
+    memset(dp,-1,sizeof(dp));
+	cin >> t;
+	
+    REP(tc, 1, t)
 	{
 		// cout<<"Case "<<tc<<":"<<endl;
 		solve();

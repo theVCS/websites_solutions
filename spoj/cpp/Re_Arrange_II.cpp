@@ -17,46 +17,50 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int n;
+ll a[15];
+ll c[15];
+ll dp[15][1<<15];
 
-int fun(int i, int j)
+ll fun(int prev=0, int bitmask = 0)
 {
-    if(i<=0||j<=0)
+    if (bitmask == (1 << n) - 1)
         return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
+    
+    if(dp[prev][bitmask]!=-1)
+        return dp[prev][bitmask];
+
+    int cnt = 0;
+
+    REP(i, 0, n - 1)
+    if (bitmask & (1 << i))
+        cnt++;
+
+    ll res = 1e18;
+
+    REP(i, 0, n - 1)
     {
-        int ans = 0;
-        int c = 1;
-
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        if (bitmask & (1 << i))
+            continue;
+        ll val = (cnt == 0) ? 0 : abs(a[i] - a[prev]) * c[cnt];
+        res = min(res, val + fun(i, bitmask | (1 << i)));
     }
+
+    return dp[prev][bitmask] = res;
 }
 
 void solve()
 {
-    while (true)
-    {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+    cin >> n;
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
-    }
+    REP(i, 0, n - 1)
+    cin >> a[i];
+
+    REP(i, 0, n - 1)
+    cin >> c[i];
+
+    memset(dp,-1,sizeof(dp));
+    cout << fun() << endl;
 }
 
 int main(int argc, char const *argv[])
@@ -70,7 +74,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {

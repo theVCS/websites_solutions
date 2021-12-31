@@ -17,42 +17,39 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+string a, b;
+const int sz = 6101;
+int dp[2][sz];
+
+int lcsMemoryEfficient()
+{
+    int n = a.size();
+    int m = b.size();
+
+    REP(i, 0, m)
+    dp[0][i] = dp[1][i] = 0;
+
+    REP(i, 1, n)
+    REP(j, 1, m)
+    {
+        int p = (i & 1);
+
+        if (a[i - 1] == b[j - 1])
+            dp[p][j] = 1 + dp[p ^ 1][j - 1];
+        else
+            dp[p][j] = max(dp[p ^ 1][j], dp[p][j - 1]);
+    }
+
+    return dp[n & 1][m];
+}
+
 
 void solve()
 {
-	cin>>n;
-
-    REP(i,1,n)
-    cin>>boys[i];
-
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+    cin>>b;
+    a=b;
+    reverse(all(b));
+    cout<<a.size()-lcsMemoryEfficient()<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +63,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

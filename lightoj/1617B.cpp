@@ -17,42 +17,53 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+ll div(ll n)
+{
+    int index = 1;
+
+    while(n % 2 == 0)
+    {
+        n /= 2;
+        index *= 2;
+    }
+
+    if(index>1)return index;
+
+    for (ll i = 3; i*i <= n; i+=2)
+    {
+        if(n % i == 0)
+            return i;
+    }
+    
+
+    return 1;
+}
 
 void solve()
 {
-	cin>>n;
+    ll n;   
+    cin>>n;
+    n-=1;
 
-    REP(i,1,n)
-    cin>>boys[i];
-
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    if(n & 1)
     {
-        REP(j,1,m)
+        ll a = n/2;
+        ll b = a+1;
+        cout<<a<<" "<<b<<" "<<1<<endl;
+    }
+    else
+    {
+        ll m = n/2;
+
+        if(m & 1)
         {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
+            cout<<m-2<<" "<<m+2<<" "<<1<<endl;   
+        }
+        else
+        {
+            cout<<m-1<<" "<<m+1<<" "<<1<<endl;   
         }
     }
-
-    cout<<ans;
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +77,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

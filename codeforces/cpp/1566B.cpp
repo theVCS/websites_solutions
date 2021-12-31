@@ -17,42 +17,35 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
-
 void solve()
 {
-	cin>>n;
+    string s;
+    cin>>s;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    int n = s.size();
+    int cnt = 0;
+    int index = 0;
 
-    cin>>m;
+    while(index < n && s[index]=='1')
+        index++;
 
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    if(index==n)
     {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
+        cout<<0<<endl;
+        return;
     }
 
-    cout<<ans;
+    while(index<n)
+    {
+        while(index < n && s[index]=='0')
+            index++;
+        cnt++;
+        
+        while(index<n && s[index]=='1')
+            index++;
+    }
+
+    cout<<min(2,cnt)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +59,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

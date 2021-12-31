@@ -17,42 +17,24 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
+int n, m;
+string st;
+
+ll fun(int index = 1, int removed = 0)
+{
+    if(index == n+1)
+        return 0;
+    else if(removed == 0)
+        fun(index+1,0)+fun(index+1,1);
+    else
+        return m+fun(index+1,1);
+}
 
 void solve()
 {
-	cin>>n;
-
-    REP(i,1,n)
-    cin>>boys[i];
-
-    cin>>m;
-
-    REP(i,1,m)
-    cin>>girls[i];
-
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
-    {
-        REP(j,1,m)
-        {
-            if(abs(boys[i]-girls[j])<=1)
-            {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
-        }
-    }
-
-    cout<<ans;
+	cin>>n>>m;
+    cin>>st;
+    cout<<fun();
 }
 
 int main(int argc, char const *argv[])

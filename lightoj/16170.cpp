@@ -17,42 +17,51 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-int n,m;
-int boys[101];
-int girls[101];
-queue<int>q[101];
-
 void solve()
 {
-	cin>>n;
+	string s, t;
+    cin>>s>>t;
 
-    REP(i,1,n)
-    cin>>boys[i];
+    int cnt[26]={0};
 
-    cin>>m;
+    for(char &c: s)
+    cnt[c-'a']++;
 
-    REP(i,1,m)
-    cin>>girls[i];
+    // REP(i,0,25)
+    // {
+    //     cout<<cnt[i]<<" ";
+    // }cout<<endl;
 
-    sort(boys+1,boys+1+n);
-    sort(girls+1,girls+1+m);
-
-    int ans = 0;
-
-    REP(i,1,n)
+    if(t[0]=='a' && t[1]=='b' && cnt[0] && cnt[1] && cnt[2])
     {
-        REP(j,1,m)
+        REP(i,0,25)
         {
-            if(abs(boys[i]-girls[j])<=1)
+            int index = i;
+
+            if(index==1)index=2;
+            else if(index==2)index=1;
+
+            while(cnt[index])
             {
-                girls[j]=5000;
-                ans++;
-                break;
-            }                
+                cout<<char(index+'a');
+                cnt[index]--;
+            }
         }
     }
+    else
+    {
+        REP(i,0,25)
+        {
+            while(cnt[i])
+            {
+                // cout<<cnt[i]<<" ";
+                cout<<char(i+'a');
+                cnt[i]--;
+            }
+        }   
+    }
 
-    cout<<ans;
+    cout<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -66,7 +75,7 @@ int main(int argc, char const *argv[])
 
 	int t = 1;
 
-	// cin >> t;
+	cin >> t;
 
 	REP(tc, 1, t)
 	{

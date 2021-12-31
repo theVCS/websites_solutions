@@ -17,46 +17,63 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-string s,t;
-int k;
-int dp[1001][1001];
+int sz = 2001;
+int dp[2][sz];
 
-int fun(int i, int j)
+int lcsLengthMemoryEfficient(vector<int>&a, vector<int>&b)
 {
-    if(i<=0||j<=0)
-        return 0;
-    else if(dp[i][j]!=-1)
-        return dp[i][j];
-    else
+    int n = a.size();
+    int m = b.size();
+
+    REP(i, 0, m)
+    dp[0][i] = dp[1][i] = 0;
+
+    REP(i, 1, n)
+    REP(j, 1, m)
     {
-        int ans = 0;
-        int c = 1;
+        int p = (i & 1);
 
-        while (i-c>=0 && j-c>=0 && s[i-c] == t[j-c])
-        {
-            if(c>=k)
-                ans=max(ans,c+fun(i-c,j-c));
-            c++;
-        }
-
-        return dp[i][j] = max({ans,fun(i-1,j),fun(i,j-1)});
+        if (a[i - 1] == b[j - 1])
+            dp[p][j] = 1 + dp[p ^ 1][j - 1];
+        else
+            dp[p][j] = max(dp[p ^ 1][j], dp[p][j - 1]);
     }
+
+    return dp[n & 1][m];
 }
 
 void solve()
 {
+    vector<int>A;
+    int ans = 0;
+
+    while(true)
+    {
+        int a;
+        cin>>a;
+        if(a==0)break;
+        A.push_back(a);
+    }
+
     while (true)
     {
-        cin>>k;
-        if(k==0)return;
-        cin>>s>>t;
+        int x;
+        cin>>x;
+        if(x==0)break;
+        vector<int>B;
+        B.push_back(x);
 
-        REP(i,1,s.size())
-        REP(j,1,t.size())
-        dp[i][j]=-1;
-        
-        cout<<fun(s.size(),t.size())<<endl;
+        while(true)
+        {
+            cin>>x;
+            if(x==0)break;
+            B.push_back(x);
+        }
+
+        ans=max(ans,lcsLengthMemoryEfficient(A,B));
     }
+    
+    cout<<ans<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -70,7 +87,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {
