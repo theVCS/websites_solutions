@@ -1,0 +1,23 @@
+Websites =>
+https://robert1003.github.io/2020/01/31/cdq-divide-and-conquer.html => divide and conquer
+https://codeforces.com/blog/entry/47764 => dp tricks
+https://robert1003.github.io/ => different topics
+
+
+
+
+Principles =>
+PigeonHole=> if there are n pigeons and n+1 holes then atleast one hole will have more than one pigeon.
+
+
+
+all topics of dp =>
+a. knapsack
+b. lcs
+c. lis
+d. edit distance
+e. matrix chain multiplication
+f. dp + BIT/segment-tree
+g. digit dp
+h. bitmask
+i. convex hull
