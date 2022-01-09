@@ -2,7 +2,8 @@ Websites =>
 https://robert1003.github.io/2020/01/31/cdq-divide-and-conquer.html => divide and conquer
 https://codeforces.com/blog/entry/47764 => dp tricks
 https://robert1003.github.io/ => different topics
-
+https://codeforces.com/blog/entry/8219 => dp optimizations
+https://en.wikipedia.org/wiki/Stirling%27s_approximation => stirling's approximation for large factorials
 
 
 
@@ -21,3 +22,4 @@ f. dp + BIT/segment-tree
 g. digit dp
 h. bitmask
 i. convex hull
+j. divide and conquer optimization
