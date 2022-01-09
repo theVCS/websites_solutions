@@ -17,57 +17,71 @@ using namespace std;
 // int dx[] = {-1, 0, 1, 0, 1, -1, 1, -1};
 // int dy[] = {0, -1, 0, 1, -1, -1, 1, 1};
 
-ll binExp(ll a, ll p, ll m = mod)
+const int N = 3;
+int n = 2;
+ll matrix[N][N];
+ll identity[N][N];
+ll res[N][N];
+
+void multiply(ll a[][N], ll b[][N])
 {
-	ll res = 1;
+    REP(i, 1, n)
+    {
+        REP(j, 1, n)
+        {
+            res[i][j] = 0;
 
-	while (p)
-	{
-		if (p & 1)
-			res = (res * a) % m;
-		a = (a * a) % m;
-		p >>= 1;
-	}
+            REP(k, 1, n)
+            {
+                a[i][k] %= mod;
+                b[k][j] %= mod;
+                res[i][j] = (res[i][j] + (a[i][k] * b[k][j]) % mod) % mod;
+            }
+        }
+    }
 
-	return res;
+    REP(i,1,n)
+    REP(j,1,n)
+    a[i][j]=res[i][j];
 }
 
-string str;
-ll dp[19][2][163];
-
-ll digitDP(int pos = 0, int flag = 1, ll res = 0)
+void matExp(long long p)
 {
-	if (pos == str.size())
-		return res;
-	else
-	{
-		ll ans = 0;
-		int ub = flag ? (str[pos] - '0') : 9;
+    while (p)
+    {
+        if (p & 1)
+            multiply(identity, matrix);
+        multiply(matrix, matrix);
+        p >>= 1;
+    }
+}
 
-		REP(i, 0, ub)
-		{
-			ans += digitDP(pos + 1, ((i == ub) & flag), res + i);
-		}
+ll fib(long long p)    // n = p where n is nth fib number
+{
+    p %= 2000000016;
+    p--;
 
-		return ans;
-	}
+    identity[1][1] = identity[2][2] = 1;
+    identity[1][2] = identity[2][1] = 0;
+
+    matrix[1][1] = 0;
+    matrix[1][2] = matrix[2][1] = matrix[2][2] = 1;
+
+    matExp(p);
+
+    // 0 1 1 2 3 5 so on
+    // return identity[1][2];
+
+    //1 1 2 3 5
+    return identity[2][2];
+
+    // 1 2 3 5
+    // return (identity[2][1] + identity[2][2]) % mod;
 }
 
 void solve()
 {
-	ll l, r;
-	cin >> l >> r;
-	l--;
-
-	memset(dp, -1, sizeof(dp));
-	str = to_string(r);
-	ll ans = digitDP();
-
-	memset(dp, -1, sizeof(dp));
-	str = to_string(l);
-	ans -= digitDP();
-
-	cout << ans << endl;
+	cout<<fib(15);
 }
 
 int main(int argc, char const *argv[])

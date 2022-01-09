@@ -8,7 +8,7 @@ using namespace std;
 #define all(x) (x).begin(), (x).end()
 #define pi 3.141592653589793238
 
-#define maxN 100001
+#define maxN 1000001
 #define INF 1000000000
 #define mod 1000000007
 #define printd(x) cout << fixed << setprecision(10) << x
@@ -46,7 +46,7 @@ public:
 
         while (index > 0)
         {
-            q += BIT[index];
+            q = max(q, BIT[index]);
             index -= (index & -index);
         }
 
@@ -57,20 +57,9 @@ public:
     {
         while (index <= n)
         {
-            BIT[index] += val;
+            BIT[index] = max(BIT[index], val);
             index += (index & -index);
         }
-    }
-
-    T query(int l, int r)
-    {
-        return query(r) - query(l - 1);
-    }
-
-    void update(int l, int r, int val)
-    {
-        update(l, val);
-        update(r + 1, -val);
     }
 
     int lowerBound(T val)
@@ -78,14 +67,12 @@ public:
         // will find the lower bound index of val in BIT if monotonically increasing
         // https://codeforces.com/blog/entry/61364
 
-        T q = 0;
         int pos = 0;
 
         for (int i = LOGN; i >= 0; i--)
         {
-            if (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)
+            if (pos + (1 << i) <= n && BIT[pos + (1 << i)] < val)
             {
-                q += BIT[pos + (1 << i)];
                 pos += (1 << i);
             }
         }
@@ -93,76 +80,44 @@ public:
         return pos + 1;
     }
 };
-FenwickTree<int> bit(100000);
 
-int n;
-struct Point
-{
-    int x, y, z, index;
-} arr[maxN];
-
-bool cmp(Point &a, Point &b)
-{
-    if (a.x != b.x)
-        return a.x > b.x;
-    else if (a.y != b.y)
-        return a.y < b.y;
-    else
-        return a.z > b.z;
-}
-
-int ans[maxN];
-
-void cdq(int l, int r)
-{
-    if (l == r)
-        return;
-    int mid = (l + r) / 2;
-    cdq(l, mid), cdq(mid + 1, r);
-
-    vector<Point> temp;
-    vector<int> cha;
-
-    int a = l, b = mid + 1, s = 0;
-
-    while (a <= mid && b <= r)
-    {
-        if (arr[a].y > arr[b].y)
-            bit.update(arr[a].z, 1), cha.push_back(arr[a].z), s++, temp.push_back(arr[a]), a++;
-        else
-            ans[arr[b].index] += s - bit.query(arr[b].z), temp.push_back(arr[b]), b++;
-    }
-
-    while (a <= mid)
-    {
-        temp.push_back(arr[a++]);
-    }
-
-    while (b <= r)
-    {
-        ans[arr[b].index] += s - bit.query(arr[b].z);
-        temp.push_back(arr[b++]);
-    }
-
-    for (int i : cha)
-        bit.update(i, -1);
-
-    REP(i, l, r)
-    arr[i] = temp[i - l];
-}
+int arr[maxN];
 
 void solve()
 {
+    int n;
     cin >> n;
+    int mx=0;
 
     REP(i, 1, n)
-    cin >> arr[i].x >> arr[i].y >> arr[i].z, arr[i].index = i;
+    {
+        cin>>arr[i];
+        arr[i]++;
+    }
 
-    sort(arr + 1, arr + 1 + n, cmp);
-    cdq(1, n);
+    int l;
+    cin >> l;
 
-    REP(i, 1, n)
-    cout << ans[i] << endl;
+    if(n==0)
+    {
+        cout<<-1<<endl;
+        return;
+    }
+
+    int ans=INF;
+    FenwickTree<int> ft(1e6+1);
+
+    REP(i,1,n)
+    {
+        int x = arr[i];
+        int y = ft.query(x-1) + 1;
+        ft.update(x, y);
+
+        if(y>=l)
+            ans=min(ans,x-1);
+    }
+
+    cout<<(ans==INF?-1:ans)<<endl;
 }
 
 int main(int argc, char const *argv[])
@@ -176,7 +131,7 @@ int main(int argc, char const *argv[])
 
     int t = 1;
 
-    // cin >> t;
+    cin >> t;
 
     REP(tc, 1, t)
     {
