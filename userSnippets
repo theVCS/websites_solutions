@@ -9,14 +9,14 @@
   "FenwickTree": {
     "prefix": "FenwickTree",
     "body": [
-      "template <class T>\r\nclass FenwickTree\r\n{\r\n\tint n, LOGN;\r\n\tvector<T> BIT;\r\n\r\npublic:\r\n\tFenwickTree() {}\r\n\r\n\tFenwickTree(int N)\r\n\t{\r\n\t\tLOGN = log2(N);\r\n\t\tn = N;\r\n\t\tBIT.assign(n + 1, 0);\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tLOGN = log2(N);\r\n\t\tn = N;\r\n\t\tBIT.assign(n + 1, 0);\r\n\t}\r\n\r\n\tT query(int index)\r\n\t{\r\n\t\tT q = 0;\r\n\r\n\t\twhile (index > 0)\r\n\t\t{\r\n\t\t\tq += BIT[index];\r\n\t\t\tindex -= (index & -index);\r\n\t\t}\r\n\r\n\t\treturn q;\r\n\t}\r\n\r\n\tvoid update(int index, T val)\r\n\t{\r\n\t\twhile (index <= n)\r\n\t\t{\r\n\t\t\tBIT[index] += val;\r\n\t\t\tindex += (index & -index);\r\n\t\t}\r\n\t}\r\n\r\n\tT query(int l, int r)\r\n\t{\r\n\t\treturn query(r) - query(l - 1);\r\n\t}\r\n\r\n\tvoid update(int l, int r, int val)\r\n\t{\r\n\t\tupdate(l, val);\r\n\t\tupdate(r + 1, -val);\r\n\t}\r\n\r\n\tint lowerBound(T val)\r\n\t{\r\n\t\t// will find the lower bound index of val in BIT if monotonically increasing\r\n\t\t// https://codeforces.com/blog/entry/61364\r\n\r\n\t\tT q = 0;\r\n\t\tint pos = 0;\r\n\r\n\t\tfor (int i = LOGN; i >= 0; i--)\r\n\t\t{\r\n\t\t\tif (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)\r\n\t\t\t{\r\n\t\t\t\tq += BIT[pos + (1 << i)];\r\n\t\t\t\tpos += (1 << i);\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn pos + 1;\r\n\t}\r\n};"
+      "template <class T>\r\nclass FenwickTree\r\n{\r\n\tint n, LOGN;\r\n\tvector<T> BIT;\r\n\r\npublic:\r\n\tFenwickTree() {}\r\n\r\n\tFenwickTree(int N)\r\n\t{\r\n\t\tLOGN = log2(N);\r\n\t\tn = N;\r\n\t\tBIT.assign(n + 1, 0);\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tLOGN = log2(N);\r\n\t\tn = N;\r\n\t\tBIT.assign(n + 1, 0);\r\n\t}\r\n\r\n\tT query(int index)\r\n\t{\r\n\t\tT q = 0;\r\n\r\n\t\twhile (index > 0)\r\n\t\t{\r\n\t\t\tq += BIT[index];\r\n\t\t\tindex -= (index & -index);\r\n\t\t}\r\n\r\n\t\treturn q;\r\n\t}\r\n\r\n\tvoid update(int index, T val)\r\n\t{\r\n\t\twhile (index <= n)\r\n\t\t{\r\n\t\t\tBIT[index] += val;\r\n\t\t\tindex += (index & -index);\r\n\t\t}\r\n\t}\r\n\r\n\tT query(int l, int r)\r\n\t{\r\n\t\treturn query(r) - query(l - 1);\r\n\t}\r\n\r\n\tvoid update(int l, int r, T val)\r\n\t{\r\n\t\tupdate(l, val);\r\n\t\tupdate(r + 1, -val);\r\n\t}\r\n\r\n\tint lowerBound(T val)\r\n\t{\r\n\t\t// will find the lower bound index of val in BIT if monotonically increasing\r\n\t\t// https://codeforces.com/blog/entry/61364\r\n\r\n\t\tT q = 0;\r\n\t\tint pos = 0;\r\n\r\n\t\tfor (int i = LOGN; i >= 0; i--)\r\n\t\t{\r\n\t\t\tif (pos + (1 << i) <= n && q + BIT[pos + (1 << i)] < val)\r\n\t\t\t{\r\n\t\t\t\tq += BIT[pos + (1 << i)];\r\n\t\t\t\tpos += (1 << i);\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn pos + 1;\r\n\t}\r\n};"
     ],
     "description": "FenwickTree"
   },
   "FenwickTree2D": {
     "prefix": "FenwickTree2D",
     "body": [
-      "template <class T>\r\nclass FenwickTree2D\r\n{\r\n\tint n, m;\r\n\tvector<vector<T>> BIT;\r\n\r\npublic:\r\n\tFenwickTree2D() {}\r\n\r\n\tFenwickTree2D(int N, int M)\r\n\t{\r\n\t\tn = N;\r\n\t\tm = M;\r\n\t\tBIT.resize(n + 1);\r\n\r\n\t\tfor (vector<T> &vec : BIT)\r\n\t\t\tvec.assign(m + 1, 0);\r\n\t}\r\n\r\n\tvoid resize(int N, int M)\r\n\t{\r\n\t\tn = N;\r\n\t\tm = M;\r\n\t\tBIT.resize(n + 1);\r\n\r\n\t\tfor (vector<T> &vec : BIT)\r\n\t\t\tvec.assign(m + 1, 0);\r\n\t}\r\n\r\n\tT _query_(int x, int y)\r\n\t{\r\n\t\tT sum = 0;\r\n\r\n\t\tfor (int i = x; i > 0; i -= (i & -i))\r\n\t\t{\r\n\t\t\tfor (int j = y; j > 0; j -= (j & -j))\r\n\t\t\t{\r\n\t\t\t\tsum += BIT[i][j]\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn sum;\r\n\t}\r\n\r\n\tT query(int x2, int y2, int x1, int y1)\r\n\t{\r\n\t\treturn _query_(x2, y2) - _query_(x1 - 1, y2) - _query_(x2, y1 - 1) + _query_(x1 - 1, y1 - 1);\r\n\t}\r\n\r\n\tvoid update(int x, int y, T val)\r\n\t{\r\n\t\tfor (int i = x; i <= n; i += (i & -i))\r\n\t\t{\r\n\t\t\tfor (int j = y; j <= m; j += (j & -j))\r\n\t\t\t{\r\n\t\t\t\tBIT[i][j] += val;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n};"
+      "template <class T>\r\nclass FenwickTree2D\r\n{\r\n\tint n, m;\r\n\tvector<vector<T>> BIT;\r\n\r\npublic:\r\n\tFenwickTree2D() {}\r\n\r\n\tFenwickTree2D(int N, int M)\r\n\t{\r\n\t\tn = N;\r\n\t\tm = M;\r\n\t\tBIT.resize(n + 1);\r\n\r\n\t\tfor (vector<T> &vec : BIT)\r\n\t\t\tvec.assign(m + 1, 0);\r\n\t}\r\n\r\n\tvoid resize(int N, int M)\r\n\t{\r\n\t\tn = N;\r\n\t\tm = M;\r\n\t\tBIT.resize(n + 1);\r\n\r\n\t\tfor (vector<T> &vec : BIT)\r\n\t\t\tvec.assign(m + 1, 0);\r\n\t}\r\n\r\n\tT _query_(int x, int y)\r\n\t{\r\n\t\tT sum = 0;\r\n\r\n\t\tfor (int i = x; i > 0; i -= (i & -i))\r\n\t\t{\r\n\t\t\tfor (int j = y; j > 0; j -= (j & -j))\r\n\t\t\t{\r\n\t\t\t\tsum += BIT[i][j];\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn sum;\r\n\t}\r\n\r\n\tT query(int x2, int y2, int x1, int y1)\r\n\t{\r\n\t\treturn _query_(x2, y2) - _query_(x1 - 1, y2) - _query_(x2, y1 - 1) + _query_(x1 - 1, y1 - 1);\r\n\t}\r\n\r\n\tvoid update(int x, int y, T val)\r\n\t{\r\n\t\tfor (int i = x; i <= n; i += (i & -i))\r\n\t\t{\r\n\t\t\tfor (int j = y; j <= m; j += (j & -j))\r\n\t\t\t{\r\n\t\t\t\tBIT[i][j] += val;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n};"
     ],
     "description": "FenwickTree2D"
   },
@@ -37,21 +37,21 @@
   "SegmentTreeLazyPropogation": {
     "prefix": "SegmentTreeLazyPropogation",
     "body": [
-      "template <class T>\r\nclass SegmentTreeLazyPropogation\r\n{\r\n\tint n;\r\n\tvector<T> segTree;\r\n\tvector<T> lazy;\r\n\r\npublic:\r\n\tSegmentTreeLazyPropogation(){}\r\n\t\r\n\tSegmentTreeLazyPropogation(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(4 * n);\r\n\t\tlazy.assign(4 * n, 0);\r\n\t}\r\n\r\n\tint resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(4 * n);\r\n\t\tlazy.assign(4 * n, 0);\r\n\t}\r\n\r\n\tvoid _build_(int si, int ss, int se, T arr[])\r\n\t{\r\n\t\tif (ss == se)\r\n\t\t{\r\n\t\t\tsegTree[si] = arr[ss];\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tint mid = (ss + se) / 2;\r\n\t\t\t_build_(2 * si, ss, mid, arr);\r\n\t\t\t_build_(2 * si + 1, mid + 1, se, arr);\r\n\t\t\tsegTree[si] = segTree[2 * si] + segTree[2 * si + 1];\r\n\t\t}\r\n\t}\r\n\r\n\tvoid build(T arr[])\r\n\t{\r\n\t\t_build_(1, 1, n, arr);\r\n\t}\r\n\r\n\tT _query_(int si, int ss, int se, int qs, int qe)\r\n\t{\r\n\t\tif (lazy[si])\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * lazy[si];\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];\r\n\r\n\t\t\tlazy[si] = 0;\r\n\t\t}\r\n\r\n\t\tif (qs > se || qe < ss)\r\n\t\t\treturn 0;\r\n\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t\treturn segTree[si];\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\t\treturn _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);\r\n\t}\r\n\r\n\tT query(int l, int r=-1)\r\n\t{\r\n\t\tif(r==-1)r=l;\r\n\t\treturn _query_(1, 1, n, l, r);\r\n\t}\r\n\r\n\tvoid _update_(int si, int ss, int se, int qs, int qe, T val)\r\n\t{\r\n\t\tif (lazy[si])\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * lazy[si];\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];\r\n\r\n\t\t\tlazy[si] = 0;\r\n\t\t}\r\n\r\n\t\tif (ss > qe || se < qs)\r\n\t\t\treturn;\r\n\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * val;\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += val, lazy[2 * si + 1] += val;\r\n\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\r\n\t\t_update_(2 * si, ss, mid, qs, qe, val);\r\n\t\t_update_(2 * si + 1, mid + 1, se, qs, qe, val);\r\n\r\n\t\tsegTree[si] = segTree[2 * si] + segTree[2 * si + 1];\r\n\t}\r\n\r\n\tvoid update(int l, int r, T val)\r\n\t{\r\n\t\t_update_(1, 1, n, l, r, val);\r\n\t}\r\n};"
+      "template <class T>\r\nclass SegmentTreeLazyPropogation\r\n{\r\n\tint n;\r\n\tvector<T> segTree;\r\n\tvector<T> lazy;\r\n\r\npublic:\r\n\tSegmentTreeLazyPropogation(){}\r\n\t\r\n\tSegmentTreeLazyPropogation(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(4 * n);\r\n\t\tlazy.assign(4 * n, 0);\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(4 * n);\r\n\t\tlazy.assign(4 * n, 0);\r\n\t}\r\n\r\n\tvoid _build_(int si, int ss, int se, T arr[])\r\n\t{\r\n\t\tif (ss == se)\r\n\t\t{\r\n\t\t\tsegTree[si] = arr[ss];\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tint mid = (ss + se) / 2;\r\n\t\t\t_build_(2 * si, ss, mid, arr);\r\n\t\t\t_build_(2 * si + 1, mid + 1, se, arr);\r\n\t\t\tsegTree[si] = segTree[2 * si] + segTree[2 * si + 1];\r\n\t\t}\r\n\t}\r\n\r\n\tvoid build(T arr[])\r\n\t{\r\n\t\t_build_(1, 1, n, arr);\r\n\t}\r\n\r\n\tT _query_(int si, int ss, int se, int qs, int qe)\r\n\t{\r\n\t\tif (lazy[si])\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * lazy[si];\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];\r\n\r\n\t\t\tlazy[si] = 0;\r\n\t\t}\r\n\r\n\t\tif (qs > se || qe < ss)\r\n\t\t\treturn 0;\r\n\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t\treturn segTree[si];\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\t\treturn _query_(2 * si, ss, mid, qs, qe) + _query_(2 * si + 1, mid + 1, se, qs, qe);\r\n\t}\r\n\r\n\tT query(int l, int r=-1)\r\n\t{\r\n\t\tif(r==-1)r=l;\r\n\t\treturn _query_(1, 1, n, l, r);\r\n\t}\r\n\r\n\tvoid _update_(int si, int ss, int se, int qs, int qe, T val)\r\n\t{\r\n\t\tif (lazy[si])\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * lazy[si];\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += lazy[si], lazy[2 * si + 1] += lazy[si];\r\n\r\n\t\t\tlazy[si] = 0;\r\n\t\t}\r\n\r\n\t\tif (ss > qe || se < qs)\r\n\t\t\treturn;\r\n\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t{\r\n\t\t\tsegTree[si] += (se - ss + 1) * val;\r\n\r\n\t\t\tif (ss != se)\r\n\t\t\t\tlazy[2 * si] += val, lazy[2 * si + 1] += val;\r\n\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\r\n\t\t_update_(2 * si, ss, mid, qs, qe, val);\r\n\t\t_update_(2 * si + 1, mid + 1, se, qs, qe, val);\r\n\r\n\t\tsegTree[si] = segTree[2 * si] + segTree[2 * si + 1];\r\n\t}\r\n\r\n\tvoid update(int l, int r, T val)\r\n\t{\r\n\t\t_update_(1, 1, n, l, r, val);\r\n\t}\r\n};"
     ],
     "description": "SegmentTreeLazyPropogation"
   },
   "mergeSortTree": {
     "prefix": "mergeSortTree",
     "body": [
-      "const int arrSize = 30001;\r\nint arr[arrSize];\r\n\r\ntemplate <class T>\r\nclass mergeSortTree\r\n{\r\n    int n;\r\n    vector<T> segTree[4 * arrSize];\r\n\r\npublic:\r\n    mergeSortTree() {}\r\n\r\n    mergeSortTree(int N)\r\n    {\r\n        n = N;\r\n    }\r\n\r\n    void resize(int N)\r\n    {\r\n        n = N;\r\n    }\r\n\r\n    void _build_(int si, int ss, int se)\r\n    {\r\n        if (ss == se)\r\n        {\r\n            segTree[si].push_back(arr[ss]);\r\n        }\r\n        else\r\n        {\r\n            int mid = (ss + se) / 2;\r\n\r\n            _build_(2 * si, ss, mid);\r\n            _build_(2 * si + 1, mid + 1, se);\r\n\r\n            int i = 0, j = 0;\r\n\r\n            while (i < segTree[2 * si].size() && j < segTree[2 * si + 1].size())\r\n                if (segTree[2 * si][i] < segTree[2 * si + 1][j])\r\n                    segTree[si].push_back(segTree[2 * si][i++]);\r\n                else\r\n                    segTree[si].push_back(segTree[2 * si + 1][j++]);\r\n\r\n            while (i < segTree[2 * si].size())\r\n                segTree[si].push_back(segTree[2 * si][i++]);\r\n\r\n            while (j < segTree[2 * si + 1].size())\r\n                segTree[si].push_back(segTree[2 * si + 1][j++]);\r\n        }\r\n    }\r\n\r\n    void build()\r\n    {\r\n        _build_(1, 1, n);\r\n    }\r\n\r\n    int bs(int si, T val)\r\n    {\r\n        int start = 0, end = segTree[si].size() - 1;\r\n\r\n        while (start <= end)\r\n        {\r\n            int mid = (start + end) / 2;\r\n\r\n            if (segTree[si][mid] <= val && (mid == end || segTree[si][mid + 1] > val))\r\n                return segTree[si].size() - 1 - mid;\r\n            else if (segTree[si][mid] <= val)\r\n                start = mid + 1;\r\n            else\r\n                end = mid - 1;\r\n        }\r\n\r\n        return segTree[si].size();\r\n    }\r\n\r\n    T _query_(int si, int ss, int se, int qs, int qe, T val)\r\n    {\r\n        if (qs > se || qe < ss)\r\n            return 0;\r\n\r\n        if (qs <= ss && qe >= se)\r\n            return bs(si, val);\r\n\r\n        int mid = (ss + se) / 2;\r\n\r\n        return _query_(2 * si, ss, mid, qs, qe, val) + _query_(2 * si + 1, mid + 1, se, qs, qe, val);\r\n    }\r\n\r\n    T query(int l, int r, T val)\r\n    {\r\n        return _query_(1, 1, n, l, r, val);\r\n    }\r\n};"
+      "const int arrSize = 30001;\r\nint arr[arrSize];\r\n\r\ntemplate <class T>\r\nclass mergeSortTree\r\n{\r\n\tint n;\r\n\tvector<T> segTree[4 * arrSize];\r\n\r\npublic:\r\n\tmergeSortTree() {}\r\n\r\n\tmergeSortTree(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid _build_(int si, int ss, int se)\r\n\t{\r\n\t\tif (ss == se)\r\n\t\t{\r\n\t\t\tsegTree[si].push_back(arr[ss]);\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tint mid = (ss + se) / 2;\r\n\r\n\t\t\t_build_(2 * si, ss, mid);\r\n\t\t\t_build_(2 * si + 1, mid + 1, se);\r\n\r\n\t\t\tint i = 0, j = 0;\r\n\r\n\t\t\twhile (i < segTree[2 * si].size() && j < segTree[2 * si + 1].size())\r\n\t\t\t\tif (segTree[2 * si][i] < segTree[2 * si + 1][j])\r\n\t\t\t\t\tsegTree[si].push_back(segTree[2 * si][i++]);\r\n\t\t\t\telse\r\n\t\t\t\t\tsegTree[si].push_back(segTree[2 * si + 1][j++]);\r\n\r\n\t\t\twhile (i < segTree[2 * si].size())\r\n\t\t\t\tsegTree[si].push_back(segTree[2 * si][i++]);\r\n\r\n\t\t\twhile (j < segTree[2 * si + 1].size())\r\n\t\t\t\tsegTree[si].push_back(segTree[2 * si + 1][j++]);\r\n\t\t}\r\n\t}\r\n\r\n\tvoid build()\r\n\t{\r\n\t\t_build_(1, 1, n);\r\n\t}\r\n\r\n\tint bs(int si, T val)\r\n\t{\r\n\t\tint start = 0, end = segTree[si].size() - 1;\r\n\r\n\t\twhile (start <= end)\r\n\t\t{\r\n\t\t\tint mid = (start + end) / 2;\r\n\r\n\t\t\tif (segTree[si][mid] <= val && (mid == end || segTree[si][mid + 1] > val))\r\n\t\t\t\treturn segTree[si].size() - 1 - mid;\r\n\t\t\telse if (segTree[si][mid] <= val)\r\n\t\t\t\tstart = mid + 1;\r\n\t\t\telse\r\n\t\t\t\tend = mid - 1;\r\n\t\t}\r\n\r\n\t\treturn segTree[si].size();\r\n\t}\r\n\r\n\tT _query_(int si, int ss, int se, int qs, int qe, T val)\r\n\t{\r\n\t\tif (qs > se || qe < ss)\r\n\t\t\treturn 0;\r\n\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t\treturn bs(si, val);\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\r\n\t\treturn _query_(2 * si, ss, mid, qs, qe, val) + _query_(2 * si + 1, mid + 1, se, qs, qe, val);\r\n\t}\r\n\r\n\tT query(int l, int r, T val)\r\n\t{\r\n\t\treturn _query_(1, 1, n, l, r, val);\r\n\t}\r\n};"
     ],
     "description": "mergeSortTree"
   },
   "PersistentSegmentTree": {
     "prefix": "PersistentSegmentTree",
     "body": [
-      "template <class T>\r\nclass PersistentSegmentTree\r\n{\r\n    int n;\r\n    vector<T> segTree;\r\n    vector<int> left, right;\r\n    vector<int> roots;\r\n    int index;\r\n\r\npublic:\r\n    PersistentSegmentTree() {}\r\n\r\n    int build(int ss, int se)\r\n    {\r\n        int node = ++index;\r\n\r\n        if (ss == se)\r\n        {\r\n            segTree[node] = 0;\r\n            return node;\r\n        }\r\n        else\r\n        {\r\n            int mid = (ss + se) / 2;\r\n            left[node] = build(ss, mid);\r\n            right[node] = build(mid + 1, se);\r\n            segTree[node] = 0;\r\n            return node;\r\n        }\r\n    }\r\n\r\n    PersistentSegmentTree(int N)\r\n    {\r\n        n = N;\r\n        segTree.resize(N * 21);\r\n        left.resize(N * 21);\r\n        right.resize(N * 21);\r\n        index = 0;\r\n        roots.push_back(build(1, n));\r\n    }\r\n\r\n    void resize(int N)\r\n    {\r\n        n = N;\r\n        segTree.resize(N * 21);\r\n        left.resize(N * 21);\r\n        right.resize(N * 21);\r\n        index = 0;\r\n        roots.push_back(build(1, n));\r\n    }\r\n\r\n    int _update_(int prevNode, int ss, int se, int qi, T val)\r\n    {\r\n        int node = ++index;\r\n\r\n        if (ss == se)\r\n        {\r\n            segTree[node] = segTree[prevNode] + val;\r\n            return node;\r\n        }\r\n\r\n        int mid = (ss + se) / 2;\r\n\r\n        if (qi <= mid)\r\n        {\r\n            right[node] = right[prevNode];\r\n            left[node] = _update_(left[prevNode], ss, mid, qi, val);\r\n        }\r\n        else\r\n        {\r\n            left[node] = left[prevNode];\r\n            right[node] = _update_(right[prevNode], mid + 1, se, qi, val);\r\n        }\r\n\r\n        segTree[node] = segTree[left[node]] + segTree[right[node]];\r\n        return node;\r\n    }\r\n\r\n    void update(int index, T val)\r\n    {\r\n        roots.push_back(_update_(roots.back(), 1, n, index, val));\r\n    }\r\n\r\n    T _query_(int nodeA, int nodeB, int ss, int se, int qs, int qe)\r\n    {\r\n        if (qs > se || qe < ss)\r\n            return 0;\r\n        if (qs <= ss && qe >= se)\r\n            return segTree[nodeA] - segTree[nodeB];\r\n        int mid = (ss + se) / 2;\r\n        return _query_(left[nodeA], left[nodeB], ss, mid, qs, qe) + _query_(right[nodeA], right[nodeB], mid + 1, se, qs, qe);\r\n    }\r\n\r\n    T _query_(int nodeA, int nodeB, int ss, int se, int k)\r\n    {\r\n        if (ss == se)\r\n            return ss;\r\n\r\n        int diff = segTree[left[nodeA]] - segTree[left[nodeB]];\r\n        int mid = (ss + se) / 2;\r\n\r\n        if (diff >= k)\r\n            return _query_(left[nodeA], left[nodeB], ss, mid, k);\r\n        else\r\n            return _query_(right[nodeA], right[nodeB], mid + 1, se, k - diff);\r\n    }\r\n\r\n    T query(int ul, int ur, int qs, int qe = -1)\r\n    {\r\n        if (qe == -1)\r\n            return _query_(roots[ur], roots[ul - 1], 1, n, qs);\r\n        else\r\n            return _query_(roots[ur], roots[ul - 1], 1, n, qs, qe);\r\n    }\r\n};\r\n"
+      "template <class T>\r\nclass PersistentSegmentTree\r\n{\r\n\tint n;\r\n\tvector<T> segTree;\r\n\tvector<int> left, right;\r\n\tvector<int> roots;\r\n\tint index;\r\n\r\npublic:\r\n\tPersistentSegmentTree() {}\r\n\r\n\tint build(int ss, int se)\r\n\t{\r\n\t\tint node = ++index;\r\n\r\n\t\tif (ss == se)\r\n\t\t{\r\n\t\t\tsegTree[node] = 0;\r\n\t\t\treturn node;\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tint mid = (ss + se) / 2;\r\n\t\t\tleft[node] = build(ss, mid);\r\n\t\t\tright[node] = build(mid + 1, se);\r\n\t\t\tsegTree[node] = 0;\r\n\t\t\treturn node;\r\n\t\t}\r\n\t}\r\n\r\n\tPersistentSegmentTree(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(N * 21);\r\n\t\tleft.resize(N * 21);\r\n\t\tright.resize(N * 21);\r\n\t\tindex = 0;\r\n\t\troots.push_back(build(1, n));\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t\tsegTree.resize(N * 21);\r\n\t\tleft.resize(N * 21);\r\n\t\tright.resize(N * 21);\r\n\t\tindex = 0;\r\n\t\troots.push_back(build(1, n));\r\n\t}\r\n\r\n\tint _update_(int prevNode, int ss, int se, int qi, T val)\r\n\t{\r\n\t\tint node = ++index;\r\n\r\n\t\tif (ss == se)\r\n\t\t{\r\n\t\t\tsegTree[node] = segTree[prevNode] + val;\r\n\t\t\treturn node;\r\n\t\t}\r\n\r\n\t\tint mid = (ss + se) / 2;\r\n\r\n\t\tif (qi <= mid)\r\n\t\t{\r\n\t\t\tright[node] = right[prevNode];\r\n\t\t\tleft[node] = _update_(left[prevNode], ss, mid, qi, val);\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tleft[node] = left[prevNode];\r\n\t\t\tright[node] = _update_(right[prevNode], mid + 1, se, qi, val);\r\n\t\t}\r\n\r\n\t\tsegTree[node] = segTree[left[node]] + segTree[right[node]];\r\n\t\treturn node;\r\n\t}\r\n\r\n\tvoid update(int index, T val)\r\n\t{\r\n\t\troots.push_back(_update_(roots.back(), 1, n, index, val));\r\n\t}\r\n\r\n\tT _query_(int nodeA, int nodeB, int ss, int se, int qs, int qe)\r\n\t{\r\n\t\tif (qs > se || qe < ss)\r\n\t\t\treturn 0;\r\n\t\tif (qs <= ss && qe >= se)\r\n\t\t\treturn segTree[nodeA] - segTree[nodeB];\r\n\t\tint mid = (ss + se) / 2;\r\n\t\treturn _query_(left[nodeA], left[nodeB], ss, mid, qs, qe) + _query_(right[nodeA], right[nodeB], mid + 1, se, qs, qe);\r\n\t}\r\n\r\n\tT _query_(int nodeA, int nodeB, int ss, int se, int k)\r\n\t{\r\n\t\tif (ss == se)\r\n\t\t\treturn ss;\r\n\r\n\t\tint diff = segTree[left[nodeA]] - segTree[left[nodeB]];\r\n\t\tint mid = (ss + se) / 2;\r\n\r\n\t\tif (diff >= k)\r\n\t\t\treturn _query_(left[nodeA], left[nodeB], ss, mid, k);\r\n\t\telse\r\n\t\t\treturn _query_(right[nodeA], right[nodeB], mid + 1, se, k - diff);\r\n\t}\r\n\r\n\tT query(int ul, int ur, int qs, int qe = -1)\r\n\t{\r\n\t\tif (qe == -1)\r\n\t\t\treturn _query_(roots[ur], roots[ul - 1], 1, n, qs);\r\n\t\telse\r\n\t\t\treturn _query_(roots[ur], roots[ul - 1], 1, n, qs, qe);\r\n\t}\r\n};\r\n"
     ],
     "description": "PersistentSegmentTree"
   },
@@ -79,9 +79,16 @@
   "Tree": {
     "prefix": "Tree",
     "body": [
-      "const int treeNode = 100001;\r\nvector<int> tree[treeNode];\r\n\r\n// for lca finding\r\nint level[treeNode], parent[treeNode][19];\r\n\r\n// euler tree tour technique\r\nint FT[2 * treeNode], intime[treeNode], outime[treeNode], timer;\r\n\r\nclass Tree\r\n{\r\n\tint n;\r\n\r\npublic:\r\n\tTree() {}\r\n\r\n\tTree(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid addEdge(int a, int b)\r\n\t{\r\n\t\ttree[a].push_back(b), tree[b].push_back(a);\r\n\t}\r\n\r\n\tvoid euler(int node = 1, int par = -1, int l = 0)\r\n\t{\r\n\t\t// euler tree tour technique\r\n\t\tintime[node] = ++timer;\r\n\t\tFT[timer] = node;\r\n\r\n\t\t// lca\r\n\t\tparent[node][0] = par;\r\n\t\tlevel[node] = l;\r\n\r\n\t\tfor (int child : tree[node])\r\n\t\t{\r\n\t\t\tif (child == par)\r\n\t\t\t\tcontinue;\r\n\t\t\teuler(child, node, l + 1);\r\n\t\t}\r\n\r\n\t\t// euler tree tour technique\r\n\t\toutime[node] = ++timer;\r\n\t\tFT[timer] = node;\r\n\t}\r\n\r\n\tvoid init()\r\n\t{\r\n\t\teuler();\r\n\r\n\t\t// lca portion\r\n\t\tfor (int j = 1; j < 19; j++)\r\n\t\t\tfor (int i = 1; i <= n; i++)\r\n\t\t\t\tif (parent[i][j - 1] == -1)\r\n\t\t\t\t\tparent[i][j] = -1;\r\n\t\t\t\telse\r\n\t\t\t\t\tparent[i][j] = parent[parent[i][j - 1]][j - 1];\r\n\t}\r\n\r\n\tint LCA(int a, int b)\r\n\t{\r\n\t\tif (level[a] < level[b])\r\n\t\t\tswap(a, b);\r\n\r\n\t\tint d = level[a] - level[b];\r\n\r\n\t\twhile (d)\r\n\t\t{\r\n\t\t\tint i = log2(d);\r\n\t\t\ta = parent[a][i];\r\n\t\t\td -= 1 << i;\r\n\t\t}\r\n\r\n\t\tif (a == b)\r\n\t\t\treturn a;\r\n\r\n\t\tfor (int i = 18; i >= 0; i--)\r\n\t\t\tif (parent[a][i] != -1 && parent[a][i] != parent[b][i])\r\n\t\t\t\ta = parent[a][i], b = parent[b][i];\r\n\r\n\t\treturn parent[a][0];\r\n\t}\r\n};"
+      "const int treeNode = 100001;\r\nvector<int> tree[treeNode];\r\n\r\n// for lca finding\r\nint level[treeNode], parent[treeNode][19];\r\n\r\n// euler tree tour technique\r\nint FT[2 * treeNode], intime[treeNode], outime[treeNode], timer;\r\n\r\nclass Tree\r\n{\r\n\tint n;\r\n\r\npublic:\r\n\tTree() {}\r\n\r\n\tTree(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid resize(int N)\r\n\t{\r\n\t\tn = N;\r\n\t}\r\n\r\n\tvoid addEdge(int a, int b)\r\n\t{\r\n\t\ttree[a].push_back(b), tree[b].push_back(a);\r\n\t}\r\n\r\n\tvoid euler(int node = 1, int par = -1, int l = 0)\r\n\t{\r\n\t\t// euler tree tour technique\r\n\t\tintime[node] = ++timer;\r\n\t\tFT[timer] = node;\r\n\r\n\t\t// lca\r\n\t\tparent[node][0] = par;\r\n\t\tlevel[node] = l;\r\n\r\n\t\tfor (int child : tree[node])\r\n\t\t{\r\n\t\t\tif (child == par)\r\n\t\t\t\tcontinue;\r\n\t\t\teuler(child, node, l + 1);\r\n\t\t}\r\n\r\n\t\t// euler tree tour technique\r\n\t\toutime[node] = ++timer;\r\n\t\tFT[timer] = node;\r\n\t}\r\n\r\n\tvoid init()\r\n\t{\r\n\t\teuler();\r\n\r\n\t\t// lca portion\r\n\t\tfor (int j = 1; j < 19; j++)\r\n\t\t\tfor (int i = 1; i <= n; i++)\r\n\t\t\t\tif (parent[i][j - 1] == -1)\r\n\t\t\t\t\tparent[i][j] = -1;\r\n\t\t\t\telse\r\n\t\t\t\t\tparent[i][j] = parent[parent[i][j - 1]][j - 1];\r\n\t}\r\n\r\n\tint LCA(int a, int b)\r\n\t{\r\n\t\tif (level[a] < level[b])\r\n\t\t\tswap(a, b);\r\n\r\n\t\tint d = level[a] - level[b];\r\n\r\n\t\twhile (d)\r\n\t\t{\r\n\t\t\tint i = log2(d);\r\n\t\t\ta = parent[a][i];\r\n\t\t\td -= 1 << i;\r\n\t\t}\r\n\r\n\t\tif (a == b)\r\n\t\t\treturn a;\r\n\r\n\t\tfor (int i = 18; i >= 0; i--)\r\n\t\t\tif (parent[a][i] != -1 && parent[a][i] != parent[b][i])\r\n\t\t\t\ta = parent[a][i], b = parent[b][i];\r\n\r\n\t\treturn parent[a][0];\r\n\t}\r\n\r\n\tvoid pathQuery(int a, int b)\r\n\t{\r\n\t\tif (intime[a] > intime[b])\r\n\t\t\tswap(a, b);\r\n\r\n\t\tint lca = LCA(a, b);\r\n\r\n\t\tif (a == lca)\r\n\t\t{\r\n\t\t\tint l = intime[a];\r\n\t\t\tint r = intime[b];\r\n\r\n\t\t\t// no need to include LCA\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tint l = outime[a];\r\n\t\t\tint r = intime[b];\r\n\t\t}\r\n\t}\r\n\r\n\tvoid subTreeQuery(int a)\r\n\t{\r\n\t\tint l = intime[a] - 1;\r\n\t\tint r = outime[a] + 1;\r\n\t}\r\n};"
     ],
     "description": "Tree"
+  },
+  "Dijkstra": {
+    "prefix": "Dijkstra",
+    "body": [
+      "int n, m;\r\nconst int maxNode = 200001;\r\nvector<pair<int, ll>> grp[maxNode];\r\nll dist[maxNode];\r\n\r\nvoid dijkstra(int src = 1)\r\n{\r\n\tREP(i, 1, n)\r\n\tdist[i] = 1e18;\r\n\r\n\tpriority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> q;\r\n\tdist[src] = 0;\r\n\tq.push({0, src});\r\n\r\n\twhile (!q.empty())\r\n\t{\r\n\t\tint node = q.top().second;\r\n\t\tll d = q.top().first;\r\n\t\tq.pop();\r\n\r\n\t\tif (d != dist[node])\r\n\t\t\tcontinue;\r\n\r\n\t\tfor (pair<int, ll> child : grp[node])\r\n\t\t{\r\n\t\t\tif (dist[child.first] > dist[node] + child.second)\r\n\t\t\t{\r\n\t\t\t\tdist[child.first] = dist[node] + child.second;\r\n\t\t\t\tq.push({dist[child.first], child.first});\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n"
+    ],
+    "description": "Dijkstra"
   },
   "sqrtDecomposition": {
     "prefix": "sqrtDecomposition",
@@ -93,14 +100,14 @@
   "TrieString": {
     "prefix": "TrieString",
     "body": [
-      "const int sz = 26;\r\n\r\nclass TrieString\r\n{\r\n    struct Node\r\n    {\r\n        bool endOfWord;\r\n        Node *arr[sz];\r\n        int cnt;\r\n\r\n        Node()\r\n        {\r\n            endOfWord = false;\r\n            REP(i, 0, sz - 1)\r\n            arr[i] = NULL;\r\n            cnt = 0;\r\n        }\r\n    };\r\n\r\n    Node *root;\r\n\r\npublic:\r\n    TrieString()\r\n    {\r\n        root = new Node();\r\n    }\r\n\r\n    void insert(string &s)\r\n    {\r\n        Node *temp = root;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n\r\n            if (temp->arr[index] == NULL)\r\n                temp->arr[index] = new Node();\r\n\r\n            temp = temp->arr[index];\r\n            temp->cnt++;\r\n        }\r\n\r\n        temp->endOfWord = true;\r\n    }\r\n\r\n    bool search(string &s)\r\n    {\r\n        Node *temp = root;\r\n        if(temp==NULL)return false;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n\r\n            if (temp->arr[index] == NULL || temp->arr[index]->cnt == 0)\r\n                return false;\r\n\r\n            temp = temp->arr[index];\r\n        }\r\n\r\n        return temp->endOfWord;\r\n    }\r\n\r\n    void del(string &s)\r\n    {\r\n        if (search(s) == false)\r\n            return;\r\n\r\n        Node *temp = root;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n            temp = temp->arr[index];\r\n            temp->cnt--;\r\n        }\r\n\r\n        if (temp->cnt == 0)\r\n            temp->endOfWord = false;\r\n    }\r\n};"
+      "const int sz = 26;\r\n\r\nclass TrieString\r\n{\r\n    struct Node\r\n    {\r\n        int endOfWord;\r\n        Node *arr[sz];\r\n        int cnt;\r\n\r\n        Node()\r\n        {\r\n            endOfWord = 0;\r\n            REP(i, 0, sz - 1)\r\n            arr[i] = NULL;\r\n            cnt = 0;\r\n        }\r\n    };\r\n\r\n    Node *root;\r\n\r\npublic:\r\n    TrieString()\r\n    {\r\n        root = new Node();\r\n    }\r\n\r\n    void insert(string &s)\r\n    {\r\n        Node *temp = root;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n\r\n            if (temp->arr[index] == NULL)\r\n                temp->arr[index] = new Node();\r\n\r\n            temp = temp->arr[index];\r\n            temp->cnt++;\r\n        }\r\n\r\n        temp->endOfWord++;\r\n    }\r\n\r\n    bool search(string &s)\r\n    {\r\n        Node *temp = root;\r\n        if (temp == NULL)\r\n            return false;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n\r\n            if (temp->arr[index] == NULL || temp->arr[index]->cnt == 0)\r\n                return false;\r\n\r\n            temp = temp->arr[index];\r\n        }\r\n\r\n        return temp->endOfWord;\r\n    }\r\n\r\n    void del(string &s)\r\n    {\r\n        if (search(s) == false)\r\n            return;\r\n\r\n        Node *temp = root;\r\n\r\n        for (char c : s)\r\n        {\r\n            int index = c - 'a';\r\n            temp = temp->arr[index];\r\n            temp->cnt--;\r\n        }\r\n\r\n        temp->endOfWord--;\r\n    }\r\n};"
     ],
     "description": "TrieString"
   },
   "TrieBit": {
     "prefix": "TrieBit",
     "body": [
-      "const int sz = 2;\r\n\r\nclass TrieBit\r\n{\r\n    struct Node\r\n    {\r\n        Node *arr[sz];\r\n        int cnt;\r\n\r\n        Node()\r\n        {\r\n            REP(i, 0, sz - 1)\r\n            arr[i] = NULL;\r\n            cnt = 0;\r\n        }\r\n    };\r\n\r\n    Node *root;\r\n\r\npublic:\r\n    TrieBit()\r\n    {\r\n        root = new Node();\r\n    }\r\n\r\n    void insert(ll s)\r\n    {\r\n        Node *temp = root;\r\n\r\n        RREP(i, 63, 0)\r\n        {\r\n            if (s & (1LL << i))\r\n            {\r\n                if (temp->arr[1] == NULL)\r\n                    temp->arr[1] = new Node();\r\n                temp = temp->arr[1];\r\n            }\r\n            else\r\n            {\r\n                if (temp->arr[0] == NULL)\r\n                    temp->arr[0] = new Node();\r\n                temp = temp->arr[0];\r\n            }\r\n\r\n            temp->cnt++;\r\n        }\r\n    }\r\n\r\n    bool search(ll s)\r\n    {\r\n        Node *temp = root;\r\n        if(temp==NULL)return false;\r\n\r\n        RREP(i, 63, 0)\r\n        {\r\n            if (s & (1LL << i))\r\n            {\r\n                if (temp->arr[1] == NULL || temp->arr[1]->cnt == 0)\r\n                    return false;\r\n                temp = temp->arr[1];\r\n            }\r\n            else\r\n            {\r\n                if (temp->arr[0] == NULL || temp->arr[0]->cnt == 0)\r\n                    return false;\r\n                temp = temp->arr[0];\r\n            }\r\n        }\r\n\r\n        return true;\r\n    }\r\n\r\n    void del(ll s)\r\n    {\r\n        if (search(s) == false)\r\n            return;\r\n\r\n        Node *temp = root;\r\n\r\n        RREP(i, 63, 0)\r\n        {\r\n            if (s & (1LL << i))\r\n            {\r\n                temp = temp->arr[1];\r\n            }\r\n            else\r\n            {\r\n                temp = temp->arr[0];\r\n            }\r\n\r\n            temp->cnt--;\r\n        }\r\n    }\r\n\r\n    ll calc(ll s)\r\n    {\r\n        Node *temp = root;\r\n        ll ans = 0;\r\n\r\n        RREP(i, 63, 0)\r\n        {\r\n            if (s & (1LL << i))\r\n            {\r\n                if (temp->arr[0] && temp->arr[0]->cnt)\r\n                {\r\n                    ans |= (1LL << i);\r\n                    temp = temp->arr[0];\r\n                }\r\n                else\r\n                {\r\n                    temp = temp->arr[1];\r\n                }\r\n            }\r\n            else\r\n            {\r\n                if (temp->arr[1] && temp->arr[1]->cnt)\r\n                {\r\n                    ans |= (1LL << i);\r\n                    temp = temp->arr[1];\r\n                }\r\n                else\r\n                {\r\n                    temp = temp->arr[0];\r\n                }\r\n            }\r\n        }\r\n\r\n        return ans;\r\n    }\r\n};\r\n"
+      "const int sz = 2;\r\n\r\nclass TrieBit\r\n{\r\n\tstruct Node\r\n\t{\r\n\t\tNode *arr[sz];\r\n\t\tint cnt;\r\n\r\n\t\tNode()\r\n\t\t{\r\n\t\t\tREP(i, 0, sz - 1)\r\n\t\t\tarr[i] = NULL;\r\n\t\t\tcnt = 0;\r\n\t\t}\r\n\t};\r\n\r\n\tNode *root;\r\n\r\npublic:\r\n\tTrieBit()\r\n\t{\r\n\t\troot = new Node();\r\n\t}\r\n\r\n\tvoid insert(ll s)\r\n\t{\r\n\t\tNode *temp = root;\r\n\r\n\t\tRREP(i, 63, 0)\r\n\t\t{\r\n\t\t\tif (s & (1LL << i))\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[1] == NULL)\r\n\t\t\t\t\ttemp->arr[1] = new Node();\r\n\t\t\t\ttemp = temp->arr[1];\r\n\t\t\t}\r\n\t\t\telse\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[0] == NULL)\r\n\t\t\t\t\ttemp->arr[0] = new Node();\r\n\t\t\t\ttemp = temp->arr[0];\r\n\t\t\t}\r\n\r\n\t\t\ttemp->cnt++;\r\n\t\t}\r\n\t}\r\n\r\n\tbool search(ll s)\r\n\t{\r\n\t\tNode *temp = root;\r\n\t\tif(temp==NULL)return false;\r\n\r\n\t\tRREP(i, 63, 0)\r\n\t\t{\r\n\t\t\tif (s & (1LL << i))\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[1] == NULL || temp->arr[1]->cnt == 0)\r\n\t\t\t\t\treturn false;\r\n\t\t\t\ttemp = temp->arr[1];\r\n\t\t\t}\r\n\t\t\telse\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[0] == NULL || temp->arr[0]->cnt == 0)\r\n\t\t\t\t\treturn false;\r\n\t\t\t\ttemp = temp->arr[0];\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn true;\r\n\t}\r\n\r\n\tvoid del(ll s)\r\n\t{\r\n\t\tif (search(s) == false)\r\n\t\t\treturn;\r\n\r\n\t\tNode *temp = root;\r\n\r\n\t\tRREP(i, 63, 0)\r\n\t\t{\r\n\t\t\tif (s & (1LL << i))\r\n\t\t\t{\r\n\t\t\t\ttemp = temp->arr[1];\r\n\t\t\t}\r\n\t\t\telse\r\n\t\t\t{\r\n\t\t\t\ttemp = temp->arr[0];\r\n\t\t\t}\r\n\r\n\t\t\ttemp->cnt--;\r\n\t\t}\r\n\t}\r\n\r\n\tll calc(ll s)\r\n\t{\r\n\t\tNode *temp = root;\r\n\t\tll ans = 0;\r\n\r\n\t\tRREP(i, 63, 0)\r\n\t\t{\r\n\t\t\tif (s & (1LL << i))\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[0] && temp->arr[0]->cnt)\r\n\t\t\t\t{\r\n\t\t\t\t\tans |= (1LL << i);\r\n\t\t\t\t\ttemp = temp->arr[0];\r\n\t\t\t\t}\r\n\t\t\t\telse\r\n\t\t\t\t{\r\n\t\t\t\t\ttemp = temp->arr[1];\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\telse\r\n\t\t\t{\r\n\t\t\t\tif (temp->arr[1] && temp->arr[1]->cnt)\r\n\t\t\t\t{\r\n\t\t\t\t\tans |= (1LL << i);\r\n\t\t\t\t\ttemp = temp->arr[1];\r\n\t\t\t\t}\r\n\t\t\t\telse\r\n\t\t\t\t{\r\n\t\t\t\t\ttemp = temp->arr[0];\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\treturn ans;\r\n\t}\r\n};\r\n"
     ],
     "description": "TrieBit"
   },
@@ -149,7 +156,7 @@
   "binExp": {
     "prefix": "binExp",
     "body": [
-      "ll binExp(ll a, ll p, ll m = mod)\r\n{\r\n\tll res = 1;\r\n\r\n\twhile (p)\r\n\t{\r\n\t\tif (p & 1)\r\n\t\t\tres = (res * a) % m;\r\n\t\ta = (a * a) % m;\r\n\t\tp >>= 1;\r\n\t}\r\n\r\n\treturn res;\r\n}"
+      "ll binExp(ll a, ll p, ll m=mod)\r\n{\r\n\tll res = 1;\r\n\ta %= m;\r\n \r\n\twhile (p)\r\n\t{\r\n\t\tif(p & 1)\r\n\t\t\tres = (res * a) % m;\r\n\t\ta = (a * a) % m;\r\n\t\tp>>=1;\r\n\t}\r\n\t\r\n\treturn res;\r\n}\r\n"
     ],
     "description": "binExp"
   },
@@ -159,6 +166,295 @@
       "ll mulmod(ll a, ll b, ll c)\r\n{\r\n\tll x = 0, y = a % c;\r\n\t\r\n\twhile (b > 0)\r\n\t{\r\n\t\tif (b % 2 == 1)\r\n\t\t{\r\n\t\t\tx = (x + y) % c;\r\n\t\t}\r\n\t\ty = (y * 2LL) % c;\r\n\t\tb /= 2;\r\n\t}\r\n\r\n\treturn x % c;\r\n}"
     ],
     "description": "mulmod"
+  },
+  "eulerTotient": {
+    "prefix": "eulerTotient",
+    "body": [
+      "const int totNum=1e6;\r\nll phi[totNum+10];\r\n \r\nvoid init()\r\n{\r\n\tphi[1]=1;\r\n\r\n\tREP(i,2,totNum)\r\n\t{\r\n\t\tif (phi[i] == 0)\r\n\t\t{\r\n\t\t\tfor (ll j = i; j <= totNum; j += i)\r\n\t\t\t{\r\n\t\t\t\tif(phi[j]==0)phi[j]=j;\r\n\t\t\t\tphi[j] /= i;\r\n\t\t\t\tphi[j] *= i - 1;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n"
+    ],
+    "description": "eulerTotient"
+  },
+  "divisors": {
+    "prefix": "divisors",
+    "body": [
+      "void divisor(long long n)\r\n{\r\n\tfor (int d : {2, 3, 5})\r\n\t{\r\n\t\twhile (n % d == 0)\r\n\t\t{\r\n\t\t\tcout << d << \" \";\r\n\t\t\tn /= d;\r\n\t\t}\r\n\t}\r\n\r\n\tstatic array<int, 8> increments = {4, 2, 4, 2, 4, 6, 2, 6};\r\n\r\n\tfor (long long d = 7, i = 0; d * d <= n; d += increments[i], i = (i + 1) % 8)\r\n\t{\r\n\t\twhile (n % d == 0)\r\n\t\t{\r\n\t\t\tcout << d << \" \";\r\n\t\t\tn /= d;\r\n\t\t}\r\n\t}\r\n\r\n\tif (n > 1)\r\n\t\tcout << n << \" \";\r\n}"
+    ],
+    "description": "divisor"
+  },
+  "primarity test brute force": {
+    "prefix": "primarity test brute force",
+    "body": [
+      "bool primeCheck(ll n)\r\n{\r\n\tif (n <= 1)\r\n\t\treturn false;\r\n\r\n\tfor (ll d : {2, 3, 5})\r\n\t{\r\n\t\tif (n == d)\r\n\t\t\treturn true;\r\n\r\n\t\tif (n % d == 0)\r\n\t\t\treturn false;\r\n\t}\r\n\r\n\tstatic array<ll, 8> increments = {4, 2, 4, 2, 4, 6, 2, 6};\r\n\r\n\tfor (long long d = 7, i = 0; d * d <= n; d += increments[i], i = (i + 1) % 8)\r\n\t{\r\n\t\tif(n % d == 0)\r\n\t\t\treturn false;\r\n\t}\r\n\r\n\treturn true;\r\n}\r\n"
+    ],
+    "description": "primarity test brute force"
+  },
+  "Primality Test Sieve": {
+    "prefix": "Primality Test Sieve",
+    "body": [
+      "const int totNum=1e8;\r\nbool primer[totNum/2+10];\r\n \r\nvoid init()\r\n{\r\n\tprimer[0] = primer[1] = true;\r\n \r\n\tfor (int i = 3; i * i <= totNum; i+=2)\r\n\t{\r\n\t\tif (primer[(i+1)/2] == false)\r\n\t\t{\r\n\t\t\tfor (int j = i * i; j <= totNum; j+=2*i)\r\n\t\t\t{\r\n\t\t\t\tprimer[(j+1)/2] = true;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n \r\nbool isPrime(int n)\r\n{\r\n\tif(n==2)return true;\r\n\tif(n<2||n%2==0)return false;\r\n\treturn primer[(n+1)/2]==false;\r\n}\r\n"
+    ],
+    "description": "Primality Test Sieve"
+  },
+  "Factorization - Sieve": {
+    "prefix": "Factorization - Sieve",
+    "body": [
+      "const int totNum = 5000000;\r\nint sieve[totNum + 10];\r\n\r\nvoid init()\r\n{\r\n\tfor (ll i = 2; i <= totNum; i++)\r\n\t\tif (sieve[i] == 0)\r\n\t\t{\r\n\t\t\tsieve[i] = i;\r\n\r\n\t\t\tfor (ll j = i * i; j <= totNum; j += i)\r\n\t\t\t\tif (sieve[j] == 0)\r\n\t\t\t\t\tsieve[j] = i;\r\n\t\t}\r\n\r\n\tsieve[1] = 1;\r\n}\r\n\r\nvoid getDivisor(int n)\r\n{\r\n\twhile (n > 1)\r\n\t{\r\n\t\tcout << sieve[n] << \" \";\r\n\t\tn /= sieve[n];\r\n\t}\r\n\tcout << endl;\r\n}"
+    ],
+    "description": "Factorization - Sieve"
+  },
+  "Primality Test Using Segmented-Sieve": {
+    "prefix": "Primality Test Using Segmented-Sieve",
+    "body": [
+      "ll L = 1000000000;",
+      "const int diff = 100010;",
+      "ll R = 1001000000;",
+      "const int totNum = 31630; // sqrt(R)",
+      "bool primer[totNum / 2 + 10];",
+      "bool primerSieve[diff];",
+      "vector<ll> primes;",
+      "",
+      "void segmentedSieve()",
+      "{",
+      "    for (ll prime : primes)",
+      "    {",
+      "        for (ll i = max(prime * prime, ((L + prime - 1) / prime) * prime); i <= R; i += prime)",
+      "            primerSieve[i - L] = true;",
+      "    }",
+      "",
+      "    if (L == 1)",
+      "        primerSieve[0] = true;",
+      "}",
+      "",
+      "bool isPrime(int n)",
+      "{",
+      "    if (n == 2)",
+      "        return true;",
+      "    if (n < 2 || n % 2 == 0)",
+      "        return false;",
+      "    return primer[(n + 1) / 2] == false;",
+      "}",
+      "",
+      "void init()",
+      "{",
+      "    primer[0] = primer[1] = true;",
+      "",
+      "    for (int i = 3; i * i <= totNum; i += 2)",
+      "        if (primer[(i + 1) / 2] == false)",
+      "            for (int j = i * i; j <= totNum; j += 2 * i)",
+      "                primer[(j + 1) / 2] = true;",
+      "",
+      "    REP(i, 2, totNum)",
+      "    if (isPrime(i))",
+      "        primes.push_back(i);",
+      "}",
+      "",
+      "bool isPrimeSieve(ll x)",
+      "{",
+      "    return primerSieve[x - L] == false;",
+      "}"
+    ],
+    "description": "Primality Test Using Segmented-Sieve"
+  },
+  "Primality Test Using Linear Sieve": {
+    "prefix": "Primality Test Using Linear Sieve",
+    "body": [
+      "const int totNum=1e6;",
+      "int lp[totNum+10]; // for prime no i, lp[i]==i",
+      "vector<int> primes; // contains all prime less <= totNums",
+      " ",
+      "void init()",
+      "{",
+      "    for (int i=2; i<maxN; ++i) ",
+      "    {",
+      "        if (lp[i] == 0) ",
+      "        {",
+      "            lp[i] = i;",
+      "            primes.push_back (i);",
+      "        }",
+      "    ",
+      "        for (int j=0; j< primes.size() && primes[j]<=lp[i] && 1LL*i*primes[j]<=totNum; ++j)",
+      "            lp[i * primes[j]] = primes[j];",
+      "    }",
+      "}",
+      "",
+      "bool isPrime(int x)",
+      "{",
+      "    return lp[x]==x;",
+      "}"
+    ],
+    "description": "Primality Test Using Linear Sieve"
+  },
+  "Miller-Rabin primality test": {
+    "prefix": "Miller-Rabin primality test",
+    "body": [
+      "ll mulmod(ll a, ll b, ll c)",
+      "{",
+      "    ll x = 0, y = a % c;",
+      "    while (b > 0)",
+      "    {",
+      "        if (b % 2 == 1)",
+      "            x = (x + y) % c;",
+      "        y = (y * 2LL) % c;",
+      "        b /= 2;",
+      "    }",
+      "    return x % c;",
+      "}",
+      "",
+      "ll binExp(ll a, ll power, ll m = mod)",
+      "{",
+      "    ll res = 1;",
+      "",
+      "    while (power)",
+      "    {",
+      "        if (power & 1)",
+      "            res = mulmod(res, a, m);",
+      "        a = mulmod(a, a, m);",
+      "        power >>= 1;",
+      "    }",
+      "    return res;",
+      "}",
+      "",
+      "// for testing a 32 bit integer it is only necessary to check the first 4 prime bases: 2, 3, 5 and 7. And for testing 64 bit integer it is enough to check the first 12 prime bases: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, and 37.",
+      "",
+      "bool isComposite(ll a, ll d, ll s, ll n)",
+      "{",
+      "    ll res = binExp(a, d, n);",
+      "",
+      "    if (res == 1 || res == n - 1)",
+      "        return false;",
+      "",
+      "    for (ll i = 1; i < s; i++)",
+      "    {",
+      "        res = mulmod(res, res, n);",
+      "        if (res == n - 1)",
+      "            return false;",
+      "    }",
+      "",
+      "    return true;",
+      "}",
+      "",
+      "bool millerRabin(ll n)",
+      "{",
+      "    if (n <= 4)",
+      "    {",
+      "        return (n == 2 || n == 3);",
+      "    }",
+      "",
+      "    if (n % 2 == 0)",
+      "        return false;",
+      "",
+      "    ll d = n - 1, s = 0;",
+      "",
+      "    while (d % 2 == 0)",
+      "    {",
+      "        d /= 2;",
+      "        s++;",
+      "    }",
+      "",
+      "    for (ll a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37})",
+      "    {",
+      "        if (n == a)",
+      "            return true;",
+      "",
+      "        if (isComposite(a, d, s, n))",
+      "            return false;",
+      "    }",
+      "",
+      "    return true;",
+      "}"
+    ],
+    "description": "Miller-Rabin primality test"
+  },
+  "gcd and lcm": {
+    "prefix": "gcd and lcm",
+    "body": [
+      "ll gcd(ll a, ll b)",
+      "{",
+      "    return (b == 0) ? a : gcd(b, a % b);",
+      "}",
+      "",
+      "ll lcm(ll a, ll b)",
+      "{",
+      "    return (a * b) / gcd(a, b);",
+      "}"
+    ],
+    "description": "gcd and lcm"
+  },
+  "matrix exponentiation": {
+    "prefix": "matrix exponentiation",
+    "body": [
+      "ll transition_matrix[2][2];",
+      "ll identity_matrix[2][2];",
+      "",
+      "void multiply(ll matrix_a[][2], ll matrix_b[][2])",
+      "{",
+      "    ll result[2][2];",
+      "",
+      "    REP(i, 0, 1)",
+      "    REP(j, 0, 1)",
+      "    {",
+      "        result[i][j] = 0;",
+      "",
+      "        REP(k, 0, 1)",
+      "        {",
+      "            result[i][j] += matrix_a[i][k] * matrix_b[k][j];",
+      "            result[i][j] %= mod;",
+      "        }",
+      "    }",
+      "",
+      "    REP(i, 0, 1)",
+      "    REP(j, 0, 1)",
+      "    matrix_b[i][j] = result[i][j];",
+      "}",
+      "",
+      "void matrixPower(ll power)",
+      "{",
+      "    transition_matrix[0][0] = 0;",
+      "    transition_matrix[0][1] = transition_matrix[1][0] = transition_matrix[1][1] = 1;",
+      "",
+      "    identity_matrix[0][0] = identity_matrix[1][1] = 1;",
+      "    identity_matrix[0][1] = identity_matrix[1][0] = 0;",
+      "",
+      "    while (power)",
+      "    {",
+      "        if (power % 2)",
+      "            multiply(transition_matrix, identity_matrix);",
+      "",
+      "        power /= 2;",
+      "        multiply(transition_matrix, transition_matrix);",
+      "    }",
+      "}"
+    ],
+    "description": "matrix exponentiation"
+  },
+  "fibonacci number": {
+    "prefix": "fibonacci number",
+    "body": [
+      "void fib(ll n, ll&x, ll&y){",
+      "    if(n==0){",
+      "        x = 0;",
+      "        y = 1;",
+      "        return ;",
+      "    }",
+      "     ",
+      "    if(n&1){",
+      "        fib(n-1, y, x);",
+      "        y=(y+x)%mod;",
+      "    }else{",
+      "        ll a, b;",
+      "        fib(n>>1, a, b);",
+      "        y = (a*a+b*b)%mod;",
+      "        x = (a*b + a*(b-a+mod))%mod;",
+      "    }",
+      "}"
+    ],
+    "description": "fibonacci number"
+  },
+  "Heavy Light Decomposition": {
+    "prefix": "Heavy Light Decomposition",
+    "body": [
+      "template <class T>\r\nclass SegmentTree\r\n{\r\n    int n;\r\n    vector<T> segTree;\r\n\r\npublic:\r\n    SegmentTree() {}\r\n\r\n    SegmentTree(int N)\r\n    {\r\n        n = N;\r\n        segTree.resize(4 * n);\r\n    }\r\n\r\n    void resize(int N)\r\n    {\r\n        n = N;\r\n        segTree.resize(4 * n);\r\n    }\r\n\r\n    void _build_(int si, int ss, int se, T arr[])\r\n    {\r\n        if (ss == se)\r\n        {\r\n            segTree[si] = arr[ss];\r\n        }\r\n        else\r\n        {\r\n            int mid = (ss + se) / 2;\r\n            _build_(2 * si, ss, mid, arr);\r\n            _build_(2 * si + 1, mid + 1, se, arr);\r\n            segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);\r\n        }\r\n    }\r\n\r\n    void build(T arr[])\r\n    {\r\n        _build_(1, 1, n, arr);\r\n    }\r\n\r\n    T _query_(int si, int ss, int se, int qs, int qe)\r\n    {\r\n        if (qs > se || qe < ss)\r\n            return 0;\r\n        if (qs <= ss && qe >= se)\r\n            return segTree[si];\r\n        int mid = (ss + se) / 2;\r\n        return max(_query_(2 * si, ss, mid, qs, qe), _query_(2 * si + 1, mid + 1, se, qs, qe));\r\n    }\r\n\r\n    T _query_(int si, int ss, int se, int qi)\r\n    {\r\n        if (ss == se)\r\n            return segTree[si];\r\n        else\r\n        {\r\n            int mid = (ss + se) / 2;\r\n            if (qi <= mid)\r\n                return _query_(2 * si, ss, mid, qi);\r\n            else\r\n                return _query_(2 * si + 1, mid + 1, se, qi);\r\n        }\r\n    }\r\n\r\n    T query(int l, int r)\r\n    {\r\n        return _query_(1, 1, n, l, r);\r\n    }\r\n\r\n    T query(int qi)\r\n    {\r\n        return _query_(1, 1, n, qi);\r\n    }\r\n\r\n    void _update_(int si, int ss, int se, int qi, T val)\r\n    {\r\n        if (ss == se)\r\n        {\r\n            segTree[si] = val;\r\n        }\r\n        else\r\n        {\r\n            int mid = (ss + se) / 2;\r\n            if (qi <= mid)\r\n                _update_(2 * si, ss, mid, qi, val);\r\n            else\r\n                _update_(2 * si + 1, mid + 1, se, qi, val);\r\n            segTree[si] = max(segTree[2 * si], segTree[2 * si + 1]);\r\n        }\r\n    }\r\n\r\n    void update(int qi, T val)\r\n    {\r\n        _update_(1, 1, n, qi, val);\r\n    }\r\n};\r\n\r\nconst int treeNode = 10010;\r\nint level[treeNode], parent[treeNode][20], subSize[treeNode];\r\nvector<pair<int, ll>> tree[treeNode];\r\npair<int, ll> specialChild[treeNode];\r\nint timer, label[treeNode], chainHead[treeNode];\r\nll arr[treeNode];\r\n\r\nclass HeavyLightDecomposition\r\n{\r\n    int n;\r\n    SegmentTree<ll> st;\r\n\r\npublic:\r\n    HeavyLightDecomposition(int N)\r\n    {\r\n        n = N;\r\n        timer = 0;\r\n        REP(i, 1, n)\r\n        tree[i].clear(), chainHead[i] = i;\r\n    }\r\n\r\n    void resize(int N)\r\n    {\r\n        n = N;\r\n        timer = 0;\r\n        REP(i, 1, n)\r\n        tree[i].clear(), chainHead[i] = i;\r\n    }\r\n\r\n    void addEdge(int a, int b, int c)\r\n    {\r\n        tree[a].push_back({b, c});\r\n        tree[b].push_back({a, c});\r\n    }\r\n\r\n    void dfs(int node = 1, int par = -1, int l = 0)\r\n    {\r\n        parent[node][0] = par;\r\n        level[node] = l;\r\n        subSize[node] = 1;\r\n\r\n        int nodeX = -1, size = 0;\r\n        ll weight = 0;\r\n\r\n        for (pair<int, ll> child : tree[node])\r\n        {\r\n            if (child.first == par)\r\n                continue;\r\n\r\n            dfs(child.first, node, l + 1);\r\n\r\n            subSize[node] += subSize[child.first];\r\n\r\n            if (size < subSize[child.first])\r\n                size = subSize[child.first], nodeX = child.first, weight = child.second;\r\n        }\r\n\r\n        // special child calculation\r\n        specialChild[node] = {nodeX, weight};\r\n    }\r\n\r\n    int LCA(int a, int b)\r\n    {\r\n        if (level[a] < level[b])\r\n            swap(a, b);\r\n\r\n        int d = level[a] - level[b];\r\n\r\n        while (d)\r\n        {\r\n            int i = log2(d);\r\n            a = parent[a][i];\r\n            d -= 1 << i;\r\n        }\r\n\r\n        if (a == b)\r\n            return a;\r\n\r\n        for (int i = 19; i >= 0; i--)\r\n        {\r\n            if (parent[a][i] != -1 && parent[a][i] != parent[b][i])\r\n                a = parent[a][i], b = parent[b][i];\r\n        }\r\n\r\n        return parent[a][0];\r\n    }\r\n\r\n    // heavy light decomposition part\r\n    void HLD(int node = 1, int par = -1, ll val = 0)\r\n    {\r\n        label[node] = ++timer;\r\n        arr[timer] = val;\r\n\r\n        int sc = specialChild[node].first;\r\n\r\n        if (sc != -1)\r\n        {\r\n            chainHead[sc] = chainHead[node];\r\n            HLD(sc, node, specialChild[node].second);\r\n        }\r\n\r\n        for (pii child : tree[node])\r\n        {\r\n            if (child.first == sc || child.first == par)\r\n                continue;\r\n            HLD(child.first, node, child.second);\r\n        }\r\n    }\r\n\r\n    void init()\r\n    {\r\n        dfs();\r\n\r\n        for (int j = 1; j < 20; j++)\r\n        {\r\n            for (int i = 1; i <= n; i++)\r\n            {\r\n                if (parent[i][j - 1] == -1)\r\n                    parent[i][j] = -1;\r\n                else\r\n                    parent[i][j] = parent[parent[i][j - 1]][j - 1];\r\n            }\r\n        }\r\n\r\n        HLD();\r\n        st.resize(timer);\r\n        st.build(arr);\r\n    }\r\n\r\n    int kAncestor(int a, int d)\r\n    {\r\n        while (d)\r\n        {\r\n            int i = log2(d);\r\n            a = parent[a][i];\r\n            d -= 1 << i;\r\n        }\r\n\r\n        return a;\r\n    }\r\n\r\n    ll queryHLD(int node, int ances)\r\n    {\r\n        ll res = 0, top = 0;\r\n\r\n        while (level[node] > level[ances])\r\n        {\r\n            top = chainHead[node];\r\n\r\n            if (level[top] <= level[ances])\r\n                top = kAncestor(node, level[node] - level[ances] - 1);\r\n\r\n            res = max(res, st.query(label[top], label[node]));\r\n            node = parent[top][0];\r\n        }\r\n\r\n        return res;\r\n    }\r\n\r\n    ll query(int a, int b)\r\n    {\r\n        int lca = LCA(a, b);\r\n        if (level[a] > level[b])\r\n            swap(a, b);\r\n        ll ans = queryHLD(b, lca);\r\n        if (lca == a)\r\n            return ans;\r\n        ans = max(ans, queryHLD(a, lca));\r\n        return ans;\r\n    }\r\n\r\n    void update(int node, ll w)\r\n    {\r\n        int lab = label[node];\r\n        st.update(lab, w);\r\n        arr[lab] = w;\r\n    }\r\n};\r\n\r\nvoid solve()\r\n{\r\n    int n;\r\n    cin >> n;\r\n\r\n    HeavyLightDecomposition hld(n);\r\n\r\n    REP(i, 1, n - 1)\r\n    {\r\n        int a, b, c;\r\n        cin >> a >> b >> c;\r\n        hld.addEdge(a, b, c);\r\n    }\r\n\r\n    hld.init();\r\n\r\n    while (true)\r\n    {\r\n        string s;\r\n        cin >> s;\r\n\r\n        if (s[0] == 'D')\r\n            return;\r\n        else if (s[0] == 'Q')\r\n        {\r\n            int a, b;\r\n            cin >> a >> b;\r\n            cout << hld.query(a, b) << endl;\r\n        }\r\n        else\r\n        {\r\n            ll node, val;\r\n            hld.update(node, val);\r\n        }\r\n    }\r\n}"
+    ],
+    "description": "Heavy Light Decomposition"
   }
 }
-
